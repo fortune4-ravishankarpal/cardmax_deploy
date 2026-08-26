@@ -21,4 +21,7 @@ node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
+src/app/(payload)/admin/importMap.js
 /playwright/.cache/
+
+src/payload-types.ts

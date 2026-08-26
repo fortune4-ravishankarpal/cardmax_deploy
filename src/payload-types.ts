@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    roles: Role;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,13 +79,14 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    roles: RolesSelect<false> | RolesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {};
@@ -122,7 +124,11 @@ export interface UserAuthOperations {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  /**
+   * Assigns permissions and access rights to this user
+   */
+  role?: (number | null) | Role;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -143,11 +149,85 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Manage admin roles and their permissions
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles".
+ */
+export interface Role {
+  id: number;
+  /**
+   * Unique role identifier (e.g., super_admin, admin, editor)
+   */
+  name: string;
+  /**
+   * Display name for the role
+   */
+  label: string;
+  /**
+   * Select permissions for this role.
+   */
+  permissions?:
+    | (
+        | '*'
+        | '*.read'
+        | '*.create'
+        | '*.update'
+        | '*.delete'
+        | 'users.*'
+        | 'users.create'
+        | 'users.read'
+        | 'users.update'
+        | 'users.delete'
+        | 'users.manage'
+        | 'media.*'
+        | 'media.create'
+        | 'media.read'
+        | 'media.update'
+        | 'media.delete'
+        | 'media.manage'
+        | 'roles.*'
+        | 'roles.create'
+        | 'roles.read'
+        | 'roles.update'
+        | 'roles.delete'
+        | 'roles.manage'
+      )[]
+    | null;
+  /**
+   * Optional description of the role and its purpose
+   */
+  description?: string | null;
+  /**
+   * Inactive roles cannot be used
+   */
+  active?: boolean | null;
+  protected?: boolean | null;
+  /**
+   * Hash of the role configuration for version tracking
+   */
+  configHash?: string | null;
+  /**
+   * Version number for optimistic locking
+   */
+  configVersion?: number | null;
+  /**
+   * Indicates if this role is managed by the system
+   */
+  systemManaged?: boolean | null;
+  /**
+   * Select which auth-enabled collections can see and assign this role. Leave empty for all auth collections.
+   */
+  visibleFor?: 'users'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -166,7 +246,7 @@ export interface Media {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -183,20 +263,24 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'roles';
+        value: number | Role;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -206,10 +290,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -229,7 +313,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -240,6 +324,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +359,24 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "roles_select".
+ */
+export interface RolesSelect<T extends boolean = true> {
+  name?: T;
+  label?: T;
+  permissions?: T;
+  description?: T;
+  active?: T;
+  protected?: T;
+  configHash?: T;
+  configVersion?: T;
+  systemManaged?: T;
+  visibleFor?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
