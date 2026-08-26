@@ -64,11 +64,13 @@ export type SupportedTimezones =
 export interface Config {
   auth: {
     users: UserAuthOperations;
+    admin: AdminAuthOperations;
   };
   blocks: {};
   collections: {
     users: User;
     media: Media;
+    admin: Admin;
     roles: Role;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -79,6 +81,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    admin: AdminSelect<false> | AdminSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -95,7 +98,7 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User;
+  user: User | Admin;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -119,11 +122,82 @@ export interface UserAuthOperations {
     password: string;
   };
 }
+export interface AdminAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
+  id: number;
+  name?: string | null;
+  phone?: string | null;
+  authenticationProvider: 'email' | 'phone' | 'google';
+  authenticationProviderId?: string | null;
+  profileCompleted: boolean;
+  income?: number | null;
+  employmentType?:
+    ('full_time' | 'part_time' | 'self_employed' | 'unemployed' | 'student' | 'retired' | 'other') | null;
+  accountStatus: 'active' | 'pending' | 'suspended';
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "admin".
+ */
+export interface Admin {
   id: number;
   /**
    * Assigns permissions and access rights to this user
@@ -146,7 +220,7 @@ export interface User {
       }[]
     | null;
   password?: string | null;
-  collection: 'users';
+  collection: 'admin';
 }
 /**
  * Manage admin roles and their permissions
@@ -186,6 +260,12 @@ export interface Role {
         | 'media.update'
         | 'media.delete'
         | 'media.manage'
+        | 'admin.*'
+        | 'admin.create'
+        | 'admin.read'
+        | 'admin.update'
+        | 'admin.delete'
+        | 'admin.manage'
         | 'roles.*'
         | 'roles.create'
         | 'roles.read'
@@ -218,28 +298,9 @@ export interface Role {
   /**
    * Select which auth-enabled collections can see and assign this role. Leave empty for all auth collections.
    */
-  visibleFor?: 'users'[] | null;
+  visibleFor?: ('users' | 'admin')[] | null;
   updatedAt: string;
   createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -274,14 +335,23 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
+        relationTo: 'admin';
+        value: number | Admin;
+      } | null)
+    | ({
         relationTo: 'roles';
         value: number | Role;
       } | null);
   globalSlug?: string | null;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'admin';
+        value: number | Admin;
+      };
   updatedAt: string;
   createdAt: string;
 }
@@ -291,10 +361,15 @@ export interface PayloadLockedDocument {
  */
 export interface PayloadPreference {
   id: number;
-  user: {
-    relationTo: 'users';
-    value: number | User;
-  };
+  user:
+    | {
+        relationTo: 'users';
+        value: number | User;
+      }
+    | {
+        relationTo: 'admin';
+        value: number | Admin;
+      };
   key?: string | null;
   value?:
     | {
@@ -324,7 +399,14 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  role?: T;
+  name?: T;
+  phone?: T;
+  authenticationProvider?: T;
+  authenticationProviderId?: T;
+  profileCompleted?: T;
+  income?: T;
+  employmentType?: T;
+  accountStatus?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -359,6 +441,29 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "admin_select".
+ */
+export interface AdminSelect<T extends boolean = true> {
+  role?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,0 +1,15 @@
+import { env } from '@/lib/env'
+
+export const OTP_CODE_LENGTH = env.OTP_CODE_LENGTH
+export const OTP_EXPIRY_MS = env.OTP_EXPIRY_MS
+export const OTP_RESEND_COOLDOWN_MS = env.OTP_RESEND_COOLDOWN_MS
+export const OTP_MAX_ATTEMPTS = env.OTP_MAX_ATTEMPTS
+export const OTP_SEND_WINDOW_MS = env.OTP_SEND_WINDOW_MS
+export const OTP_SEND_MAX_PER_WINDOW = env.OTP_SEND_MAX_PER_WINDOW
+export const OTP_STATE_TTL_MS = env.OTP_STATE_TTL_MS
+
+export const SESSION_MAX_AGE_SECONDS = env.SESSION_MAX_AGE_SECONDS
+
+export const COOKIE_SECURE = env.COOKIE_SECURE
+export const COOKIE_SAME_SITE = env.COOKIE_SAME_SITE
+export const COOKIE_NAME = env.COOKIE_NAME

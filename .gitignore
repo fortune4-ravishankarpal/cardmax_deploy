@@ -8,6 +8,7 @@ next-env.d.ts
 .vercel
 .agents/*
 project/*
+tsconfig.tsbuildinfo
 
 # Payload default media upload directory
 public/media/
