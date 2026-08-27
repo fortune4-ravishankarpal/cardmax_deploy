@@ -2,8 +2,8 @@ import { env } from '@/lib/env'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 export const emailConfig =  nodemailerAdapter({
-    defaultFromAddress: 'noreply@tenderbharo.com',
-    defaultFromName: 'No-Reply',
+    defaultFromAddress: 'noreply@cardmax.com',
+    defaultFromName: 'no-Reply',
 
     transportOptions: {
       host: env.SMTP_HOST,
