@@ -25,7 +25,7 @@ export const auditFieldsConfig: Plugin = (incomingConfig) => {
     }))
   }
 
-  // Inject access control into the audit fields for globals
+  /* Inject access control into the audit fields for globals
   if (configWithAudit.globals) {
     configWithAudit.globals = configWithAudit.globals.map((global) => ({
       ...global,
@@ -43,6 +43,6 @@ export const auditFieldsConfig: Plugin = (incomingConfig) => {
       }),
     }))
   }
-
+  */
   return configWithAudit
 }

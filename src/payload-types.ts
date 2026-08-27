@@ -157,6 +157,14 @@ export interface User {
   employmentType?:
     ('full_time' | 'part_time' | 'self_employed' | 'unemployed' | 'student' | 'retired' | 'other') | null;
   accountStatus: 'active' | 'pending' | 'suspended';
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -178,25 +186,6 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: number;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "admin".
  */
 export interface Admin {
@@ -205,6 +194,14 @@ export interface Admin {
    * Assigns permissions and access rights to this user
    */
   role?: (number | null) | Role;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -307,8 +304,43 @@ export interface Role {
    * Select which auth-enabled collections can see and assign this role. Leave empty for all auth collections.
    */
   visibleFor?: ('users' | 'admin')[] | null;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -325,6 +357,14 @@ export interface Otp {
   maxAttempts?: number | null;
   lastSentAt: number;
   resendAt: number;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -438,6 +478,8 @@ export interface UsersSelect<T extends boolean = true> {
   income?: T;
   employmentType?: T;
   accountStatus?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -461,6 +503,8 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -479,6 +523,8 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface AdminSelect<T extends boolean = true> {
   role?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -510,6 +556,8 @@ export interface OtpSelect<T extends boolean = true> {
   maxAttempts?: T;
   lastSentAt?: T;
   resendAt?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
@@ -529,6 +577,8 @@ export interface RolesSelect<T extends boolean = true> {
   configVersion?: T;
   systemManaged?: T;
   visibleFor?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }

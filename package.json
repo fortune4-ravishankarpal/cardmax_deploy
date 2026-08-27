@@ -19,6 +19,7 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
+    "@payload-bites/audit-fields": "^1.7.0",
     "@payloadcms/db-postgres": "3.88.0",
     "@payloadcms/email-nodemailer": "^3.88.0",
     "@payloadcms/next": "3.88.0",
