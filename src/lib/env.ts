@@ -40,6 +40,16 @@ export const env = createEnv({
     // Misc
     CRON_SECRET: z.string().min(1).optional(),
     VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1).optional(),
+
+
+    
+    // SMTP
+    SMTP_USER: z.string().min(1),
+    SMTP_PASS: z.string().min(1),
+    SMTP_HOST: z.string().min(1),
+    FROM_EMAIL: z.string().min(1),
+    SUPPORT_EMAIL: z.string().min(1),
+    SALES_EMAIL: z.string().min(1),
   },
 
   client: {
@@ -85,6 +95,15 @@ export const env = createEnv({
 
     // Client
     NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
+
+
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASS: process.env.SMTP_PASS,
+    SMTP_HOST: process.env.SMTP_HOST,
+    FROM_EMAIL: process.env.FROM_EMAIL,
+    SUPPORT_EMAIL: process.env.SUPPORT_EMAIL,
+    SALES_EMAIL: process.env.SALES_EMAIL,
+
   },
 
   emptyStringAsUndefined: true,

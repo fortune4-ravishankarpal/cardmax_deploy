@@ -143,7 +143,7 @@ export const LoginForm = () => {
         <>
           <a className="auth-button auth-button--google" href="/api/users/google/login">
             <span className="auth-google-icon" aria-hidden="true">
-              G
+              G 
             </span>
             Continue with Google
           </a>
