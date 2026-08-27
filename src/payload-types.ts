@@ -71,6 +71,7 @@ export interface Config {
     users: User;
     media: Media;
     admin: Admin;
+    otp: Otp;
     roles: Role;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -82,6 +83,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     admin: AdminSelect<false> | AdminSelect<true>;
+    otp: OtpSelect<false> | OtpSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -266,6 +268,12 @@ export interface Role {
         | 'admin.update'
         | 'admin.delete'
         | 'admin.manage'
+        | 'otp.*'
+        | 'otp.create'
+        | 'otp.read'
+        | 'otp.update'
+        | 'otp.delete'
+        | 'otp.manage'
         | 'roles.*'
         | 'roles.create'
         | 'roles.read'
@@ -304,6 +312,25 @@ export interface Role {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "otp".
+ */
+export interface Otp {
+  id: number;
+  identifier: string;
+  channel: 'email' | 'phone';
+  codeHash: string;
+  salt: string;
+  expiresAt: number;
+  attempts?: number | null;
+  maxAttempts?: number | null;
+  lastSentAt: number;
+  resendAt: number;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -337,6 +364,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'admin';
         value: number | Admin;
+      } | null)
+    | ({
+        relationTo: 'otp';
+        value: number | Otp;
       } | null)
     | ({
         relationTo: 'roles';
@@ -464,6 +495,24 @@ export interface AdminSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "otp_select".
+ */
+export interface OtpSelect<T extends boolean = true> {
+  identifier?: T;
+  channel?: T;
+  codeHash?: T;
+  salt?: T;
+  expiresAt?: T;
+  attempts?: T;
+  maxAttempts?: T;
+  lastSentAt?: T;
+  resendAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

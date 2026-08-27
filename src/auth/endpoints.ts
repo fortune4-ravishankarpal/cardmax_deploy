@@ -64,7 +64,7 @@ export const verifyOtpHandler = async (req: PayloadRequest): Promise<Response> =
   const { identifier, code, name } = parsed.data
 
   try {
-    const verified = await verifyOtp(identifier, code)
+    const verified = await verifyOtp(req.payload, identifier, code)
     const { identifier: accountKey, channel } = verified
     const { user } = await findOrCreateByIdentifier(req.payload, {
       channel,

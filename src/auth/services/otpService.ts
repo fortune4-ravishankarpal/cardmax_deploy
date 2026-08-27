@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 
-import type { OtpRecord, OtpResult } from '@/auth/types'
+import type { OtpResult } from '@/auth/types'
 import {
   OTP_CODE_LENGTH,
   OTP_EXPIRY_MS,
@@ -25,12 +25,51 @@ class AuthorizationError extends Error {
   }
 }
 
-const store = new Map<string, OtpRecord>()
+
 
 const normalizeIdentifier = (identifier: string): { key: string; channel: 'email' | 'phone' } => {
   const channel = detectChannel(identifier)
   const key = channel === 'email' ? identifier.toLowerCase() : normalizePhone(identifier)
   return { key, channel }
+}
+
+const getOtpRecord = async (payload: Payload, key: string): Promise<any> => {
+  const result = await payload.find({
+    collection: 'otp',
+    where: {
+      and: [
+        { identifier: { equals: key } },
+        { expiresAt: { greater_than: Date.now() } },
+        { deletedAt: { exists: false } }
+      ],
+    },
+    limit: 1,
+  })
+  return result.docs[0]
+}
+
+const deleteOtpRecord = async (payload: Payload, id: string): Promise<void> => {
+  // await payload.delete({ collection: 'otp', id })
+  await payload.update({
+    collection: 'otp',
+    id,
+    data: { deletedAt: new Date().toISOString() },
+  })
+}
+
+const updateOtpAttempts = async (payload: Payload, id: string, attempts: number): Promise<void> => {
+  await payload.update({
+    collection: 'otp',
+    id,
+    data: { attempts },
+  })
+}
+
+const createOtpRecord = async (payload: Payload, record: any): Promise<any> => {
+  return await payload.create({
+    collection: 'otp',
+    data: record,
+  })
 }
 
 export const requestOtp = async (
@@ -45,9 +84,8 @@ export const requestOtp = async (
   }
 
   const now = Date.now()
-  const existing = store.get(key)
+  const existing = await getOtpRecord(payload, key)
   if (existing && now < existing.resendAt) {
-    const wait = Math.max(1, Math.ceil((existing.resendAt - now) / 1000))
     throw new AuthorizationError(
       'RESEND_COOLDOWN',
       `Please wait before requesting another code.`,
@@ -57,7 +95,7 @@ export const requestOtp = async (
 
   const code = generateOtpCode(OTP_CODE_LENGTH)
   const salt = randomHex(8)
-  const record: OtpRecord = {
+  const record: any = {
     identifier: key,
     channel,
     codeHash: otpHash(code, salt),
@@ -68,7 +106,7 @@ export const requestOtp = async (
     lastSentAt: now,
     resendAt: now + OTP_RESEND_COOLDOWN_MS,
   }
-  store.set(key, record)
+  await createOtpRecord(payload, record)
 
   await sendOtpCode(payload, { channel, destination: identifier, code })
 
@@ -81,38 +119,43 @@ export const requestOtp = async (
 }
 
 export const verifyOtp = async (
+  payload: Payload,
   identifier: string,
   code: string,
 ): Promise<{ channel: 'email' | 'phone'; identifier: string }> => {
   const { key, channel } = normalizeIdentifier(identifier)
-  const record = store.get(key)
+  const record = await getOtpRecord(payload, key)
   if (!record) {
     throw new AuthorizationError('INVALID_OTP', 'The code you entered is incorrect.', 400)
   }
 
   const now = Date.now()
   if (now > record.expiresAt) {
-    store.delete(key)
+    await deleteOtpRecord(payload, record.id)
     throw new AuthorizationError('OTP_EXPIRED', 'This code has expired.', 400)
   }
 
   if (record.attempts >= record.maxAttempts) {
-    store.delete(key)
+    await deleteOtpRecord(payload, record.id)
     throw new AuthorizationError('TOO_MANY_ATTEMPTS', 'Too many incorrect attempts.', 429)
   }
 
   const candidateMatch = otpHash(code, record.salt)
   if (!safeEqual(record.codeHash, candidateMatch)) {
-    store.set(key, { ...record, attempts: record.attempts + 1 })
+    await updateOtpAttempts(payload, record.id, record.attempts + 1)
     throw new AuthorizationError('INVALID_OTP', 'The code you entered is incorrect.', 400)
   }
 
-  store.delete(key)
+  await deleteOtpRecord(payload, record.id)
   return { channel, identifier: key }
 }
 
-export const consumePendingOtp = (identifier: string): void => {
-  store.delete(normalizeIdentifier(identifier).key)
+export const consumePendingOtp = async (payload: Payload, identifier: string): Promise<void> => {
+  const { key } = normalizeIdentifier(identifier)
+  const record = await getOtpRecord(payload, key)
+  if (record) {
+    await deleteOtpRecord(payload, record.id)
+  }
 }
 
 export { AuthorizationError, AuthorizationError as OtpError }

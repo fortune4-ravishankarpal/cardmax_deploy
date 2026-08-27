@@ -1,13 +1,52 @@
 // @vitest-environment node
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, beforeEach } from 'vitest'
 
 import { detectChannel, normalizePhone, maskIdentifier, syntheticEmailForPhone } from '@/auth/identifiers'
 import { generateOtpCode, otpHash, safeEqual } from '@/auth/code'
 import { checkRateLimit, clearRateLimit } from '@/auth/rateLimit'
 import { requestOtp, verifyOtp } from '@/auth/services/otpService'
 
+let otpStore: any[]
+
 const payloadStub = {
   sendEmail: async () => undefined,
+    find: async (args: any) => {
+    const { where } = args
+    let docs = otpStore.filter((d) => !d.deletedAt)
+    if (where && where.and) {
+      for (const cond of where.and) {
+        const key = Object.keys(cond)[0]
+        const op = Object.keys(cond[key])[0]
+        const val = cond[key][op]
+        if (op === 'equals') {
+          docs = docs.filter((d) => d[key] === val)
+        } else if (op === 'greater_than') {
+          docs = docs.filter((d) => d[key] > val)
+        }
+      }
+    }
+    return { docs: docs.slice(0, args.limit || 1) }
+  },
+  create: async (args: any) => {
+    const doc = { id: Date.now().toString(), ...args.data }
+    otpStore.push(doc)
+    return doc
+  },
+  update: async (args: any) => {
+    const idx = otpStore.findIndex((d) => String(d.id) === String(args.id))
+    if (idx >= 0) {
+      otpStore[idx] = { ...otpStore[idx], ...args.data }
+      return otpStore[idx]
+    }
+    return null
+  },
+  delete: async (args: any) => {
+    const idx = otpStore.findIndex((d) => String(d.id) === String(args.id))
+    if (idx >= 0) {
+      otpStore[idx].deletedAt = Date.now()
+    }
+    return { id: args.id }
+  },
 } as any
 
 describe('auth identifiers', () => {
@@ -60,6 +99,10 @@ describe('rate limiter', () => {
 })
 
 describe('otp service', () => {
+  beforeEach(() => {
+    otpStore = []
+  })
+
   it('requests a code and returns masked destination', async () => {
     clearRateLimit(`otp-send:user+otp${Date.now()}@cardmax.local`)
     const result = await requestOtp(payloadStub, 'otp-request@example.com')
@@ -77,15 +120,15 @@ describe('otp service', () => {
   it('rejects the wrong code with the incorrect attempt error', async () => {
     const identifier = `wrongcode+${Date.now()}@example.com`
     await requestOtp(payloadStub, identifier)
-    await expect(verifyOtp(identifier, '000000')).rejects.toMatchObject({ code: 'INVALID_OTP' })
+    await expect(verifyOtp(payloadStub, identifier, '000000')).rejects.toMatchObject({ code: 'INVALID_OTP' })
   })
 
   it('locks after the maximum number of wrong attempts', async () => {
     const identifier = `attempts+${Date.now()}@example.com`
     await requestOtp(payloadStub, identifier)
     for (let i = 0; i < 5; i += 1) {
-      await verifyOtp(identifier, '000000').catch(() => undefined)
+      await verifyOtp(payloadStub, identifier, '000000').catch(() => undefined)
     }
-    await expect(verifyOtp(identifier, '000000')).rejects.toMatchObject({ code: 'TOO_MANY_ATTEMPTS' })
+    await expect(verifyOtp(payloadStub, identifier, '000000')).rejects.toMatchObject({ code: 'TOO_MANY_ATTEMPTS' })
   })
 })
