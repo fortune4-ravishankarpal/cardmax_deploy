@@ -26,3 +26,4 @@ src/app/(payload)/admin/importMap.js
 /playwright/.cache/
 
 src/payload-types.tspayload-types.ts
+src\app\(payload)\admin\importMap.js
