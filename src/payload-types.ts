@@ -72,6 +72,8 @@ export interface Config {
     media: Media;
     admin: Admin;
     otp: Otp;
+    'gmail-connections': GmailConnection;
+    statements: Statement;
     roles: Role;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -84,6 +86,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     admin: AdminSelect<false> | AdminSelect<true>;
     otp: OtpSelect<false> | OtpSelect<true>;
+    'gmail-connections': GmailConnectionsSelect<false> | GmailConnectionsSelect<true>;
+    statements: StatementsSelect<false> | StatementsSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -271,6 +275,18 @@ export interface Role {
         | 'otp.update'
         | 'otp.delete'
         | 'otp.manage'
+        | 'gmail-connections.*'
+        | 'gmail-connections.create'
+        | 'gmail-connections.read'
+        | 'gmail-connections.update'
+        | 'gmail-connections.delete'
+        | 'gmail-connections.manage'
+        | 'statements.*'
+        | 'statements.create'
+        | 'statements.read'
+        | 'statements.update'
+        | 'statements.delete'
+        | 'statements.manage'
         | 'roles.*'
         | 'roles.create'
         | 'roles.read'
@@ -371,6 +387,70 @@ export interface Otp {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gmail-connections".
+ */
+export interface GmailConnection {
+  id: number;
+  user: number | User;
+  gmailAddress: string;
+  encryptedRefreshToken: string;
+  tokenIv: string;
+  tokenTag: string;
+  scopes?: string | null;
+  status: 'active' | 'revoked' | 'expired';
+  connectedAt: string;
+  lastRefreshedAt?: string | null;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "statements".
+ */
+export interface Statement {
+  id: number;
+  user: number | User;
+  source: 'gmail' | 'upload';
+  issuer: string;
+  /**
+   * Gmail message ID of the source email
+   */
+  gmailMessageId?: string | null;
+  attachmentFilename?: string | null;
+  status: 'pending' | 'processing' | 'parsed' | 'error';
+  errorMessage?: string | null;
+  transactionCount?: number | null;
+  totalAmount?: number | null;
+  accountLast4?: string | null;
+  periodStart?: string | null;
+  periodEnd?: string | null;
+  pdf?: (number | null) | Media;
+  /**
+   * Size of the PDF file in bytes
+   */
+  pdfSize?: number | null;
+  parsedAt?: string | null;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -408,6 +488,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'otp';
         value: number | Otp;
+      } | null)
+    | ({
+        relationTo: 'gmail-connections';
+        value: number | GmailConnection;
+      } | null)
+    | ({
+        relationTo: 'statements';
+        value: number | Statement;
       } | null)
     | ({
         relationTo: 'roles';
@@ -561,6 +649,50 @@ export interface OtpSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gmail-connections_select".
+ */
+export interface GmailConnectionsSelect<T extends boolean = true> {
+  user?: T;
+  gmailAddress?: T;
+  encryptedRefreshToken?: T;
+  tokenIv?: T;
+  tokenTag?: T;
+  scopes?: T;
+  status?: T;
+  connectedAt?: T;
+  lastRefreshedAt?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "statements_select".
+ */
+export interface StatementsSelect<T extends boolean = true> {
+  user?: T;
+  source?: T;
+  issuer?: T;
+  gmailMessageId?: T;
+  attachmentFilename?: T;
+  status?: T;
+  errorMessage?: T;
+  transactionCount?: T;
+  totalAmount?: T;
+  accountLast4?: T;
+  periodStart?: T;
+  periodEnd?: T;
+  pdf?: T;
+  pdfSize?: T;
+  parsedAt?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

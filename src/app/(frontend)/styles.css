@@ -345,6 +345,45 @@ svg {
   font-size: 13px;
 }
 
+.auth-connected {
+  padding: 12px 14px;
+  border: 1px solid rgb(40, 120, 70);
+  border-radius: 8px;
+  background: rgb(16, 40, 24);
+  color: rgb(170, 230, 190);
+  font-size: 14px;
+}
+
+.auth-connected p {
+  margin: 0;
+}
+
+.auth-consent {
+  padding: 12px 14px;
+  border: 1px solid rgb(70, 70, 70);
+  border-radius: 8px;
+  background: rgb(28, 28, 28);
+  color: rgb(200, 200, 200);
+  font-size: 14px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.auth-consent p {
+  margin: 0 0 8px;
+}
+
+.auth-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.auth-list li {
+  font-size: 13px;
+  line-height: 22px;
+  color: rgb(180, 180, 180);
+}
+
 .auth-brand {
   text-align: center;
 }

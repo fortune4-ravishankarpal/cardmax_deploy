@@ -16,6 +16,13 @@ import {
   completeProfileHandler,
   logoutHandler,
 } from '@/auth/endpoints'
+import {
+  gmailConnectHandler,
+  gmailCallbackHandler,
+  gmailStatusHandler,
+  gmailDisconnectHandler,
+  gmailIngestHandler,
+} from '@/auth/gmail/endpoints'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -133,6 +140,31 @@ export const Users: CollectionConfig = {
       path: '/google/callback',
       method: 'get',
       handler: googleCallbackHandler,
+    },
+    {
+      path: '/gmail/connect',
+      method: 'get',
+      handler: gmailConnectHandler,
+    },
+    {
+      path: '/gmail/callback',
+      method: 'get',
+      handler: gmailCallbackHandler,
+    },
+    {
+      path: '/gmail/status',
+      method: 'get',
+      handler: gmailStatusHandler,
+    },
+    {
+      path: '/gmail/disconnect',
+      method: 'post',
+      handler: gmailDisconnectHandler,
+    },
+    {
+      path: '/gmail/ingest',
+      method: 'post',
+      handler: gmailIngestHandler,
     },
   ],
 }

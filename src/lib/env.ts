@@ -27,6 +27,11 @@ export const env = createEnv({
     GOOGLE_OAUTH_CLIENT_ID: z.string().min(1).optional(),
     GOOGLE_OAUTH_CLIENT_SECRET: z.string().min(1).optional(),
     GOOGLE_OAUTH_REDIRECT_URI: z.string().url().optional(),
+    // Gmail statement ingestion
+    GMAIL_ENCRYPTION_KEY: z.string().min(1).optional(),
+    GOOGLE_GMAIL_REDIRECT_URI: z.string().url().optional(),
+    STATEMENT_PARSER_ENDPOINT: z.string().url().optional(),
+    GMAIL_ISSUER_PATTERNS: z.string().min(1).optional(),
 
     // Sessions & cookies
     SESSION_MAX_AGE_SECONDS: z.coerce.number().int().positive().default(60 * 60 * 24 * 30),
@@ -82,6 +87,11 @@ export const env = createEnv({
     GOOGLE_OAUTH_CLIENT_ID: process.env.GOOGLE_OAUTH_CLIENT_ID,
     GOOGLE_OAUTH_CLIENT_SECRET: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
     GOOGLE_OAUTH_REDIRECT_URI: process.env.GOOGLE_OAUTH_REDIRECT_URI,
+    // Gmail
+    GMAIL_ENCRYPTION_KEY: process.env.GMAIL_ENCRYPTION_KEY,
+    GOOGLE_GMAIL_REDIRECT_URI: process.env.GOOGLE_GMAIL_REDIRECT_URI,
+    STATEMENT_PARSER_ENDPOINT: process.env.STATEMENT_PARSER_ENDPOINT,
+    GMAIL_ISSUER_PATTERNS: process.env.GMAIL_ISSUER_PATTERNS,
 
     // Sessions & cookies
     SESSION_MAX_AGE_SECONDS: process.env.SESSION_MAX_AGE_SECONDS,
