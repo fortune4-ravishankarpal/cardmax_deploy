@@ -16,6 +16,7 @@ export const Banks: CollectionConfig = {
     admin: {
         useAsTitle: 'name',
         defaultColumns: ['name', 'code', 'status', 'country'],
+        group: "Master"
     },
     trash: true,
     versions: {

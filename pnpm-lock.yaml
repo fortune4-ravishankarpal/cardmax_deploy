@@ -29,6 +29,9 @@ importers:
       '@t3-oss/env-nextjs':
         specifier: ^0.13.11
         version: 0.13.11(typescript@5.7.3)(zod@4.4.3)
+      '@veiag/payload-enhanced-sidebar':
+        specifier: ^0.5.1
+        version: 0.5.1(payload@3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3))(react@19.2.6)
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -1948,6 +1951,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@veiag/payload-enhanced-sidebar@0.5.1':
+    resolution: {integrity: sha512-Hw9aq6pA2qQLfAYuLl9CmWzkqB6wjb1QZ9bL8gigdGYHL6cR/iva08qHr8X+Re2CFV8dBfZV/HWVZIjFSkLSIQ==}
+    engines: {node: ^18.20.2 || >=20.9.0, pnpm: ^9 || ^10}
+    peerDependencies:
+      payload: ^3.75.0
+
   '@vitejs/plugin-react@4.5.2':
     resolution: {integrity: sha512-QNVT3/Lxx99nMQWJWF7K4N6apUEuT0KlZA3mx/mVaoGj3smm/8rc8ezz15J1pcbcjDK0V15rpHetVfya08r76Q==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -3295,6 +3304,11 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lucide-react@0.556.0:
+    resolution: {integrity: sha512-iOb8dRk7kLaYBZhR2VlV1CeJGxChBgUthpSP8wom9jfj79qovgG6qcSdiy6vkoREKPnbUYzJsCn4o4PtG3Iy+A==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
@@ -6161,6 +6175,14 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
+  '@veiag/payload-enhanced-sidebar@0.5.1(payload@3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3))(react@19.2.6)':
+    dependencies:
+      '@payloadcms/translations': 3.88.0
+      lucide-react: 0.556.0(react@19.2.6)
+      payload: 3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3)
+    transitivePeerDependencies:
+      - react
+
   '@vitejs/plugin-react@4.5.2(supports-color@7.2.0)(vite@7.3.6(@types/node@22.19.9)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(tsx@4.22.4))':
     dependencies:
       '@babel/core': 7.29.7(supports-color@7.2.0)
@@ -7659,6 +7681,10 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-react@0.556.0(react@19.2.6):
+    dependencies:
+      react: 19.2.6
 
   lz-string@1.5.0: {}
 

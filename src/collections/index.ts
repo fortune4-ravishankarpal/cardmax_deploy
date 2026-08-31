@@ -5,5 +5,6 @@ import { Otp } from './Otp'
 import { GmailConnection } from './GmailConnection'
 import { Statements } from './Statements'
 import { Banks } from './BankMaster'
+import { CreditCards } from './creditCard'
 
-export const collectionsConfigs = [Users, Media, AdminUsers, Otp, GmailConnection, Statements, Banks]
+export const collectionsConfigs = [Users, Media, AdminUsers, Otp, GmailConnection, Statements, Banks, CreditCards]

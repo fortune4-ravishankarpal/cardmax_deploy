@@ -75,6 +75,7 @@ export interface Config {
     'gmail-connections': GmailConnection;
     statements: Statement;
     banks: Bank;
+    CreditCard: CreditCard;
     roles: Role;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -90,6 +91,7 @@ export interface Config {
     'gmail-connections': GmailConnectionsSelect<false> | GmailConnectionsSelect<true>;
     statements: StatementsSelect<false> | StatementsSelect<true>;
     banks: BanksSelect<false> | BanksSelect<true>;
+    CreditCard: CreditCardSelect<false> | CreditCardSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -296,6 +298,13 @@ export interface Role {
         | 'banks.delete'
         | 'banks.manage'
         | 'banks.publish'
+        | 'CreditCard.*'
+        | 'CreditCard.create'
+        | 'CreditCard.read'
+        | 'CreditCard.update'
+        | 'CreditCard.delete'
+        | 'CreditCard.manage'
+        | 'CreditCard.publish'
         | 'roles.*'
         | 'roles.create'
         | 'roles.read'
@@ -505,6 +514,62 @@ export interface Bank {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CreditCard".
+ */
+export interface CreditCard {
+  id: number;
+  name: string;
+  slug: string;
+  bank: number | Bank;
+  cardType: 'credit_card' | 'secured_credit_card' | 'rupay' | 'co_brand';
+  network?: ('visa' | 'mastercard' | 'amex' | 'rupay') | null;
+  state: 'active' | 'invite_only' | 'discontinued' | 'pending_research';
+  eligibility?: {
+    minimumIncome?: number | null;
+    employmentTypes?: ('salaried' | 'self_employed' | 'business')[] | null;
+    inviteOnly?: boolean | null;
+  };
+  fees?: {
+    joiningFee?: number | null;
+    annualFee?: number | null;
+    renewalFee?: number | null;
+    feeWaiverThreshold?: number | null;
+  };
+  baseReward: {
+    type: 'points' | 'cashback';
+    pointsPerBlock?: number | null;
+    blockSize?: number | null;
+    cashbackPercentage?: number | null;
+  };
+  forexMarkup?: number | null;
+  fuelSurcharge?: {
+    waived?: boolean | null;
+    waiverPercentage?: number | null;
+    monthlyCap?: number | null;
+  };
+  pointValuation?: {
+    realisticValue?: number | null;
+    ceilingValue?: number | null;
+  };
+  pointExpiry?: number | null;
+  image?: (number | null) | Media;
+  description?: string | null;
+  lastVerifiedAt?: string | null;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -554,6 +619,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'banks';
         value: number | Bank;
+      } | null)
+    | ({
+        relationTo: 'CreditCard';
+        value: number | CreditCard;
       } | null)
     | ({
         relationTo: 'roles';
@@ -785,6 +854,65 @@ export interface BanksSelect<T extends boolean = true> {
   lastVerifiedAt?: T;
   notes?: T;
   slug?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CreditCard_select".
+ */
+export interface CreditCardSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  bank?: T;
+  cardType?: T;
+  network?: T;
+  state?: T;
+  eligibility?:
+    | T
+    | {
+        minimumIncome?: T;
+        employmentTypes?: T;
+        inviteOnly?: T;
+      };
+  fees?:
+    | T
+    | {
+        joiningFee?: T;
+        annualFee?: T;
+        renewalFee?: T;
+        feeWaiverThreshold?: T;
+      };
+  baseReward?:
+    | T
+    | {
+        type?: T;
+        pointsPerBlock?: T;
+        blockSize?: T;
+        cashbackPercentage?: T;
+      };
+  forexMarkup?: T;
+  fuelSurcharge?:
+    | T
+    | {
+        waived?: T;
+        waiverPercentage?: T;
+        monthlyCap?: T;
+      };
+  pointValuation?:
+    | T
+    | {
+        realisticValue?: T;
+        ceilingValue?: T;
+      };
+  pointExpiry?: T;
+  image?: T;
+  description?: T;
+  lastVerifiedAt?: T;
   createdBy?: T;
   lastModifiedBy?: T;
   updatedAt?: T;
