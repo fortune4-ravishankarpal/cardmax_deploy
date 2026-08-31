@@ -15,6 +15,7 @@ public/media/
 
 public/robots.txt
 public/sitemap*.xml
+pnpm-lock.yaml
 
 
 # Playwright

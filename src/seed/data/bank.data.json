@@ -1,0 +1,375 @@
+[
+    {
+        "name": "HDFC Bank",
+        "code": "HDFC",
+        "shortName": "HDFC",
+        "country": "India",
+        "website": "https://www.hdfcbank.com",
+        "statementConfig": {
+            "parserType": "dedicated",
+            "statementEmailSenders": [
+                {
+                    "email": "alerts@hdfcbank.net"
+                }
+            ],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "HDFC Bank Credit Card Statement"
+                },
+                {
+                    "pattern": "HDFC Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Commonly derived from cardholder name, date of birth, or card details (e.g., first 4 letters of name + last 4 of card or DOB)."
+        },
+        "dataSource": "bank_website",
+        "notes": "Largest issuer (~22% cards in force). Dedicated statement parser available. Also uses customerservices.cards@hdfcbank.com for support."
+    },
+    {
+        "name": "SBI Cards and Payment Services",
+        "code": "SBICARD",
+        "shortName": "SBI Card",
+        "country": "India",
+        "website": "https://www.sbicard.com",
+        "statementConfig": {
+            "parserType": "dedicated",
+            "statementEmailSenders": [
+                {
+                    "email": "customercare@sbicard.com"
+                }
+            ],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "SBI Card Statement"
+                },
+                {
+                    "pattern": "Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Typically first 4 letters of name (as on card) + DOB in DDMM format, or similar name/DOB/card combination."
+        },
+        "dataSource": "bank_website",
+        "notes": "Second-largest (~18–19% share). Pure-play credit card company (majority-owned by SBI). Strong in spends/travel/fuel co-brands. E-statements via registered email; SMS ESTMT options available."
+    },
+    {
+        "name": "ICICI Bank",
+        "code": "ICICI",
+        "shortName": "ICICI",
+        "country": "India",
+        "website": "https://www.icicibank.com",
+        "statementConfig": {
+            "parserType": "dedicated",
+            "statementEmailSenders": [
+                {
+                    "email": "customer.care@icicibank.com"
+                }
+            ],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "ICICI Bank Credit Card Statement"
+                },
+                {
+                    "pattern": "Credit Card Statement"
+                }
+            ],
+            "passwordHint": "First 4 letters of registered name (uppercase) + DOB in DDMM format (common example format)."
+        },
+        "dataSource": "bank_website",
+        "notes": "Third-largest (~16% share). Strong digital/lifestyle/co-brand focus (e.g., Amazon Pay). Statements via iMobile/NetBanking or email."
+    },
+    {
+        "name": "Axis Bank",
+        "code": "AXIS",
+        "shortName": "Axis",
+        "country": "India",
+        "website": "https://www.axisbank.com",
+        "statementConfig": {
+            "parserType": "dedicated",
+            "statementEmailSenders": [
+                {
+                    "email": "customer.services@axisbank.com"
+                }
+            ],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Axis Bank Credit Card Statement"
+                },
+                {
+                    "pattern": "Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name (first letters) + DOB or card digits combination; password-protected PDFs."
+        },
+        "dataSource": "bank_website",
+        "notes": "Fourth-largest (~13% share). Acquired Citi consumer portfolio. Strong travel/premium offerings (e.g., Magnus). E-statements encouraged; SMS/NetBanking options."
+    },
+    {
+        "name": "Kotak Mahindra Bank",
+        "code": "KOTAK",
+        "shortName": "Kotak",
+        "country": "India",
+        "website": "https://www.kotak.com",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Kotak Credit Card Statement"
+                },
+                {
+                    "pattern": "Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Typically name + DOB or card details."
+        },
+        "dataSource": "bank_website",
+        "notes": "~4% share. Digital-focused (811 platform). E-statement registration via NetBanking/app/SMS GREEN / customer care."
+    },
+    {
+        "name": "RBL Bank",
+        "code": "RBL",
+        "shortName": "RBL",
+        "country": "India",
+        "website": "https://www.rblbank.com",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "RBL Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB/card combination common."
+        },
+        "dataSource": "bank_website",
+        "notes": "~3.8% share. Active co-brand and rewards focus."
+    },
+    {
+        "name": "IDFC FIRST Bank",
+        "code": "IDFCFIRST",
+        "shortName": "IDFC First",
+        "country": "India",
+        "website": "https://www.idfcfirstbank.com",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "IDFC FIRST Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB or card details."
+        },
+        "dataSource": "bank_website",
+        "notes": "~4% share. Growing mid-sized player."
+    },
+    {
+        "name": "Bank of Baroda",
+        "code": "BOB",
+        "shortName": "BoB / BOBCARD",
+        "country": "India",
+        "website": "https://www.bankofbaroda.in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Bank of Baroda Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB/card combination."
+        },
+        "dataSource": "bank_website",
+        "notes": "Public sector; ~2.6% share via BOBCARD."
+    },
+    {
+        "name": "Yes Bank",
+        "code": "YES",
+        "shortName": "Yes Bank",
+        "country": "India",
+        "website": "https://www.yesbank.in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Yes Bank Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB/card details."
+        },
+        "dataSource": "bank_website",
+        "notes": "~2.5% share."
+    },
+    {
+        "name": "IndusInd Bank",
+        "code": "INDUSIND",
+        "shortName": "IndusInd",
+        "country": "India",
+        "website": "https://www.indusind.com",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "IndusInd Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB or similar."
+        },
+        "dataSource": "bank_website",
+        "notes": "~2.5% share. E-statement registration available."
+    },
+    {
+        "name": "Federal Bank",
+        "code": "FEDERAL",
+        "shortName": "Federal",
+        "country": "India",
+        "website": "https://www.federalbank.co.in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Federal Bank Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB/card combination."
+        },
+        "dataSource": "bank_website",
+        "notes": "Growing (~2%+); recent portfolio activity noted."
+    },
+    {
+        "name": "American Express Banking Corp",
+        "code": "AMEX",
+        "shortName": "Amex",
+        "country": "India",
+        "website": "https://www.americanexpress.com/in",
+        "statementConfig": {
+            "parserType": "dedicated",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "American Express Statement"
+                }
+            ],
+            "passwordHint": "Typically account or name/DOB related."
+        },
+        "dataSource": "bank_website",
+        "notes": "Foreign bank; high spend-per-card. Premium focus."
+    },
+    {
+        "name": "Canara Bank",
+        "code": "CANARA",
+        "shortName": "Canara",
+        "country": "India",
+        "website": "https://www.canarabank.com",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Canara Bank Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB/card details."
+        },
+        "dataSource": "bank_website",
+        "notes": "Public sector; smaller credit card presence."
+    },
+    {
+        "name": "AU Small Finance Bank",
+        "code": "AU",
+        "shortName": "AU Bank",
+        "country": "India",
+        "website": "https://www.aubank.in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "AU Bank Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB or card details."
+        },
+        "dataSource": "bank_website",
+        "notes": "Small finance bank; growing digital cards."
+    },
+    {
+        "name": "HSBC Bank",
+        "code": "HSBC",
+        "shortName": "HSBC",
+        "country": "India",
+        "website": "https://www.hsbc.co.in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "HSBC Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB combination common."
+        },
+        "dataSource": "bank_website",
+        "notes": "Foreign bank; premium/international focus."
+    },
+    {
+        "name": "Punjab National Bank",
+        "code": "PNB",
+        "shortName": "PNB",
+        "country": "India",
+        "website": "https://www.pnbindia.in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "PNB Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB/card details."
+        },
+        "dataSource": "bank_website",
+        "notes": "Public sector; smaller credit card book."
+    },
+    {
+        "name": "Standard Chartered Bank",
+        "code": "SCB",
+        "shortName": "StanChart",
+        "country": "India",
+        "website": "https://www.sc.com/in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Standard Chartered Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB or account-related."
+        },
+        "dataSource": "bank_website",
+        "notes": "Foreign bank. Portfolio activity (e.g., potential Federal Bank integration noted in reports)."
+    },
+    {
+        "name": "Union Bank of India",
+        "code": "UNION",
+        "shortName": "Union Bank",
+        "country": "India",
+        "website": "https://www.unionbankofindia.co.in",
+        "statementConfig": {
+            "parserType": "generic",
+            "statementEmailSenders": [],
+            "statementSubjectPatterns": [
+                {
+                    "pattern": "Union Bank Credit Card Statement"
+                }
+            ],
+            "passwordHint": "Name/DOB/card combination."
+        },
+        "dataSource": "bank_website",
+        "notes": "Public sector; limited credit card scale."
+    }
+]

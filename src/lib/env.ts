@@ -47,7 +47,7 @@ export const env = createEnv({
     VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1).optional(),
 
 
-    
+
     // SMTP
     SMTP_USER: z.string().min(1),
     SMTP_PASS: z.string().min(1),
@@ -55,6 +55,9 @@ export const env = createEnv({
     FROM_EMAIL: z.string().min(1),
     SUPPORT_EMAIL: z.string().min(1),
     SALES_EMAIL: z.string().min(1),
+
+    CMS_SEED_ADMIN_EMAIL: z.email().min(1),
+    CMS_SEED_ADMIN_PASSWORD: z.string().min(4)
   },
 
   client: {
@@ -114,6 +117,8 @@ export const env = createEnv({
     SUPPORT_EMAIL: process.env.SUPPORT_EMAIL,
     SALES_EMAIL: process.env.SALES_EMAIL,
 
+    CMS_SEED_ADMIN_EMAIL: process.env.CMS_SEED_ADMIN_EMAIL,
+    CMS_SEED_ADMIN_PASSWORD: process.env.CMS_SEED_ADMIN_PASSWORD,
   },
 
   emptyStringAsUndefined: true,

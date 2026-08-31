@@ -74,6 +74,7 @@ export interface Config {
     otp: Otp;
     'gmail-connections': GmailConnection;
     statements: Statement;
+    banks: Bank;
     roles: Role;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -88,6 +89,7 @@ export interface Config {
     otp: OtpSelect<false> | OtpSelect<true>;
     'gmail-connections': GmailConnectionsSelect<false> | GmailConnectionsSelect<true>;
     statements: StatementsSelect<false> | StatementsSelect<true>;
+    banks: BanksSelect<false> | BanksSelect<true>;
     roles: RolesSelect<false> | RolesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -287,6 +289,13 @@ export interface Role {
         | 'statements.update'
         | 'statements.delete'
         | 'statements.manage'
+        | 'banks.*'
+        | 'banks.create'
+        | 'banks.read'
+        | 'banks.update'
+        | 'banks.delete'
+        | 'banks.manage'
+        | 'banks.publish'
         | 'roles.*'
         | 'roles.create'
         | 'roles.read'
@@ -451,6 +460,51 @@ export interface Statement {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "banks".
+ */
+export interface Bank {
+  id: number;
+  name: string;
+  code: string;
+  shortName?: string | null;
+  country?: string | null;
+  website?: string | null;
+  logo?: (number | null) | Media;
+  statementConfig?: {
+    parserType?: ('dedicated' | 'generic' | 'ocr_llm') | null;
+    statementEmailSenders?:
+      | {
+          email?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    statementSubjectPatterns?:
+      | {
+          pattern?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    passwordHint?: string | null;
+  };
+  dataSource?: ('bank_website' | 'mitc' | 'statement' | 'research') | null;
+  lastVerifiedAt?: string | null;
+  notes?: string | null;
+  slug?: string | null;
+  createdBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  lastModifiedBy?: {
+    relationTo: 'admin';
+    value: number | Admin;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt?: string | null;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -496,6 +550,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'statements';
         value: number | Statement;
+      } | null)
+    | ({
+        relationTo: 'banks';
+        value: number | Bank;
       } | null)
     | ({
         relationTo: 'roles';
@@ -693,6 +751,46 @@ export interface StatementsSelect<T extends boolean = true> {
   lastModifiedBy?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "banks_select".
+ */
+export interface BanksSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  shortName?: T;
+  country?: T;
+  website?: T;
+  logo?: T;
+  statementConfig?:
+    | T
+    | {
+        parserType?: T;
+        statementEmailSenders?:
+          | T
+          | {
+              email?: T;
+              id?: T;
+            };
+        statementSubjectPatterns?:
+          | T
+          | {
+              pattern?: T;
+              id?: T;
+            };
+        passwordHint?: T;
+      };
+  dataSource?: T;
+  lastVerifiedAt?: T;
+  notes?: T;
+  slug?: T;
+  createdBy?: T;
+  lastModifiedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  deletedAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

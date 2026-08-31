@@ -10,11 +10,14 @@
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "gen": "pnpm generate:importmap && pnpm generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
+    "seed:one": "tsx -r dotenv/config scripts/seed-one.ts",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
-    "nuke:x": "pnpm payload migrate:fresh",
+    "nuke": "echo y | pnpm payload migrate:fresh && pnpm seed",
+    "seed": "tsx -r dotenv/config src/seed/seeders/index.seed.ts",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
   },
@@ -36,6 +39,7 @@
     "react-dom": "19.2.6",
     "react-hook-form": "^7.86.0",
     "sharp": "0.34.2",
+    "slugify": "^1.6.9",
     "zod": "^4.4.3"
   },
   "devDependencies": {

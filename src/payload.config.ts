@@ -5,11 +5,11 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
-import { plugins } from './plugins' 
+import { plugins } from './plugins'
 import { env } from './lib/env'
 import { emailConfig } from './configs/payload/email'
 import { collectionsConfigs } from './collections'
-import { AdminUsers } from './collections/AdminUser' 
+import { AdminUsers } from './collections/AdminUser'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -20,8 +20,12 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    autoLogin: {
+      email: env.CMS_SEED_ADMIN_EMAIL,
+      password: env.CMS_SEED_ADMIN_PASSWORD,
+    },
   },
-  email:emailConfig,
+  email: emailConfig,
   collections: collectionsConfigs,
   editor: lexicalEditor(),
   secret: env.PAYLOAD_SECRET,
