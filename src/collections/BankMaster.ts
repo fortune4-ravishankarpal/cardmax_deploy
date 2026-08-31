@@ -21,7 +21,9 @@ export const Banks: CollectionConfig = {
     trash: true,
     versions: {
         drafts: {
-            autosave: true
+            autosave: {
+                interval: 2000,
+            }
         }
     },
     fields: [
