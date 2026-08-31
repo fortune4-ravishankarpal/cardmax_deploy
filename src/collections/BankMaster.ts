@@ -15,7 +15,7 @@ export const Banks: CollectionConfig = {
     slug: 'banks',
     admin: {
         useAsTitle: 'name',
-        defaultColumns: ['name', 'code', 'status', 'country'],
+        defaultColumns: ['name', 'dataVersion', 'code', 'status', 'country'],
         group: "Master"
     },
     trash: true,
@@ -32,6 +32,16 @@ export const Banks: CollectionConfig = {
             type: 'text',
             required: true,
             unique: true,
+        },
+        {
+            name: 'dataVersion',
+            type: 'text',
+            required: true,
+            admin: {
+                readOnly: true,
+                position: "sidebar",
+                description: 'Human-readable identifier for the published bank ruleset.',
+            },
         },
         {
             name: 'code',
@@ -125,4 +135,25 @@ export const Banks: CollectionConfig = {
             hooks: { beforeValidate: [generateSlugHook] },
         }
     ],
+    hooks: {
+        beforeChange: [
+            ({ data, operation, originalDoc }) => {
+                // Draft and autosave operations must not alter the published ruleset label.
+                if (data?._status !== 'published') {
+                    return data
+                }
+
+                if (operation === 'create') {
+                    data.dataVersion = 'v1'
+                    return data
+                }
+
+                const currentVersion = originalDoc?.dataVersion
+                const versionNumber = /^v(\d+)$/.exec(currentVersion ?? '')?.[1]
+                data.dataVersion = `v${Number(versionNumber ?? 0) + 1}`
+
+                return data
+            },
+        ],
+    },
 }

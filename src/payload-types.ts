@@ -474,6 +474,10 @@ export interface Statement {
 export interface Bank {
   id: number;
   name: string;
+  /**
+   * Human-readable identifier for the published bank ruleset.
+   */
+  dataVersion: string;
   code: string;
   shortName?: string | null;
   country?: string | null;
@@ -519,6 +523,10 @@ export interface Bank {
 export interface CreditCard {
   id: number;
   name: string;
+  /**
+   * Human-readable identifier for the card ruleset used in calculations.
+   */
+  dataVersion: string;
   slug: string;
   bank: number | Bank;
   cardType: 'credit_card' | 'secured_credit_card' | 'rupay' | 'co_brand';
@@ -827,6 +835,7 @@ export interface StatementsSelect<T extends boolean = true> {
  */
 export interface BanksSelect<T extends boolean = true> {
   name?: T;
+  dataVersion?: T;
   code?: T;
   shortName?: T;
   country?: T;
@@ -867,6 +876,7 @@ export interface BanksSelect<T extends boolean = true> {
  */
 export interface CreditCardSelect<T extends boolean = true> {
   name?: T;
+  dataVersion?: T;
   slug?: T;
   bank?: T;
   cardType?: T;

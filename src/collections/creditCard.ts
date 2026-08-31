@@ -6,7 +6,7 @@ export const CreditCards: CollectionConfig = {
 
     admin: {
         useAsTitle: 'name',
-        defaultColumns: ['name', 'bank', 'status', 'cardType'],
+        defaultColumns: ['name', 'dataVersion', 'bank', 'status', 'cardType'],
         group: "Master"
     },
 
@@ -23,6 +23,16 @@ export const CreditCards: CollectionConfig = {
             name: 'name',
             type: 'text',
             required: true,
+        },
+        {
+            name: 'dataVersion',
+            type: 'text',
+            required: true,
+            admin: {
+                readOnly: true,
+                position: "sidebar",
+                description: 'Human-readable identifier for the card ruleset used in calculations.',
+            },
         },
         {
             name: 'slug',
@@ -214,6 +224,25 @@ export const CreditCards: CollectionConfig = {
     ],
 
     hooks: {
+        beforeChange: [
+            ({ data, operation, originalDoc }) => {
+                // Draft and autosave operations must not alter the published ruleset label.
+                if (data?._status !== 'published') {
+                    return data
+                }
+
+                if (operation === 'create') {
+                    data.dataVersion = 'v1'
+                    return data
+                }
+
+                const currentVersion = originalDoc?.dataVersion
+                const versionNumber = /^v(\d+)$/.exec(currentVersion ?? '')?.[1]
+                data.dataVersion = `v${Number(versionNumber ?? 0) + 1}`
+
+                return data
+            },
+        ],
         beforeValidate: [
             ({ data }) => {
                 if (data?.name && !data?.slug) {
