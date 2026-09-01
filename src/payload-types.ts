@@ -568,8 +568,6 @@ export interface CreditCard {
     relationTo: 'admin';
     value: number | Admin;
   } | null;
-  kanbanStatus?: ('draft' | 'ready-for-review' | 'published') | null;
-  kanbanOrderRank?: string | null;
   updatedAt: string;
   createdAt: string;
   deletedAt?: string | null;
@@ -924,8 +922,6 @@ export interface CreditCardSelect<T extends boolean = true> {
   lastVerifiedAt?: T;
   createdBy?: T;
   lastModifiedBy?: T;
-  kanbanStatus?: T;
-  kanbanOrderRank?: T;
   updatedAt?: T;
   createdAt?: T;
   deletedAt?: T;

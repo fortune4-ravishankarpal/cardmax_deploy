@@ -7,7 +7,6 @@ import { auditFieldsConfig } from './audit'
 // import { contentFreezeConfig } from './contentFreezing' 
 
 import { gatekeeperPluginConfig } from './getKeeper'
-import { KanbanBoardConfig } from './kanbanBoard'
 export const plugins: Plugin[] = [
   gatekeeperPluginConfig,
   auditFieldsConfig,
@@ -15,5 +14,4 @@ export const plugins: Plugin[] = [
   enhancedSidebarConfig,
   // contentFreezeConfig,
   // seoPluginConfig,
-  KanbanBoardConfig,
 ]

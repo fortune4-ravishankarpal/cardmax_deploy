@@ -1,3 +1,4 @@
+/* 
 import { payloadKanbanBoard } from 'payload-kanban-board';
 
 export const KanbanBoardConfig = payloadKanbanBoard({
@@ -25,3 +26,4 @@ export const KanbanBoardConfig = payloadKanbanBoard({
         },
     },
 })
+*/
