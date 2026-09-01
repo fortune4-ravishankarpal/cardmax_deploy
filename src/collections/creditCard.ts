@@ -4,7 +4,6 @@ import slugify from 'slugify'
 
 export const CreditCards: CollectionConfig = {
     slug: 'CreditCard',
-
     admin: {
         useAsTitle: 'name',
         defaultColumns: ['name', 'dataVersion', 'bank', 'status', 'cardType'],
@@ -24,7 +23,7 @@ export const CreditCards: CollectionConfig = {
             if (!isAdmin({ req })) {
                 return {
                     deletedAt: {
-                        exists: true
+                        exists: false
                     }
                 }
             }

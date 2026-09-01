@@ -1,13 +1,14 @@
 import { AdminUsers } from "@/collections/AdminUser";
 import { env } from "@/lib/env";
 
-import path from 'path'
-import { fileURLToPath } from 'url'
+import type { Config } from "payload";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const filename = fileURLToPath(import.meta.url)
-const dirname = path.dirname(filename)
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
-export const adminConfig = {
+export const adminConfig: Config["admin"] = {
   user: AdminUsers.slug,
   importMap: {
     baseDir: path.resolve(dirname),
@@ -16,4 +17,5 @@ export const adminConfig = {
     email: env.CMS_SEED_ADMIN_EMAIL,
     password: env.CMS_SEED_ADMIN_PASSWORD,
   },
-}
+  suppressHydrationWarning: true,
+};
