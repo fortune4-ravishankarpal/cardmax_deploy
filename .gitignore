@@ -18,6 +18,7 @@ public/sitemap*.xml
 pnpm-lock.yaml
 
 
+
 # Playwright
 node_modules/
 /test-results/
@@ -26,6 +27,6 @@ node_modules/
 src/app/(payload)/admin/importMap.js
 /playwright/.cache/
 
-src/payload-types.tspayload-types.ts
+src/payload-types.ts
 src\app\(payload)\admin\importMap.js
 src/app/(payload)/admin/importMap.js
