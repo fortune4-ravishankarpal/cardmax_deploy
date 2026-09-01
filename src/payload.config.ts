@@ -9,22 +9,13 @@ import { plugins } from './plugins'
 import { env } from './lib/env'
 import { emailConfig } from './configs/payload/email'
 import { collectionsConfigs } from './collections'
-import { AdminUsers } from './collections/AdminUser'
+import { adminConfig } from './configs/payload/admin'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
-  admin: {
-    user: AdminUsers.slug,
-    importMap: {
-      baseDir: path.resolve(dirname),
-    },
-    autoLogin: {
-      email: env.CMS_SEED_ADMIN_EMAIL,
-      password: env.CMS_SEED_ADMIN_PASSWORD,
-    },
-  },
+  admin: adminConfig,
   email: emailConfig,
   collections: collectionsConfigs,
   editor: lexicalEditor(),
