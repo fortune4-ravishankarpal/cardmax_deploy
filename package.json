@@ -16,7 +16,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
-    "nuke": "echo y | pnpm payload migrate:fresh && pnpm seed",
+    "nuke": "echo y | pnpm payload migrate:fresh && pnpm seed && pnpm dev",
     "seed": "tsx -r dotenv/config src/seed/seeders/index.seed.ts",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
@@ -36,7 +36,6 @@
     "next": "16.3.3",
     "payload": "3.88.0",
     "payload-gatekeeper": "^1.1.0",
-    "payload-kanban-board": "^3.0.24",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-hook-form": "^7.86.0",

@@ -36,6 +36,7 @@ export default buildConfig({
     pool: {
       connectionString: env.DATABASE_URL,
     },
+    idType: "uuidv7"
   }),
   sharp,
   plugins: plugins,
