@@ -1,3 +1,4 @@
+/*
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 
@@ -51,3 +52,4 @@ export const formBuilderPluginConfig = formBuilderPlugin({
     },
   },
 })
+*/

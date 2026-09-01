@@ -1,3 +1,4 @@
+/*
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 // import { Page, Product } from '@/payload-types'
@@ -27,3 +28,4 @@ export const seoPluginConfig = seoPlugin({
   generateURL,
   generateDescription,
 })
+*/

@@ -1,3 +1,4 @@
+/*
 import type { Metadata } from 'next'
 
 import type { Media, Page, Post, Config } from '../payload-types'
@@ -47,3 +48,4 @@ export const generateMeta = async (args: {
     title,
   }
 }
+*/

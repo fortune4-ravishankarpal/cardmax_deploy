@@ -31,7 +31,6 @@ export const CreditCards: CollectionConfig = {
             admin: {
                 readOnly: true,
                 position: "sidebar",
-                description: 'Human-readable identifier for the card ruleset used in calculations.',
             },
         },
         {

@@ -1,3 +1,4 @@
+/* 
 import { checkIsSuperAdmin } from '@/access/isAdmin'
 import { contentFreezePlugin } from '@payload-bites/content-freeze'
 
@@ -21,3 +22,4 @@ export const contentFreezeConfig = contentFreezePlugin({
     },
   }),
 })
+*/

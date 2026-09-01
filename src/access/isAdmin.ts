@@ -1,7 +1,7 @@
 import type { Access } from 'payload'
-import type { User } from '@/payload-types'
+import type { Admin } from '@/payload-types'
 
-export const checkIsAdmin = (user: User | null): boolean => {
+export const checkIsAdmin = (user: Admin | null): boolean => {
   if (!user || !user.role) return false
 
   if (typeof user.role === 'object' && 'name' in user.role) {
@@ -13,7 +13,7 @@ export const checkIsAdmin = (user: User | null): boolean => {
   return false
 }
 
-export const checkIsSuperAdmin = (user: User | null): boolean => {
+export const checkIsSuperAdmin = (user: Admin | null): boolean => {
   if (!user || !user.role) return false
 
   if (typeof user.role === 'object' && 'name' in user.role) {
@@ -23,28 +23,37 @@ export const checkIsSuperAdmin = (user: User | null): boolean => {
   return false
 }
 
-export const checkIsAdminOrUserAdmin = (user: User | null): boolean => {
+export const checkIsAdminOrUserAdmin = (user: Admin | null): boolean => {
   if (!user || !user.role) return false
 
   if (typeof user.role === 'object' && 'name' in user.role) {
     return (
-      user.role.name === 'admin' ||
-      user.role.name === 'super_admin' ||
-      user.role.name === 'user admin'
-    )
+      user.role.name === 'admin' || user.role.name === 'super_admin')
   }
 
   return false
 }
 
 export const isAdmin: Access = ({ req }) => {
-  return checkIsAdmin(req?.user || null)
+  if (req.user?.collection === 'admin') {
+    return checkIsAdmin(req?.user || null)
+  } else {
+    return false
+  }
 }
 
 export const isSuperAdmin: Access = ({ req }) => {
-  return checkIsSuperAdmin(req?.user || null)
+  if (req.user?.collection === 'admin') {
+    return checkIsSuperAdmin(req?.user || null)
+  } else {
+    return false
+  }
 }
 
 export const isAdminOrUserAdmin: Access = ({ req }) => {
-  return checkIsAdminOrUserAdmin(req?.user || null)
+  if (req.user?.collection === 'admin') {
+    return checkIsAdminOrUserAdmin(req?.user || null)
+  } else {
+    return false
+  }
 }

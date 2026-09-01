@@ -1,3 +1,4 @@
+/*
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { Plugin } from 'payload'
@@ -61,3 +62,4 @@ export const plugins: Plugin[] = [
     },
   }),
 ]
+*/

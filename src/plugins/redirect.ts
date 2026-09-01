@@ -1,3 +1,4 @@
+/*
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
@@ -24,3 +25,4 @@ export const redirectsConfig = redirectsPlugin({
     },
   },
 })
+*/

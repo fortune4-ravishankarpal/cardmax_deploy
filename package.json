@@ -36,6 +36,7 @@
     "next": "16.3.3",
     "payload": "3.88.0",
     "payload-gatekeeper": "^1.1.0",
+    "payload-kanban-board": "^3.0.24",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-hook-form": "^7.86.0",
@@ -62,12 +63,5 @@
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
     "pnpm": "^9 || ^10 || ^11"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "sharp",
-      "esbuild",
-      "unrs-resolver"
-    ]
   }
 }
