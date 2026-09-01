@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { isAdmin } from '@/access/isAdmin'
 import slugify from 'slugify'
 
 export const CreditCards: CollectionConfig = {
@@ -9,8 +10,27 @@ export const CreditCards: CollectionConfig = {
         defaultColumns: ['name', 'dataVersion', 'bank', 'status', 'cardType'],
         group: "Master"
     },
-
     trash: true,
+    access: {
+        readVersions: isAdmin,
+        delete: isAdmin,
+        update: async ({ req, data }) => {
+            if (data && 'deletedAt' in data && data.deletedAt === null) {
+                return isAdmin({ req })
+            }
+            return Boolean(req.user)
+        },
+        read: async ({ req }) => {
+            if (!isAdmin({ req })) {
+                return {
+                    deletedAt: {
+                        exists: true
+                    }
+                }
+            }
+            return Boolean(req.user)
+        },
+    },
     versions: {
         drafts: {
             autosave: {
