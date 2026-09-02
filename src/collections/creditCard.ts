@@ -76,7 +76,6 @@ export const CreditCards: CollectionConfig = {
             options: [
                 { label: 'Credit Card', value: 'credit_card' },
                 { label: 'Secured Credit Card', value: 'secured_credit_card' },
-                { label: 'RuPay Credit Card', value: 'rupay' },
                 { label: 'Co-brand Credit Card', value: 'co_brand' },
             ],
         },
@@ -87,6 +86,7 @@ export const CreditCards: CollectionConfig = {
                 { label: 'Visa', value: 'visa' },
                 { label: 'Mastercard', value: 'mastercard' },
                 { label: 'American Express', value: 'amex' },
+                { label: 'Discover', value: 'discover' },
                 { label: 'RuPay', value: 'rupay' },
             ],
         },

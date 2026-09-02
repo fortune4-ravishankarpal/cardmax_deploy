@@ -193,6 +193,63 @@ describe('card validation', () => {
     expect(out.brand).toBe('visa')
   })
 
+  it('accepts and normalizes bank relationship + card type metadata', () => {
+    const out = validateAndNormalizeCardInput(
+      {
+        pan: TEST_PAN,
+        cardholderName: 'A',
+        expiryMonth: 12,
+        expiryYear: 2035,
+        bank: '  bank-hdfc-id  ',
+        cardType: 'credit_card',
+      },
+      { requirePan: true },
+    )
+    expect(out.bank).toBe('bank-hdfc-id')
+    expect(out.cardType).toBe('credit_card')
+  })
+
+  it('accepts metadata-only updates (bank/card type) without a PAN', () => {
+    const out = validateAndNormalizeCardInput({ bank: 'bank-sbi-id', cardType: 'co_brand' })
+    expect(out.bank).toBe('bank-sbi-id')
+    expect(out.cardType).toBe('co_brand')
+    expect(out.pan).toBeUndefined()
+  })
+
+  it('rejects a bank value that is not a bank ID string', () => {
+    expectCardErrorCode(
+      () =>
+        validateAndNormalizeCardInput(
+          {
+            pan: TEST_PAN,
+            cardholderName: 'A',
+            expiryMonth: 12,
+            expiryYear: 2035,
+            bank: 123,
+          },
+          { requirePan: true },
+        ),
+      'CARD_BANK_INVALID',
+    )
+  })
+
+  it('rejects an unrecognized cardType value', () => {
+    expectCardErrorCode(
+      () =>
+        validateAndNormalizeCardInput(
+          {
+            pan: TEST_PAN,
+            cardholderName: 'A',
+            expiryMonth: 12,
+            expiryYear: 2035,
+            cardType: 'debit_card',
+          },
+          { requirePan: true },
+        ),
+      'CARD_TYPE_INVALID',
+    )
+  })
+
   it('rejects a create payload missing expiry', () => {
     expectCardErrorCode(
       () => validateAndNormalizeCardInput({ pan: TEST_PAN, cardholderName: 'A' }, { requirePan: true }),

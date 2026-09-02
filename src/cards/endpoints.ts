@@ -5,6 +5,7 @@ import { callerFromReq, type CardCaller } from './audit'
 import {
   createCard,
   deleteCard,
+  listBankOptions,
   lookupCardByPan,
   revealCardPan,
   rotateCardKeys,
@@ -66,6 +67,23 @@ const addCardEndpoint: Endpoint = {
       const body = await readBody(req)
       const card = await createCard(req.payload, caller, body)
       return json({ ok: true, card })
+    }),
+}
+
+/**
+ * GET /api/cards/banks — bank master options for the add-card dropdown..
+ * Authenticated callers only. Returns a minimal whitelist (id/name/shortName);
+ * the banks master collection itself remains gatekeeper-protected (writes stay
+ * admin-only) — this endpoint only exposes display options..
+ */
+const listBanksEndpoint: Endpoint = {
+  path: '/banks',
+  method: 'get',
+  handler: (req) =>
+    safeHandler(async () => {
+      const caller = requireCaller(req)
+      const banks = await listBankOptions(req.payload, caller)
+      return json({ ok: true, banks })
     }),
 }
 
@@ -153,6 +171,7 @@ export const cardEndpoints: Endpoint[] = [
   { path: '/authprobe', method: 'get', handler: authProbeHandler },
   { path: '/authprobe', method: 'post', handler: authProbeHandler },
   addCardEndpoint,
+  listBanksEndpoint,
   updateCardEndpoint,
   revealCardEndpoint,
   lookupCardEndpoint,

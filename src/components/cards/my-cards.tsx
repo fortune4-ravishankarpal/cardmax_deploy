@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import styles from './my-cards.module.scss'
 
@@ -20,10 +20,19 @@ import styles from './my-cards.module.scss'
 interface CardView {
   id: string
   nickname?: string | null
+  bank?: { id: string; name?: string | null } | string | null
+  cardType?: string | null
   brand?: string | null
   panMasked?: string | null
   expiryMonth?: number | null
   expiryYear?: number | null
+}
+
+/** One bank master option served by GET /api/cards/banks for the dropdown.. */
+interface BankOption {
+  id: string
+  name: string
+  shortName?: string | null
 }
 
 interface RevealData {
@@ -55,9 +64,31 @@ const brandLabel = (brand: string | null | undefined): string => {
       return 'American Express'
     case 'rupay':
       return 'RuPay'
+    case "discover":
+      return "Discover"
     default:
       return ''
   }
+}
+
+const cardTypeLabel = (cardType: string | null | undefined): string => {
+  switch (cardType) {
+    case 'credit_card':
+      return 'Credit Card'
+    case 'secured_credit_card':
+      return 'Secured Credit Card'
+    case 'co_brand':
+      return 'Co-brand Card'
+    default:
+      return ''
+  }
+}
+
+/** Resolve a bank relationship (populated object or raw ID) to a display label.. */
+const bankLabel = (bank: CardView['bank'], nameById: Map<string, string>): string => {
+  if (!bank) return ''
+  if (typeof bank === 'object') return bank.name ?? ''
+  return nameById.get(bank) ?? ''
 }
 
 const postJson = async (url: string, body: unknown): Promise<CardResponse> => {
@@ -78,6 +109,9 @@ export const MyCards = () => {
   // Add-card form state — the PAN lives in form state only while entering it.
   const [cardNumber, setCardNumber] = useState('')
   const [cardholderName, setCardholderName] = useState('')
+  const [bankId, setBankId] = useState('')
+  const [banks, setBanks] = useState<BankOption[]>([])
+  const [cardType, setCardType] = useState('')
   const [expiryMonth, setExpiryMonth] = useState('')
   const [expiryYear, setExpiryYear] = useState('')
   const [saving, setSaving] = useState(false)
@@ -124,6 +158,30 @@ export const MyCards = () => {
     loadCards()
   }, [loadCards])
 
+  // Bank master options for the add-card dropdown — served by the secure card
+  // API (GET /api/cards/banks); the banks collection itself is not user-readable
+  // (payload-gatekeeper restricts it to admin roles)..
+  useEffect(() => {
+    let cancelled = false
+    const loadBanks = async () => {
+      try {
+        const res = await fetch('/api/cards/banks')
+        const data = (await res.json().catch(() => ({}))) as { banks?: BankOption[] }
+        if (!cancelled) {
+          setBanks(Array.isArray(data.banks) ? data.banks.filter((b) => b?.id && b?.name) : [])
+        }
+      } catch {
+        if (!cancelled) setBanks([])
+      }
+    }
+    loadBanks()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const bankNameById = useMemo(() => new Map(banks.map((b) => [b.id, b.name])), [banks])
+
   const handleAdd = async () => {
     setError('')
     setNotice('')
@@ -136,6 +194,10 @@ export const MyCards = () => {
         cardholderName,
         expiryMonth: month,
         expiryYear: year,
+        // The issuing bank cannot be detected from the PAN server-side (only
+        // the network/brand can) — the user picks it from the bank master list.
+        ...(bankId ? { bank: bankId } : {}),
+        ...(cardType ? { cardType } : {}),
       })
       if (data.error) {
         setError(data.error)
@@ -143,6 +205,8 @@ export const MyCards = () => {
       }
       setCardNumber('')
       setCardholderName('')
+      setBankId('')
+      setCardType('')
       setExpiryMonth('')
       setExpiryYear('')
       setNotice('Card saved. Only the last four digits are stored in clear text.')
@@ -191,7 +255,7 @@ export const MyCards = () => {
       setError('Network error. Please try again.')
     }
   }
-return (
+  return (
     <div className={styles.container}>
       <h1 className={styles.title}>My Cards</h1>
       <p className={styles.subtitle}>
@@ -244,6 +308,28 @@ return (
           </label>
           <div className={styles.row}>
             <label className={styles.field}>
+              <span>Bank</span>
+              <select className={styles.input} value={bankId} onChange={(e) => setBankId(e.target.value)}>
+                <option value="">Not specified</option>
+                {banks.map((bank) => (
+                  <option key={bank.id} value={bank.id}>
+                    {bank.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={styles.field}>
+              <span>Card type</span>
+              <select className={styles.input} value={cardType} onChange={(e) => setCardType(e.target.value)}>
+                <option value="">Not specified</option>
+                <option value="credit_card">Credit Card</option>
+                <option value="secured_credit_card">Secured Credit Card</option>
+                <option value="co_brand">Co-brand Credit Card</option>
+              </select>
+            </label>
+          </div>
+          <div className={styles.row}>
+            <label className={styles.field}>
               <span>Expiry month</span>
               <input
                 type="number"
@@ -291,6 +377,11 @@ return (
                 <div className={styles.cardMeta}>
                   <span className={styles.cardNumber}>{card.panMasked || '•••• •••• •••• ••••'}</span>
                   {card.nickname && <span className={styles.cardNickname}>{card.nickname}</span>}
+                  {(bankLabel(card.bank, bankNameById) || cardTypeLabel(card.cardType)) && (
+                    <span className={styles.cardBank}>
+                      {[bankLabel(card.bank, bankNameById), cardTypeLabel(card.cardType)].filter(Boolean).join(' · ')}
+                    </span>
+                  )}
                   <span className={styles.cardDetails}>
                     {brandLabel(card.brand)}
                     {card.expiryMonth && card.expiryYear

@@ -22,8 +22,8 @@ export const isValidLuhn = (digits: string): boolean => {
   for (let i = digits.length - 1; i >= 0; i--) {
     let d = digits.charCodeAt(i) - 48
     if (double) {
-      d *=2
-      if (d >= 10) d -=9
+      d *= 2
+      if (d >= 10) d -= 9
     }
     sum += d
     double = !double
@@ -31,7 +31,20 @@ export const isValidLuhn = (digits: string): boolean => {
   return sum % 10 === 0
 }
 
-export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'rupay' | 'unknown'
+export type CardBrand = 'visa' | 'mastercard' | 'amex' | 'rupay' | "discover" | 'unknown'
+
+/**
+ * Card type vocabulary — kept IDENTICAL to the CreditCard catalog collection
+ * (`src/collections/creditCard.ts`) so user-entered card metadata and catalog
+ * data share one set of values.
+ */
+export type CardType = 'credit_card' | 'secured_credit_card' | 'co_brand'
+
+export const CARD_TYPE_OPTIONS: ReadonlySet<string> = new Set<string>([
+  'credit_card',
+  'secured_credit_card',
+  'co_brand',
+])
 
 /** Detect a card brand from PAN prefixes — used only for display (no sensitive value). */
 export const detectCardBrand = (digits: string): CardBrand => {
@@ -39,8 +52,10 @@ export const detectCardBrand = (digits: string): CardBrand => {
   if (/^3[47]/.test(digits)) return 'amex'
   if (/^(5[1-5]|2(2[2-9]|[3-6]|7[01]|720))/.test(digits)) return 'mastercard'
   if (/^(60|65|81|82|508|50|36|38|39|63)/.test(digits)) return 'rupay'
+  if (/^6(?:011|5|4[4-9]|22)/.test(digits)) return 'discover'
   return 'unknown'
 }
+
 
 /**
  * Keys (and key fragments) that must never be persisted — PCI prohibited
@@ -63,11 +78,11 @@ const BANNED_KEY_PATTERNS: RegExp[] = [
   /(^|[\s_\-.])magneticstripe($|[\s_\-.])/i,
   /(^|[\s_\-.])magnetic_stripe($|[\s_\-.])/i,
   /(^|[\s_\-.])emv($|[\s_\-.])/i,
-	  /(^|[\s_\-.])chipdata($|[\s_\-.])/i,
-	  /(^|[\s_\-.])chip_data($|[\s_\-.])/i,
-	  /(^|[\s_\-.])cavv($|[\s_\-.])/i,
-	  /(^|[\s_\-.])arpc($|[\s_\-.])/i,
-	  /(^|[\s_\-.])icvv($|[\s_\-.])/i,
+  /(^|[\s_\-.])chipdata($|[\s_\-.])/i,
+  /(^|[\s_\-.])chip_data($|[\s_\-.])/i,
+  /(^|[\s_\-.])cavv($|[\s_\-.])/i,
+  /(^|[\s_\-.])arpc($|[\s_\-.])/i,
+  /(^|[\s_\-.])icvv($|[\s_\-.])/i,
   // Common CVV/CVC aliases written as compound names.
   /(^|[\s_\-.])cardsecuritycode($|[\s_\-.])/i,
   /(^|[\s_\-.])cardverification(code|value)($|[\s_\-.])/i,
@@ -109,6 +124,8 @@ export interface CardInput {
   expiryMonth?: unknown
   expiryYear?: unknown
   nickname?: unknown
+  bank?: unknown
+  cardType?: unknown
 }
 
 export interface NormalizedCardInput {
@@ -119,6 +136,8 @@ export interface NormalizedCardInput {
   expiryMonth?: number
   expiryYear?: number
   nickname?: string
+  bank?: string | null
+  cardType?: CardType
 }
 
 /** Fields the secure card endpoints accept. Unknown keys are rejected (400). */
@@ -129,6 +148,8 @@ export const ALLOWED_CARD_INPUT_KEYS = new Set<string>([
   'expiryMonth',
   'expiryYear',
   'nickname',
+  'bank',
+  'cardType',
 ])
 
 /**
@@ -145,7 +166,7 @@ export const validateAndNormalizeCardInput = (
     throw new CardError('CARD_UNKNOWN_FIELD', `Unknown field "${unknownKey}" is not accepted by the secure card API.`, 400)
   }
 
-	 const out: NormalizedCardInput = {}
+  const out: NormalizedCardInput = {}
   const rawPan = typeof data.pan === 'string' ? data.pan : (typeof data.cardNumber === 'string' ? data.cardNumber : undefined)
 
   if (rawPan !== undefined || opts.requirePan) {
@@ -161,7 +182,7 @@ export const validateAndNormalizeCardInput = (
     out.brand = opts.existingBrand && opts.existingBrand !== 'unknown' ? opts.existingBrand : undefined
   }
 
-	 if (data.cardholderName !== undefined || opts.requirePan) {
+  if (data.cardholderName !== undefined || opts.requirePan) {
     const name = typeof data.cardholderName === 'string' ? data.cardholderName.trim() : ''
     if (!name) {
       throw new CardError('CARD_HOLDER_NAME_REQUIRED', 'The cardholder name is required.', 400)
@@ -172,7 +193,7 @@ export const validateAndNormalizeCardInput = (
     out.cardholderName = name
   }
 
-	 // Expiry month/year are stored as plaintext non-PAN metadata (validated here)
+  // Expiry month/year are stored as plaintext non-PAN metadata (validated here)
   // and as Payload field validators on the collection itself..
   if (data.expiryMonth !== undefined || opts.requirePan) {
     const month = Number(data.expiryMonth)
@@ -182,7 +203,7 @@ export const validateAndNormalizeCardInput = (
     out.expiryMonth = month
   }
 
-	 if (data.expiryYear !== undefined || opts.requirePan) {
+  if (data.expiryYear !== undefined || opts.requirePan) {
     const year = Number(data.expiryYear)
     if (!Number.isInteger(year) || year < 2000 || year > 2199) {
       throw new CardError('CARD_EXPIRY_INVALID', 'Expiry year must be a 4-digit year between 2000 and 2199.', 400)
@@ -190,8 +211,8 @@ export const validateAndNormalizeCardInput = (
     out.expiryYear = year
   }
 
-	 // Refuse clearly expired cards (a card needs a valid expiry; users can update later..
-	 if ((out.expiryMonth !== undefined || out.expiryYear !== undefined) && opts.requirePan) {
+  // Refuse clearly expired cards (a card needs a valid expiry; users can update later..
+  if ((out.expiryMonth !== undefined || out.expiryYear !== undefined) && opts.requirePan) {
     const now = new Date()
     const currentMonth = now.getMonth() + 1
     const currentYear = now.getFullYear()
@@ -203,10 +224,32 @@ export const validateAndNormalizeCardInput = (
     }
   }
 
-	 if (data.nickname !== undefined) {
+  if (data.nickname !== undefined) {
     const nickname = typeof data.nickname === 'string' ? data.nickname.trim().slice(0, 60) : undefined
     out.nickname = nickname || undefined
   }
 
-	 return out
+  // Issuing bank and card type are user-supplied, non-sensitive display
+  // metadata (like the nickname). The bank can never be derived server-side
+  // because the PAN is encrypted at rest — only the network (`brand`) is
+  // auto-detected from the PAN prefix. `bank` must be an ID from the `banks`
+  // master collection; its existence is verified in the service layer..
+  if (data.bank !== undefined) {
+    if (data.bank === null) {
+      out.bank = null
+    } else if (typeof data.bank === 'string' && data.bank.trim()) {
+      out.bank = data.bank.trim()
+    } else {
+      throw new CardError('CARD_BANK_INVALID', 'The selected bank is not valid.', 400)
+    }
+  }
+
+  if (data.cardType !== undefined) {
+    if (typeof data.cardType !== 'string' || !CARD_TYPE_OPTIONS.has(data.cardType)) {
+      throw new CardError('CARD_TYPE_INVALID', 'The card type is not a recognized value.', 400)
+    }
+    out.cardType = data.cardType as CardType
+  }
+
+  return out
 }

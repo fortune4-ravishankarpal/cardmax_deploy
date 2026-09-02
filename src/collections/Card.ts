@@ -12,21 +12,6 @@ import {
   denySensitiveFieldAccess,
 } from '@/cards/access'
 
-/**
- * Secure `cards` collection — PCI-sensitive card data vault..
- *
- * - The PAN and cardholder name are stored ONLY as authenticated AES-256-GCM
- *   ciphertext (`encryptedCardData`) — plaintext never reaches the database..
- * - The plaintext `panLast4` is kept for display/masking; `panLookup` is a
- *   deterministic HMAC-SHA-256 index for exact-match lookups (never reversible..
- * - Expiry month/year are non-PAN metadata stored as plaintext integers..
- * - All ciphertext/internal fields are unreadable/unwritable via REST, GraphQL,
- *   admin API, exports, or admin UI (field-level `read/create/update` denied..
- * - Rows are scoped: users see only their own cards; admins see all (masked..
- * - Creation is server-side only (the secure `/api/cards/add` endpoint encrypts
- *   before writing). Raw PAN/cardholder values are rejected by the collection hooks..
- */
-
 export const Cards: CollectionConfig = {
   slug: 'cards',
   labels: {
@@ -36,7 +21,16 @@ export const Cards: CollectionConfig = {
   admin: {
     useAsTitle: 'panLast4',
     group: 'Users',
-    defaultColumns: ['panMasked', 'brand', 'nickname', 'expiryMonth', 'expiryYear', 'updatedAt'],
+    defaultColumns: [
+      'panMasked',
+      'brand',
+      'bank',
+      'cardType',
+      'nickname',
+      'expiryMonth',
+      'expiryYear',
+      'updatedAt',
+    ],
   },
   access: {
     read: cardsReadAccess,
@@ -67,6 +61,29 @@ export const Cards: CollectionConfig = {
       admin: { description: 'Optional label for this card (e.g. "My travel card").' },
     },
     {
+      // Issuing bank — relationship to the `banks` master collection. The bank
+      // CANNOT be derived from the stored data — the PAN is encrypted at rest,
+      // and the auto-detected `brand` is the card network (Visa/Mastercard/...),
+      // not the bank. Users pick the bank from the master list via the secure
+      // card API; the ID is verified for existence in src/cards/service.ts..
+      name: 'bank',
+      type: 'relationship',
+      relationTo: 'banks',
+      index: true,
+      admin: { description: 'Issuing bank for this card (from the bank master list).' },
+    },
+    {
+      // Card kind — same vocabulary as the CreditCard catalog collection..
+      name: 'cardType',
+      type: 'select',
+      options: [
+        { label: 'Credit Card', value: 'credit_card' },
+        { label: 'Secured Credit Card', value: 'secured_credit_card' },
+        { label: 'Co-brand Credit Card', value: 'co_brand' },
+      ],
+      admin: { description: 'Kind of card (matches the card catalog vocabulary).' },
+    },
+    {
       name: 'brand',
       type: 'select',
       required: false,
@@ -76,6 +93,7 @@ export const Cards: CollectionConfig = {
         { label: 'Mastercard', value: 'mastercard' },
         { label: 'American Express', value: 'amex' },
         { label: 'RuPay', value: 'rupay' },
+        { label: 'Discover', value: 'discover' },
         { label: 'Unknown', value: 'unknown' },
       ],
       access: { create: () => false, update: () => false },
@@ -155,7 +173,6 @@ export const Cards: CollectionConfig = {
       access: denySensitiveFieldAccess,
     },
     {
-      // Computed masked PAN for list/table views — never a full PAN..
       name: 'panMasked',
       type: 'text',
       virtual: true,

@@ -36,6 +36,8 @@ export interface StoredCardDoc {
   id: string
   user?: { id: string } | string | null
   nickname?: string | null
+  bank?: (string | { id: string }) | null
+  cardType?: string | null
   brand?: string | null
   panLast4?: string | null
   panLookup?: string | null
@@ -56,6 +58,8 @@ export interface CardPublicView {
   id: string
   user?: string | null
   nickname?: string | null
+  bank?: (string | { id: string; name?: string | null }) | null
+  cardType?: string | null
   brand?: string | null
   panMasked?: string | null
   panLast4?: string | null
@@ -70,6 +74,8 @@ export const toCardPublicView = (doc: StoredCardDoc): CardPublicView => ({
   id: doc.id,
   user: typeof doc.user === 'object' && doc.user ? String((doc.user as { id: string }).id) : (doc.user ?? null),
   nickname: doc.nickname ?? null,
+  bank: bankFromDoc(doc),
+  cardType: doc.cardType ?? null,
   brand: doc.brand ?? null,
   panMasked: doc.panMasked ?? maskPanFromLast4(doc.panLast4 ?? null),
   panLast4: doc.panLast4 ?? null,
@@ -78,6 +84,68 @@ export const toCardPublicView = (doc: StoredCardDoc): CardPublicView => ({
 	createdAt: doc.createdAt ?? null,
 	updatedAt: doc.updatedAt ?? null,
 })
+
+/**
+ * Normalize the stored `bank` relationship for the public view — whitelisted
+ * shape only (id + name). Never leaks other bank master-data fields..
+ */
+const bankFromDoc = (doc: StoredCardDoc): CardPublicView['bank'] => {
+  if (!doc.bank) return null
+  if (typeof doc.bank === 'object') {
+    const bank = doc.bank as { id: string; name?: string | null }
+    return { id: bank.id, name: bank.name ?? null }
+  }
+  return doc.bank
+}
+
+/**
+ * Verify that a bank ID references a real, published, non-soft-deleted bank in
+ * the `banks` master collection. Draft-only or trashed banks are rejected..
+ */
+const assertBankExists = async (payload: Payload, bankId: string): Promise<void> => {
+  const result = await payload.find({
+    collection: 'banks',
+    where: { id: { equals: bankId }, deletedAt: { exists: false } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const bank = (result.docs as Array<{ id?: string }>)[0]
+  if (!bank?.id) {
+    throw new CardError('CARD_BANK_INVALID', 'The selected bank does not exist in the bank master list.', 400)
+  }
+}
+
+/** Minimal bank option for the add-card dropdown — no statement config or other master internals.. */
+export interface BankOption {
+  id: string
+  name: string
+  shortName?: string | null
+}
+
+/**
+ * Bank master options for authenticated callers (dropdown on the add-card form)..
+ * Returns ONLY id/name/shortName. The banks collection itself remains
+ * gatekeeper-protected (writes stay admin-only) — this is a safe read
+ * projection served through the already-secured card endpoints..
+ */
+export const listBankOptions = async (
+  payload: Payload,
+  caller: CardCaller,
+): Promise<BankOption[]> => {
+  if (!caller.id) throw new CardError('UNAUTHENTICATED', 'Authentication required.', 401)
+  const result = await payload.find({
+    collection: 'banks',
+    where: { deletedAt: { exists: false } },
+    limit: 500,
+    sort: 'name',
+    depth: 0,
+    overrideAccess: true,
+  })
+  return (result.docs as Array<{ id: string; name?: string; shortName?: string | null }>)
+    .filter((bank) => bank.id && bank.name)
+    .map((bank) => ({ id: bank.id, name: String(bank.name), shortName: bank.shortName ?? null }))
+}
 
 const findCardDoc = async (payload: Payload, id: string): Promise<StoredCardDoc> => {
   const doc = (await payload.findByID({
@@ -151,6 +219,9 @@ export const createCard = async (
   }
   assertNoProhibitedCardData(input)
   const normalized = validateAndNormalizeCardInput(input, { requirePan: true })
+  if (normalized.bank) {
+    await assertBankExists(payload, normalized.bank)
+  }
   const cipher = encryptCardEnvelope({
     pan: normalized.pan as string,
     cardholderName: normalized.cardholderName as string,
@@ -161,6 +232,8 @@ export const createCard = async (
     data: {
       user: caller.id,
       nickname: normalized.nickname,
+      bank: normalized.bank,
+      cardType: normalized.cardType,
       brand: normalized.brand,
       expiryMonth: normalized.expiryMonth!,
       expiryYear: normalized.expiryYear!,
@@ -225,7 +298,7 @@ export const deleteCard = async (
  *
  * When the PAN or cardholder name is changed, the existing envelope is decrypted
  * (server-side), merged with the incoming values,and re-encrypted with the current
- * key version before the update is persisted. Metadata-only updates (nickname,
+ * key version before the update is persisted. Metadata-only updates (nickname, bank/type,
  * expiry) never touch the envelope..
  */
 export const updateCard = async (
@@ -239,6 +312,9 @@ export const updateCard = async (
   const normalized = validateAndNormalizeCardInput(input, {
     existingBrand: (doc.brand as CardBrand | null) ?? null,
   })
+  if (normalized.bank) {
+    await assertBankExists(payload, normalized.bank)
+  }
 
 	 let envelopeWrite: CardEnvelopeCipher | undefined
   let lookup: string | undefined
@@ -291,6 +367,8 @@ export const updateCard = async (
  if (normalized.expiryYear !== undefined) data.expiryYear = normalized.expiryYear
  
  if (normalized.nickname !== undefined) data.nickname = normalized.nickname
+ if (normalized.bank !== undefined) data.bank = normalized.bank
+ if (normalized.cardType !== undefined) data.cardType = normalized.cardType
  
  const updated = (await payload.update({
     collection: 'cards',
