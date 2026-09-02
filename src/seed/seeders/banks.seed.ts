@@ -10,7 +10,7 @@ export default async function bankSeeder(payload: Payload) {
                 let bankInfo = bank as Banks
                 await payload.create({
                     collection: "banks",
-                    data: bankInfo,
+                    data: { ...bankInfo, dataVersion: bank.dataVersion ?? 'v1', },
                 });
                 payload.logger.info("Completed " + bank.name);
             } catch (error: any) {
