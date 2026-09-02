@@ -81,6 +81,20 @@ export const Cards: CollectionConfig = {
       access: { create: () => false, update: () => false },
     },
     {
+      name: 'bankName',
+      type: 'text',
+      admin: {
+        description: 'The issuing bank name',
+      }
+    },
+    {
+      name: 'cardType',
+      type: 'text',
+      admin: {
+        description: 'The type of card (Credit, Debit, etc.)',
+      }
+    },
+    {
       // Plaintext last-4 digits — allowed for display and lookup; never the full PAN..
       name: 'panLast4',
       type: 'text',
