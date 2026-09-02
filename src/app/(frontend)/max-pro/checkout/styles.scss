@@ -1,0 +1,95 @@
+.checkout-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f7fa;
+  font-family: var(--font-inter, sans-serif);
+  padding: 2rem;
+
+  .checkout-container {
+    background: #fff;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    max-width: 500px;
+    width: 100%;
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+
+    .subtitle {
+      color: #7f8c8d;
+      margin-bottom: 2.5rem;
+    }
+
+    .order-summary {
+      background: #f8f9fa;
+      border: 1px solid #eef2f5;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: #555;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &.total {
+          border-top: 1px solid #eef2f5;
+          padding-top: 1rem;
+          font-weight: bold;
+          font-size: 1.2rem;
+          color: #2c3e50;
+        }
+      }
+    }
+
+    .btn-checkout {
+      width: 100%;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover:not(:disabled) {
+        background: #2980b9;
+      }
+
+      &:disabled {
+        background: #bdc3c7;
+        cursor: not-allowed;
+      }
+    }
+
+    .error-message {
+      background: #fee;
+      color: #e74c3c;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .disclaimer {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: #95a5a6;
+      text-align: center;
+      line-height: 1.5;
+    }
+  }
+}

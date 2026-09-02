@@ -274,5 +274,24 @@ export const CreditCards: CollectionConfig = {
                 return data
             },
         ],
+        afterChange: [
+            async ({ doc, previousDoc, req, operation }) => {
+                // If this is an update and the document was published
+                if (operation === 'update' && doc._status === 'published') {
+                    // Check if points valuation dropped (devaluation)
+                    const prevVal = previousDoc?.pointValuation?.realisticValue
+                    const currentVal = doc.pointValuation?.realisticValue
+                    
+                    if (prevVal !== undefined && currentVal !== undefined && currentVal < prevVal) {
+                         await req.payload.jobs.queue({
+                             task: 'fanoutDevaluation',
+                             input: {
+                                 creditCardId: doc.id
+                             }
+                         })
+                    }
+                }
+            }
+        ]
     },
 }

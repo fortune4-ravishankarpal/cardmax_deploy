@@ -60,6 +60,47 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       collections: ['banks', 'CreditCard'],
       access: SideBarAccessViewChecker,
     },
+    {
+      id: 'subscriptions',
+      type: 'tab',
+      icon: 'CreditCard', // or another lucide icon name
+      label: { en: 'Subscription & Max Pro' },
+      collections: [
+        'subscriptions',
+        'subscription-plans',
+        'subscription-payments',
+        'subscription-events',
+        'trial-eligibility',
+        'provider-events',
+        'max-pro-events',
+        'user-goals'
+      ],
+      access: SideBarAccessViewChecker,
+    },
+    {
+      id: 'privacy',
+      type: 'tab',
+      icon: 'Shield',
+      label: { en: 'Privacy & Settings' },
+      collections: ['consents', 'consent-events', 'feature-flags'],
+      access: SideBarAccessViewChecker,
+    },
+    {
+      id: 'engagement',
+      type: 'tab',
+      icon: 'Bell',
+      label: { en: 'Engagement & Analytics' },
+      collections: ['notifications', 'analytics-events'],
+      access: SideBarAccessViewChecker,
+    },
+    {
+      id: 'wallets',
+      type: 'tab',
+      icon: 'Wallet',
+      label: { en: 'Wallets & Users' },
+      collections: ['user-cards'],
+      access: SideBarAccessViewChecker,
+    },
     // {
     //   id: 'setting',
     //   type: 'tab',

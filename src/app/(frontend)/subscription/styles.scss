@@ -1,0 +1,97 @@
+.subscription-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  font-family: var(--font-inter, sans-serif);
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+  }
+
+  .subscription-details {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+
+      &.active { background: #d4edda; color: #155724; }
+      &.trialing { background: #cce5ff; color: #004085; }
+      &.past_due { background: #fff3cd; color: #856404; }
+      &.canceled { background: #e2e3e5; color: #383d41; }
+      &.expired { background: #f8d7da; color: #721c24; }
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        color: #7f8c8d;
+        font-weight: 500;
+      }
+
+      .value {
+        font-weight: 600;
+        color: #2c3e50;
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+
+      &.btn-danger {
+        background: #e74c3c;
+        color: #fff;
+
+        &:hover {
+          background: #c0392b;
+        }
+      }
+      
+      &.btn-secondary {
+        background: #95a5a6;
+        color: #fff;
+
+        &:hover {
+          background: #7f8c8d;
+        }
+      }
+    }
+  }
+
+  .error-message {
+    background: #fee;
+    color: #e74c3c;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+}

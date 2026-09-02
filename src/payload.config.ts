@@ -10,6 +10,11 @@ import { env } from './lib/env'
 import { emailConfig } from './configs/payload/email'
 import { collectionsConfigs } from './collections'
 import { adminConfig } from './configs/payload/admin'
+import { processProviderEventTask } from './jobs/tasks/processProviderEvent'
+import { expireSubscriptionsTask } from './jobs/tasks/expireSubscriptions'
+import { reconcileSubscriptionsTask } from './jobs/tasks/reconcileSubscriptions'
+import { sendNotificationTask } from './jobs/tasks/sendNotification'
+import { fanoutDevaluationTask } from './jobs/tasks/fanoutDevaluation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,6 +27,15 @@ export default buildConfig({
   secret: env.PAYLOAD_SECRET,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  jobs: {
+    tasks: [
+      processProviderEventTask,
+      expireSubscriptionsTask,
+      reconcileSubscriptionsTask,
+      sendNotificationTask,
+      fanoutDevaluationTask
+    ]
   },
   db: postgresAdapter({
     pool: {

@@ -46,6 +46,12 @@ export const env = createEnv({
     CRON_SECRET: z.string().min(1).optional(),
     VERCEL_PROJECT_PRODUCTION_URL: z.string().min(1).optional(),
 
+    // Payment & Max Pro
+    RAZORPAY_KEY_ID: z.string().min(1),
+    RAZORPAY_KEY_SECRET: z.string().min(1),
+    RAZORPAY_WEBHOOK_SECRET: z.string().min(1),
+    MAX_PRO_GRACE_PERIOD_DAYS: z.coerce.number().int().default(7),
+
 
 
     // SMTP
@@ -105,6 +111,12 @@ export const env = createEnv({
     // Misc
     CRON_SECRET: process.env.CRON_SECRET,
     VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+
+    // Payment & Max Pro
+    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+    RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
+    RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
+    MAX_PRO_GRACE_PERIOD_DAYS: process.env.MAX_PRO_GRACE_PERIOD_DAYS,
 
     // Client
     NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,

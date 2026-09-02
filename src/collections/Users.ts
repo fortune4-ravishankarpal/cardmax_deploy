@@ -23,6 +23,7 @@ import {
   gmailDisconnectHandler,
   gmailIngestHandler,
 } from '@/auth/gmail/endpoints'
+import { consentEndpoints } from '../consent/endpoints'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -166,5 +167,6 @@ export const Users: CollectionConfig = {
       method: 'post',
       handler: gmailIngestHandler,
     },
+    ...consentEndpoints,
   ],
 }
