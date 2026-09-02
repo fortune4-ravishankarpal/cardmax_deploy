@@ -49,7 +49,7 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       type: 'tab',
       icon: 'FileText',
       label: { en: 'Content' },
-      collections: ['media', "users", "admin"],
+      collections: ['media', "users", "admin", 'cards'],
       access: SideBarAccessViewChecker,
     },
     {

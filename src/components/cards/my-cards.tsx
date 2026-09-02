@@ -111,6 +111,7 @@ export const MyCards = () => {
     try {
       const res = await fetch('/api/cards?limit=100&sort=-updatedAt')
       const data = (await res.json()) as { docs?: CardView[] }
+      console.log('data :', data);
       setCards(data.docs ?? [])
     } catch {
       setError('Could not load your cards.')

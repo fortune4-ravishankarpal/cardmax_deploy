@@ -17,5 +17,5 @@ export const adminConfig: Config["admin"] = {
   //   email: env.CMS_SEED_ADMIN_EMAIL,
   //   password: env.CMS_SEED_ADMIN_PASSWORD,
   // },
-  suppressHydrationWarning: true,
+  // suppressHydrationWarning: true,
 };

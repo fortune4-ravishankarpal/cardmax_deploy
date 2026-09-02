@@ -138,7 +138,20 @@ const rotateKeysEndpoint: Endpoint = {
     }),
 }
 
+// TEMPORARY AUTH PROBE (will be removed): reports whether req.user is present
+// per HTTP method. Never logs token contents.
+const authProbeHandler = (req: PayloadRequest): Response => {
+  const user = req.user as { collection?: string; id?: string } | null
+  return json({
+    method: req.method,
+    user: user ? `${user.collection ?? '?'}:${String(user.id).slice(0, 8)}` : null,
+    hasCookie: (req.headers.get('cookie') ?? '').length > 0,
+  })
+}
+
 export const cardEndpoints: Endpoint[] = [
+  { path: '/authprobe', method: 'get', handler: authProbeHandler },
+  { path: '/authprobe', method: 'post', handler: authProbeHandler },
   addCardEndpoint,
   updateCardEndpoint,
   revealCardEndpoint,

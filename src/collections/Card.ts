@@ -58,13 +58,13 @@ export const Cards: CollectionConfig = {
       relationTo: 'users',
       required: true,
       index: true,
-      admin: { position: 'sidebar', readOnly: true },
+      admin: { readOnly: true },
       access: { read: () => true, create: () => false, update: () => false },
     },
     {
       name: 'nickname',
       type: 'text',
-      admin: { position: 'sidebar', description: 'Optional label for this card (e.g. "My travel card").' },
+      admin: { description: 'Optional label for this card (e.g. "My travel card").' },
     },
     {
       name: 'brand',
@@ -104,7 +104,6 @@ export const Cards: CollectionConfig = {
       required: true,
       min: 1,
       max: 12,
-      admin: { position: 'sidebar' },
       validate: (value: unknown) => {
         const n = Number(value) as number
         if (!Number.isInteger(n) || n < 1 || n > 12) return 'Expiry month must be an integer between 1 and 12.'
@@ -117,7 +116,6 @@ export const Cards: CollectionConfig = {
       required: true,
       min: 2000,
       max: 2199,
-      admin: { position: 'sidebar' },
       validate: (value: unknown) => {
         const n = Number(value) as number
         if (!Number.isInteger(n) || n < 2000 || n > 2199) return 'Expiry year must be between 2000 and 2199.'
