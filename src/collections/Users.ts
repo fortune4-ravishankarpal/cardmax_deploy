@@ -110,6 +110,22 @@ export const Users: CollectionConfig = {
       required: true,
       admin: { position: 'sidebar' },
     },
+    {
+      name: 'acceptedTermsAndConditions',
+      type: 'checkbox',
+      label: 'Accept the Terms and Conditions',
+      defaultValue: false,
+      required: true,
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: 'acceptedPrivacyPolicy',
+      type: 'checkbox',
+      label: 'Accept the Privacy Policy',
+      defaultValue: false,
+      required: true,
+      admin: { position: 'sidebar' },
+    },
   ],
   endpoints: [
     {

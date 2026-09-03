@@ -13,9 +13,9 @@ export const adminConfig: Config["admin"] = {
   importMap: {
     baseDir: path.resolve(dirname),
   },
-  autoLogin: {
-    email: env.CMS_SEED_ADMIN_EMAIL,
-    password: env.CMS_SEED_ADMIN_PASSWORD,
-  },
+  // autoLogin: {
+  //   email: env.CMS_SEED_ADMIN_EMAIL,
+  //   password: env.CMS_SEED_ADMIN_PASSWORD,
+  // },
   suppressHydrationWarning: true,
 };

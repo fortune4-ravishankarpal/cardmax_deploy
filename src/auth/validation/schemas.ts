@@ -16,6 +16,8 @@ export const completeProfileSchema = z.object({
   phone: z.string().trim().min(6).max(20).optional().or(z.literal('')),
   income: z.union([z.number().min(0), z.string().trim().min(1).max(20)]).optional(),
   employmentType: z.string().trim().min(1).max(60).optional(),
+  acceptedTermsAndConditions: z.boolean().optional(),
+  acceptedPrivacyPolicy: z.boolean().optional(),
 })
 
 export type SendOtpInput = z.infer<typeof sendOtpSchema>

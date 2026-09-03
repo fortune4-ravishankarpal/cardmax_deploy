@@ -12,6 +12,8 @@ type FormValues = {
   phone: string
   income: string
   employmentType: string
+  acceptedTermsAndConditions: boolean
+  acceptedPrivacyPolicy: boolean
 }
 
 const postJson = (url: string, body: unknown): Promise<{ data: any; status: number }> =>
@@ -36,6 +38,8 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
       phone: user.phone || '',
       income: user.income != null ? String(user.income) : '',
       employmentType: user.employmentType || '',
+      acceptedTermsAndConditions: false,
+      acceptedPrivacyPolicy: false,
     },
   })
 
@@ -47,6 +51,9 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
     if (values.phone.trim()) payload.phone = values.phone.trim()
     if (values.income.trim()) payload.income = values.income.trim()
     if (values.employmentType) payload.employmentType = values.employmentType
+
+    payload.acceptedTermsAndConditions = values.acceptedTermsAndConditions
+    payload.acceptedPrivacyPolicy = values.acceptedPrivacyPolicy
 
     const { status, data } = await postJson('/api/users/complete-profile', payload)
     setSaving(false)
@@ -76,18 +83,34 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
         <label className="auth-label" htmlFor="name">
           Full name
         </label>
-        <input id="name" className="auth-input" placeholder="Jane Doe" {...register('name', { required: true })} />
-        {errors.name && <span className="auth-field-error">Your name is required.</span>}
+        <input
+          id="name"
+          className="auth-input"
+          placeholder="Jane Doe"
+          {...register('name', { required: true })}
+        />
 
         <label className="auth-label" htmlFor="email">
-          Email
+          Email <span style={{ color: 'red' }}>*</span>
         </label>
-        <input id="email" className="auth-input" type="email" placeholder="you@example.com" {...register('email')} />
+        <input
+          id="email"
+          className="auth-input"
+          type="email"
+          placeholder="you@example.com"
+          {...register('email', { required: true })}
+        />
+        {errors.email && <span className="auth-field-error">Your email is required.</span>}
 
         <label className="auth-label" htmlFor="phone">
           Phone
         </label>
-        <input id="phone" className="auth-input" type="tel" placeholder="+1 555 000 0000" {...register('phone')} />
+        <input
+          id="phone"
+          className="auth-input"
+          type="tel"
+          {...register('phone', { required: true })}
+        />
 
         <label className="auth-label" htmlFor="income">
           Monthly income
@@ -113,6 +136,50 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
             </option>
           ))}
         </select>
+
+        <div
+          className="auth-checkbox-group"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}
+        >
+          <input
+            id="acceptedTermsAndConditions"
+            type="checkbox"
+            {...register('acceptedTermsAndConditions', { required: true })}
+          />
+          <label htmlFor="acceptedTermsAndConditions" style={{ margin: 0, fontSize: '0.9rem' }}>
+            I accept the Terms and Conditions <span style={{ color: 'red' }}>*</span>
+          </label>
+        </div>
+        {errors.acceptedTermsAndConditions && (
+          <span className="auth-field-error" style={{ display: 'block' }}>
+            You must accept the terms.
+          </span>
+        )}
+
+        <div
+          className="auth-checkbox-group"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            marginTop: '0.5rem',
+            marginBottom: '1rem',
+          }}
+        >
+          <input
+            id="acceptedPrivacyPolicy"
+            type="checkbox"
+            {...register('acceptedPrivacyPolicy', { required: true })}
+          />
+          <label htmlFor="acceptedPrivacyPolicy" style={{ margin: 0, fontSize: '0.9rem' }}>
+            I accept the Privacy Policy <span style={{ color: 'red' }}>*</span>
+          </label>
+        </div>
+        {errors.acceptedPrivacyPolicy && (
+          <span className="auth-field-error" style={{ display: 'block', marginBottom: '1rem' }}>
+            You must accept the privacy policy.
+          </span>
+        )}
 
         <button type="submit" className="auth-button auth-button--primary" disabled={saving}>
           {saving ? 'Saving…' : 'Save and continue'}

@@ -46,6 +46,12 @@ export const completeUserProfile = async (payload: Payload, user: User, data: an
     profileCompleted: true,
     accountStatus: 'active',
   }
+  if (data?.acceptedTermsAndConditions !== undefined) {
+    payloadUpdateData.acceptedTermsAndConditions = Boolean(data.acceptedTermsAndConditions)
+  }
+  if (data?.acceptedPrivacyPolicy !== undefined) {
+    payloadUpdateData.acceptedPrivacyPolicy = Boolean(data.acceptedPrivacyPolicy)
+  }
   if (income !== undefined) payloadUpdateData.income = income
   if (employmentType) payloadUpdateData.employmentType = employmentType
   if (typeof data?.email === 'string' && data.email.trim()) {
