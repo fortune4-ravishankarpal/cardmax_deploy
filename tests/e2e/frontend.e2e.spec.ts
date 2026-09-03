@@ -10,7 +10,7 @@ test.describe('Frontend', () => {
 
   test('can load homepage', async ({ page }) => {
     await page.goto('http://localhost:3000')
-    await expect(page).toHaveTitle(/card max/)
+    await expect(page).toHaveTitle(/"card max"/)
     const heading = page.locator('h1').first()
     await expect(heading).toHaveText('card max')
   })

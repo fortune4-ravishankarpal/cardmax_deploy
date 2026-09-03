@@ -30,7 +30,6 @@ async function run() {
 
     console.log(`\n🚀 Creating migration: ${name}...\n`)
 
-    // We use npx payload migrate:create <name>
     // execSync inherits stdio so the user can see the output/prompts from Payload
     execSync(`npx payload migrate:create ${name}`, { stdio: 'inherit' })
 
