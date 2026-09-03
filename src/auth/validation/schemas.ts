@@ -22,6 +22,14 @@ export const completeProfileSchema = z.object({
   marketingConsent: z.boolean().optional(),
 })
 
+export const updateProfileSchema = z.object({
+  name: z.string().trim().min(1, 'Name is required').max(120),
+  phone: z.string().trim().max(20).optional().nullable(),
+  income: z.union([z.number().min(0), z.string().trim().max(20)]).optional().nullable(),
+  employmentType: z.string().trim().max(60).optional().nullable(),
+})
+
 export type SendOtpInput = z.infer<typeof sendOtpSchema>
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>
 export type CompleteProfileInput = z.infer<typeof completeProfileSchema>
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>

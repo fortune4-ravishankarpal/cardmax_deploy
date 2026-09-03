@@ -1,6 +1,11 @@
 import type { PayloadRequest } from 'payload'
 
-import { sendOtpSchema, verifyOtpSchema, completeProfileSchema } from '@/auth/validation/schemas'
+import {
+  sendOtpSchema,
+  verifyOtpSchema,
+  completeProfileSchema,
+  updateProfileSchema,
+} from '@/auth/validation/schemas'
 import { requestOtp, verifyOtp, AuthorizationError } from '@/auth/services/otpService'
 import { findOrCreateByIdentifier, findOrCreateByGoogleProfile } from '@/auth/services/userService'
 import { issueSession, buildSessionCookie, clearSessionCookie } from '@/auth/services/authService'
@@ -162,3 +167,129 @@ export const googleCallbackHandler = async (req: PayloadRequest): Promise<Respon
 export const isProfileCompleted = (user: User): boolean => {
   return isProfileComplete(user)
 }
+
+export const getProfileHandler = async (req: PayloadRequest): Promise<Response> => {
+  if (!req.user || req.user.collection !== 'users') {
+    return json({ error: 'Authentication required', code: 'UNAUTHENTICATED' }, 401)
+  }
+
+  try {
+    const user = await req.payload.findByID({
+      collection: 'users',
+      id: req.user.id,
+      depth: 0,
+      overrideAccess: true,
+    })
+
+    if (!user) {
+      return json({ error: 'User not found', code: 'NOT_FOUND' }, 404)
+    }
+
+    const cardsResult = await req.payload.find({
+      collection: 'user-cards',
+      where: {
+        user: { equals: req.user.id },
+      },
+      limit: 100,
+      overrideAccess: true,
+    })
+
+    const subscriptionsResult = await req.payload.find({
+      collection: 'subscriptions',
+      where: {
+        user: { equals: req.user.id },
+      },
+      sort: '-createdAt',
+      limit: 1,
+      overrideAccess: true,
+    })
+
+    const activeSubscription = subscriptionsResult.docs[0] || null
+
+    return json({
+      id: user.id,
+      name: user.name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      income: user.income != null ? user.income : null,
+      employmentType: user.employmentType || null,
+      authenticationProvider: user.authenticationProvider || 'email',
+      profileCompleted: Boolean(user.profileCompleted),
+      accountStatus: user.accountStatus || 'active',
+      createdAt: user.createdAt,
+      marketingConsent: Boolean(user.marketingConsent),
+      stats: {
+        activeCardsCount: cardsResult.docs.filter((c: any) => c.status === 'active').length,
+        totalCardsCount: cardsResult.totalDocs || 0,
+        subscriptionStatus: activeSubscription ? (activeSubscription as any).status : 'free',
+      },
+    })
+  } catch (e) {
+    return errorResponse(e)
+  }
+}
+
+export const updateProfileHandler = async (req: PayloadRequest): Promise<Response> => {
+  if (!req.user || req.user.collection !== 'users') {
+    return json({ error: 'Authentication required', code: 'UNAUTHENTICATED' }, 401)
+  }
+
+  const body = await jsonBody(req)
+  const parsed = updateProfileSchema.safeParse(body)
+  if (!parsed.success) {
+    return errorResponse({ issues: parsed.error.issues })
+  }
+
+  const { name, phone, income, employmentType } = parsed.data
+
+  const updateData: Record<string, unknown> = {
+    name,
+  }
+
+  if (phone !== undefined) {
+    updateData.phone = phone ? phone.trim() : null
+  }
+
+  if (income !== undefined) {
+    if (income === null || income === '') {
+      updateData.income = null
+    } else {
+      const parsedIncome = typeof income === 'number' ? income : Number(income)
+      if (Number.isNaN(parsedIncome) || parsedIncome < 0) {
+        return json({ error: 'Please enter a valid monthly income.', code: 'INVALID_INCOME' }, 400)
+      }
+      updateData.income = parsedIncome
+    }
+  }
+
+  if (employmentType !== undefined) {
+    updateData.employmentType = employmentType ? employmentType.trim() : null
+  }
+
+  try {
+    const updated = await req.payload.update({
+      collection: 'users',
+      id: req.user.id,
+      data: updateData,
+      overrideAccess: true,
+      depth: 0,
+    })
+
+    return json({
+      success: true,
+      user: {
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        phone: updated.phone,
+        income: updated.income,
+        employmentType: updated.employmentType,
+        authenticationProvider: updated.authenticationProvider,
+        profileCompleted: updated.profileCompleted,
+        accountStatus: updated.accountStatus,
+      },
+    })
+  } catch (e) {
+    return errorResponse(e)
+  }
+}

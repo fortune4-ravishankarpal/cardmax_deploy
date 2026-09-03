@@ -30,6 +30,10 @@ export default function ConsentPage() {
   const loadSummary = useCallback(async () => {
     try {
       const res = await fetch('/api/users/consent/summary')
+      if (res.status === 401) {
+        window.location.href = '/login'
+        return
+      }
       if (!res.ok) throw new Error('Could not load privacy settings.')
       const data = await res.json()
       setSummary(data)

@@ -15,6 +15,8 @@ import {
   googleCallbackHandler,
   completeProfileHandler,
   logoutHandler,
+  getProfileHandler,
+  updateProfileHandler,
 } from '@/auth/endpoints'
 import {
   gmailConnectHandler,
@@ -204,6 +206,16 @@ export const Users: CollectionConfig = {
       path: '/complete-profile',
       method: 'post',
       handler: completeProfileHandler,
+    },
+    {
+      path: '/profile',
+      method: 'get',
+      handler: getProfileHandler,
+    },
+    {
+      path: '/profile',
+      method: 'patch',
+      handler: updateProfileHandler,
     },
     {
       path: '/logout',
