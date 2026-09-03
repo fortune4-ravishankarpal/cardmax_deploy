@@ -5,7 +5,7 @@ export const SubscriptionPlan: CollectionConfig = {
   admin: {
     group: 'Subscription & Max Pro',
     useAsTitle: 'name',
-    defaultColumns: ['name', 'providerPlanId', 'price', 'billingInterval'],
+    defaultColumns: ['name', 'dataVersion', 'providerPlanId', 'price', 'billingInterval'],
   },
   access: {
     read: () => true,
@@ -13,11 +13,34 @@ export const SubscriptionPlan: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
     delete: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
   },
+  trash: true,
+  versions: {
+    drafts: {
+      autosave: {
+        interval: 2000,
+      }
+    }
+  },
   fields: [
     {
       name: 'name',
       type: 'text',
       required: true,
+    },
+    {
+      name: 'dataVersion',
+      type: 'text',
+      admin: {
+          readOnly: true,
+          position: "sidebar",
+          description: 'Human-readable identifier for the published version.',
+      },
+      hooks: {
+        beforeValidate: [({ value, operation }) => {
+          if (operation === 'create' && !value) return 'v1'
+          return value
+        }]
+      }
     },
     {
       name: 'description',
@@ -73,4 +96,25 @@ export const SubscriptionPlan: CollectionConfig = {
       }
     }
   ],
+  hooks: {
+      beforeChange: [
+          ({ data, operation, originalDoc }) => {
+              // Draft and autosave operations must not alter the published label.
+              if (data?._status !== 'published') {
+                  return data
+              }
+
+              if (operation === 'create') {
+                  data.dataVersion = 'v1'
+                  return data
+              }
+
+              const currentVersion = originalDoc?.dataVersion
+              const versionNumber = /^v(\d+)$/.exec(currentVersion ?? '')?.[1]
+              data.dataVersion = `v${Number(versionNumber ?? 0) + 1}`
+
+              return data
+          },
+      ],
+  },
 }

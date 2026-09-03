@@ -57,7 +57,7 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       type: 'tab',
       icon: 'Archive',
       label: { en: 'Master' },
-      collections: ['banks', 'CreditCard'],
+      collections: ['banks', 'CreditCard', 'subscription-plans'],
       access: SideBarAccessViewChecker,
     },
     {
@@ -67,7 +67,6 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       label: { en: 'Subscription & Max Pro' },
       collections: [
         'subscriptions',
-        'subscription-plans',
         'subscription-payments',
         'subscription-events',
         'trial-eligibility',
