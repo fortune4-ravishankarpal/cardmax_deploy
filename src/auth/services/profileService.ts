@@ -3,6 +3,7 @@ import type { Payload } from 'payload'
 import type { User } from '@/payload-types'
 import { findUserByEmail } from '@/auth/services/userService'
 import { AuthorizationError } from '@/auth/services/otpService'
+import { CURRENT_TOS_VERSION, CURRENT_PRIVACY_VERSION } from '@/lib/consentVersions'
 
 export const isProfileComplete = (user: User | null): boolean => {
   if (!user) return false
@@ -41,17 +42,41 @@ export const completeUserProfile = async (payload: Payload, user: User, data: an
     throw new AuthorizationError('EMAIL_IN_USE', 'That email is already in use.', 409)
   }
 
+  const now = new Date().toISOString()
+
   const payloadUpdateData: Record<string, unknown> = {
     name,
     profileCompleted: true,
     accountStatus: 'active',
   }
+
+  // ── T&C acceptance ───────────────────────────────────────────────────────
   if (data?.acceptedTermsAndConditions !== undefined) {
     payloadUpdateData.acceptedTermsAndConditions = Boolean(data.acceptedTermsAndConditions)
+    if (data.acceptedTermsAndConditions === true) {
+      // Record the version and timestamp of acceptance.
+      // Only update if not already set to avoid overwriting a higher version.
+      payloadUpdateData.tosVersion = CURRENT_TOS_VERSION
+      payloadUpdateData.acceptedTermsAt = now
+    }
   }
+
+  // ── Privacy Notice acknowledgement ───────────────────────────────────────
   if (data?.acceptedPrivacyPolicy !== undefined) {
     payloadUpdateData.acceptedPrivacyPolicy = Boolean(data.acceptedPrivacyPolicy)
+    if (data.acceptedPrivacyPolicy === true) {
+      payloadUpdateData.privacyNoticeVersion = CURRENT_PRIVACY_VERSION
+      payloadUpdateData.acknowledgedPrivacyAt = now
+    }
   }
+
+  // ── Marketing consent ────────────────────────────────────────────────────
+  // Default to false if not provided — never assume opt-in.
+  const marketingConsent = data?.marketingConsent === true
+  payloadUpdateData.marketingConsent = marketingConsent
+  payloadUpdateData.marketingConsentAt = now
+
+  // ── Optional profile fields ──────────────────────────────────────────────
   if (income !== undefined) payloadUpdateData.income = income
   if (employmentType) payloadUpdateData.employmentType = employmentType
   if (typeof data?.email === 'string' && data.email.trim()) {
@@ -70,4 +95,4 @@ export const completeUserProfile = async (payload: Payload, user: User, data: an
   })
 
   return updated
-}
+}

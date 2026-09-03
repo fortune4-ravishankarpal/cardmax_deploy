@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import './gmail-consent.scss'
 
 interface GmailStatus {
   connected: boolean
@@ -98,6 +99,32 @@ export const GmailForm = () => {
     }
   }
 
+  const [connecting, setConnecting] = useState(false)
+  const [persistDerived, setPersistDerived] = useState(false)
+
+  const handleConnect = async () => {
+    setConnecting(true)
+    setError('')
+    try {
+      const res = await fetch('/api/users/gmail/initiate-consent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ persistDerived }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.url) {
+        setError(data.error || 'Could not initiate Gmail authorization. Please try again.')
+        setConnecting(false)
+        return
+      }
+      // Redirect to Google OAuth consent screen
+      window.location.href = data.url
+    } catch {
+      setError('Network error. Please try again.')
+      setConnecting(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="auth-card">
@@ -183,19 +210,70 @@ export const GmailForm = () => {
           </button>
         </>
       ) : (
-        <>
-          <p className="auth-copy">
-            CardMax will use <strong>read-only</strong> access to find your credit card
-            statement emails and download their PDF attachments. We never read your other
-            messages and never post or modify anything in your Gmail.
+        <div className="gmail-consent-container">
+          <p className="auth-copy" style={{ marginBottom: 0 }}>
+            Before connecting, here is exactly what CardMax will and will not do with your Gmail:
           </p>
-          <a className="auth-button" href="/api/users/gmail/connect">
-            <span className="auth-google-icon" aria-hidden="true">
+
+          {/* ── Required: Search inbox ── */}
+          <div className="consent-section required">
+            <div className="section-header">
+              <h3>Read-only statement search</h3>
+              <span className="badge required-badge">Required</span>
+            </div>
+            <p>
+              We search your Gmail for emails from credit card issuers (such as HDFC, ICICI, Axis, SBI)
+              and download attached PDF statements. We <strong>never</strong> read personal emails,
+              and <strong>never</strong> send, modify, or delete anything in your mailbox.
+            </p>
+          </div>
+
+          {/* ── Optional: Save summaries ── */}
+          <div className="consent-section optional">
+            <div className="section-header">
+              <h3>Store financial summaries</h3>
+              <span className="badge optional-badge">Optional</span>
+            </div>
+            <p>
+              Save extracted statement data (billing periods, total due amounts, and transaction counts)
+              so you can track your spending history across cards over time.
+            </p>
+            <div className="toggle-row">
+              <input
+                id="persistDerived"
+                type="checkbox"
+                checked={persistDerived}
+                onChange={(e) => setPersistDerived(e.target.checked)}
+              />
+              <div>
+                <label htmlFor="persistDerived" className="toggle-label">
+                  Save financial summaries in my account
+                </label>
+                <p className="toggle-desc">
+                  If off, statements are analyzed in-session only and derived summaries are not saved.
+                  You can update this any time in Settings.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <p className="consent-notice">
+            You can disconnect Gmail and revoke permissions at any time from your Privacy & Consent Settings.
+          </p>
+
+          <button
+            type="button"
+            className="auth-button auth-button--primary"
+            onClick={handleConnect}
+            disabled={connecting}
+            style={{ width: '100%' }}
+          >
+            <span className="auth-google-icon" aria-hidden="true" style={{ marginRight: '0.5rem' }}>
               G
             </span>
-            Connect Gmail
-          </a>
-        </>
+            {connecting ? 'Connecting to Google…' : 'Confirm & Connect with Google'}
+          </button>
+        </div>
       )}
     </div>
   )

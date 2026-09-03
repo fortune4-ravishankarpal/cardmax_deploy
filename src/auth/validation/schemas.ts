@@ -18,6 +18,8 @@ export const completeProfileSchema = z.object({
   employmentType: z.string().trim().min(1).max(60).optional(),
   acceptedTermsAndConditions: z.boolean().optional(),
   acceptedPrivacyPolicy: z.boolean().optional(),
+  /** Whether the user opted in to marketing/promotional emails. Default: false. */
+  marketingConsent: z.boolean().optional(),
 })
 
 export type SendOtpInput = z.infer<typeof sendOtpSchema>

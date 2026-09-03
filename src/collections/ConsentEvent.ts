@@ -2,6 +2,7 @@ import { CollectionConfig } from 'payload'
 
 export const ConsentEvent: CollectionConfig = {
   slug: 'consent-events',
+  timestamps: true,
   admin: {
     group: 'Privacy & Settings',
     useAsTitle: 'action',

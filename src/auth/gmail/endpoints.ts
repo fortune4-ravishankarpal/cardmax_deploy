@@ -46,7 +46,7 @@ const requireUser = (req: PayloadRequest): { id: number; email: string } => {
   if (!req.user || req.user.collection !== 'users') {
     throw new AuthorizationError('UNAUTHENTICATED', 'Authentication required.', 401)
   }
-  return req.user as { id: number; email: string }
+  return req.user as unknown as { id: number; email: string }
 }
 
 /** Check that Gmail OAuth is configured. Throws 501 if not. */
@@ -56,10 +56,13 @@ const requireGmailConfig = (): void => {
   }
 }
 
+import { ConsentService } from '@/consent/service'
+import { CURRENT_PRIVACY_VERSION } from '@/lib/consentVersions'
+
 /**
  * GET /api/users/gmail/connect
  *
- * Initiates the Gmail OAuth 2.0 flow. Requires an authenticated user.
+ * Legacy direct initiator for the Gmail OAuth 2.0 flow. Requires an authenticated user.
  * Creates a CSRF state nonce tied to the user, then redirects to Google's
  * consent screen requesting `gmail.readonly` scope.
  */
@@ -76,11 +79,37 @@ export const gmailConnectHandler = async (req: PayloadRequest): Promise<Response
 }
 
 /**
+ * POST /api/users/gmail/initiate-consent
+ *
+ * Initiates the Gmail OAuth 2.0 flow with a server-side consent intent.
+ * The client sends `{ persistDerived: boolean }`.
+ * Creates an OAuth state nonce mapped to the user and their consent intent,
+ * then returns the server-constructed OAuth redirect URL.
+ */
+export const gmailInitiateConsentHandler = async (req: PayloadRequest): Promise<Response> => {
+  try {
+    requireGmailConfig()
+    const user = requireUser(req)
+    const body = await jsonBody(req)
+    const persistDerived = Boolean(body.persistDerived)
+
+    const { url } = createGmailOAuthUrl(user.id, {
+      persist_derived: persistDerived,
+    })
+
+    return json({ ok: true, url })
+  } catch (e) {
+    const err = e as AuthorizationError
+    return json({ error: err.message, code: err.code }, err.status || 500)
+  }
+}
+
+/**
  * GET /api/users/gmail/callback
  *
  * Handles the OAuth 2.0 callback from Google. Validates the CSRF state,
- * exchanges the authorization code for tokens, stores the encrypted
- * refresh token, and redirects back to the Gmail integration page.
+ * retrieves the server-stored consent intent, exchanges the authorization code for tokens,
+ * stores the encrypted refresh token, finalizes the consent records, and redirects back.
  */
 export const gmailCallbackHandler = async (req: PayloadRequest): Promise<Response> => {
   const url = new URL(req.url || '')
@@ -98,7 +127,7 @@ export const gmailCallbackHandler = async (req: PayloadRequest): Promise<Respons
   try {
     requireGmailConfig()
     const user = requireUser(req)
-    validateGmailState(state, user.id)
+    const consentIntent = validateGmailState(state, user.id)
 
     const tokens = await exchangeGmailCode(code)
 
@@ -106,6 +135,41 @@ export const gmailCallbackHandler = async (req: PayloadRequest): Promise<Respons
     let gmailAddress = await fetchGmailAddress(tokens.accessToken)
 
     await saveGmailTokens(req.payload, user.id, tokens, gmailAddress || '')
+
+    // Finalize consent records server-side
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined
+    const userAgent = req.headers.get('user-agent') || undefined
+
+    // 1. Mandatory Gmail purpose: analyse_inbox (granted upon successful OAuth)
+    await ConsentService.grant({
+      userId: user.id,
+      purpose: 'analyse_inbox',
+      version: CURRENT_PRIVACY_VERSION,
+      source: 'gmail_connect_flow',
+      ipAddress: ip,
+      userAgent,
+    })
+
+    // 2. Optional Gmail secondary purpose: persist_derived
+    if (consentIntent?.persist_derived) {
+      await ConsentService.grant({
+        userId: user.id,
+        purpose: 'persist_derived',
+        version: CURRENT_PRIVACY_VERSION,
+        source: 'gmail_connect_flow',
+        ipAddress: ip,
+        userAgent,
+      })
+    } else {
+      await ConsentService.revoke({
+        userId: user.id,
+        purpose: 'persist_derived',
+        version: CURRENT_PRIVACY_VERSION,
+        source: 'gmail_connect_flow',
+        ipAddress: ip,
+        userAgent,
+      })
+    }
 
     return new Response(null, {
       status: 302,
@@ -141,8 +205,8 @@ export const gmailStatusHandler = async (req: PayloadRequest): Promise<Response>
 /**
  * POST /api/users/gmail/disconnect
  *
- * Revokes the Gmail OAuth tokens at Google and deletes the local
- * connection record. After this call, Gmail access is fully removed.
+ * Revokes the Gmail OAuth tokens at Google, deletes the local
+ * connection record, and revokes active Gmail consent records.
  */
 export const gmailDisconnectHandler = async (req: PayloadRequest): Promise<Response> => {
   try {
@@ -159,6 +223,28 @@ export const gmailDisconnectHandler = async (req: PayloadRequest): Promise<Respo
     // Always attempt local cleanup (idempotent)
     await deleteGmailConnection(req.payload, user.id)
 
+    // Revoke Gmail consent records
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined
+    const userAgent = req.headers.get('user-agent') || undefined
+
+    await ConsentService.revoke({
+      userId: user.id,
+      purpose: 'analyse_inbox',
+      version: CURRENT_PRIVACY_VERSION,
+      source: 'settings_page',
+      ipAddress: ip,
+      userAgent,
+    }).catch(() => {})
+
+    await ConsentService.revoke({
+      userId: user.id,
+      purpose: 'persist_derived',
+      version: CURRENT_PRIVACY_VERSION,
+      source: 'settings_page',
+      ipAddress: ip,
+      userAgent,
+    }).catch(() => {})
+
     return json({ ok: true, disconnected: true })
   } catch (e) {
     const err = e as AuthorizationError
@@ -173,7 +259,7 @@ interface IngestResultEntry {
   issuer: string
   filename: string
   size: number
-  status: 'parsed' | 'error'
+  status: 'parsed' | 'error' | 'scanned_not_stored'
   error?: string
 }
 
@@ -183,12 +269,13 @@ interface IngestResultEntry {
  * Triggers a Gmail statement ingestion run for the authenticated user.
  *
  * Steps:
- * 1. Load + decrypt the stored refresh token.
- * 2. Refresh the access token if it has expired.
- * 3. Search Gmail for statement emails using issuer patterns.
- * 4. Download each PDF attachment.
- * 5. Identify the issuer from email headers.
- * 6. Pass each PDF to the statement parser pipeline.
+ * 1. Verify consent for analyse_inbox.
+ * 2. Load + decrypt the stored refresh token.
+ * 3. Refresh the access token if it has expired.
+ * 4. Search Gmail for statement emails using issuer patterns.
+ * 5. Download each PDF attachment.
+ * 6. Identify the issuer from email headers.
+ * 7. If persist_derived consent is active, pass PDF to statement parser pipeline.
  *
  * Accepts an optional `maxPdfs` body field to limit the number of
  * PDFs processed (default: GMAIL_INGEST_MAX_PDFS, max: GMAIL_INGEST_MAX_PDFS).
@@ -202,6 +289,18 @@ export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response>
 
   try {
     const user = requireUser(req)
+
+    // Check if user has active consent for analyse_inbox
+    const canAnalyse = await ConsentService.hasConsent(user.id, 'analyse_inbox')
+    if (!canAnalyse) {
+      return json(
+        { error: 'Consent to search Gmail for statements is not granted.', code: 'CONSENT_REQUIRED' },
+        403,
+      )
+    }
+
+    const canPersist = await ConsentService.hasConsent(user.id, 'persist_derived')
+
     const tokens = await loadGmailTokens(req.payload, user.id)
 
     // Refresh the access token (throws GMAIL_TOKEN_REFRESH_FAILED if invalid)
@@ -256,19 +355,21 @@ export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response>
           // Non-fatal — continue with 'unknown' issuer
         }
 
-        // Pass the PDF to the statement parser pipeline
-        await parser.parse(user.id, pdf, {
-          issuer,
-          source: 'gmail',
-          gmailMessageId: att.messageId,
-          attachmentFilename: att.filename,
-        })
+        // Pass the PDF to the statement parser pipeline only if persist_derived consent is active
+        if (canPersist) {
+          await parser.parse(user.id, pdf, {
+            issuer,
+            source: 'gmail',
+            gmailMessageId: att.messageId,
+            attachmentFilename: att.filename,
+          })
+        }
 
         results.push({
           issuer,
           filename: att.filename,
           size: pdf.length,
-          status: 'parsed',
+          status: canPersist ? 'parsed' : 'scanned_not_stored',
         })
       } catch (e) {
         const err = e as Error
@@ -287,7 +388,9 @@ export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response>
       processed,
       totalFound: attachments.length,
       results,
-      message: `Processed ${processed} statement PDF(s).`,
+      message: canPersist
+        ? `Processed ${processed} statement PDF(s).`
+        : `Scanned ${processed} statement PDF(s) (derived storage disabled per privacy setting).`,
     })
   } catch (e) {
     const err = e as AuthorizationError

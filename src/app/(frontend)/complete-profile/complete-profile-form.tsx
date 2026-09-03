@@ -14,6 +14,7 @@ type FormValues = {
   employmentType: string
   acceptedTermsAndConditions: boolean
   acceptedPrivacyPolicy: boolean
+  marketingConsent: boolean
 }
 
 const postJson = (url: string, body: unknown): Promise<{ data: any; status: number }> =>
@@ -40,6 +41,7 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
       employmentType: user.employmentType || '',
       acceptedTermsAndConditions: false,
       acceptedPrivacyPolicy: false,
+      marketingConsent: false,   // OFF by default — explicit opt-in required
     },
   })
 
@@ -54,6 +56,8 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
 
     payload.acceptedTermsAndConditions = values.acceptedTermsAndConditions
     payload.acceptedPrivacyPolicy = values.acceptedPrivacyPolicy
+    // Marketing consent: passed as explicit boolean (false if unchecked)
+    payload.marketingConsent = values.marketingConsent === true
 
     const { status, data } = await postJson('/api/users/complete-profile', payload)
     setSaving(false)
@@ -137,31 +141,37 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
           ))}
         </select>
 
+        {/* ── Legal ─────────────────────────────────────────────────────── */}
+        <div className="auth-section-label" style={{ marginTop: '1.5rem', marginBottom: '0.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
+          Legal
+        </div>
+
         <div
           className="auth-checkbox-group"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem' }}
+          style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginTop: '0.5rem' }}
         >
           <input
             id="acceptedTermsAndConditions"
             type="checkbox"
+            style={{ marginTop: '2px', flexShrink: 0 }}
             {...register('acceptedTermsAndConditions', { required: true })}
           />
           <label htmlFor="acceptedTermsAndConditions" style={{ margin: 0, fontSize: '0.9rem' }}>
-            I accept the{' '}
+            I have read and accept the{' '}
             <a
-              href="/terms"
+              href="/terms-and-conditions"
               target="_blank"
               rel="noopener noreferrer"
               style={{ textDecoration: 'underline', color: '#4b4bebff' }}
             >
-              Terms and Conditions
+              Terms of Service
             </a>{' '}
             <span style={{ color: 'red' }}>*</span>
           </label>
         </div>
         {errors.acceptedTermsAndConditions && (
           <span className="auth-field-error" style={{ display: 'block' }}>
-            You must accept the terms.
+            You must accept the Terms of Service to continue.
           </span>
         )}
 
@@ -169,35 +179,69 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
           className="auth-checkbox-group"
           style={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             gap: '0.5rem',
-            marginTop: '0.5rem',
-            marginBottom: '1rem',
+            marginTop: '0.75rem',
+            marginBottom: '0.5rem',
           }}
         >
           <input
             id="acceptedPrivacyPolicy"
             type="checkbox"
+            style={{ marginTop: '2px', flexShrink: 0 }}
             {...register('acceptedPrivacyPolicy', { required: true })}
           />
           <label htmlFor="acceptedPrivacyPolicy" style={{ margin: 0, fontSize: '0.9rem' }}>
-            I accept the{' '}
+            I have read the{' '}
             <a
               href="/privacy"
               target="_blank"
               rel="noopener noreferrer"
               style={{ textDecoration: 'underline', color: '#4b4bebff' }}
             >
-              Privacy Policy
+              Privacy Notice
             </a>{' '}
             <span style={{ color: 'red' }}>*</span>
           </label>
         </div>
         {errors.acceptedPrivacyPolicy && (
-          <span className="auth-field-error" style={{ display: 'block', marginBottom: '1rem' }}>
-            You must accept the privacy policy.
+          <span className="auth-field-error" style={{ display: 'block', marginBottom: '0.5rem' }}>
+            Please confirm you have read the Privacy Notice.
           </span>
         )}
+
+        {/* ── Optional: Communications ───────────────────────────────────── */}
+        <div className="auth-section-label" style={{ marginTop: '1.5rem', marginBottom: '0.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
+          Communications <span style={{ fontWeight: 'normal', textTransform: 'none', letterSpacing: 0, opacity: 1 }}>(optional)</span>
+        </div>
+
+        <div
+          className="auth-checkbox-group"
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '0.5rem',
+            marginTop: '0.5rem',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <input
+            id="marketingConsent"
+            type="checkbox"
+            style={{ marginTop: '2px', flexShrink: 0 }}
+            {...register('marketingConsent')}
+          />
+          <div>
+            <label htmlFor="marketingConsent" style={{ margin: 0, fontSize: '0.9rem', display: 'block' }}>
+              Send me product updates and tips
+            </label>
+            <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
+              Occasionally send me emails about new CardMax features and credit card tips.
+              You can unsubscribe at any time in Settings. Account and billing emails are
+              always sent regardless of this setting.
+            </p>
+          </div>
+        </div>
 
         <button type="submit" className="auth-button auth-button--primary" disabled={saving}>
           {saving ? 'Saving…' : 'Save and continue'}
@@ -206,3 +250,4 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
     </div>
   )
 }
+

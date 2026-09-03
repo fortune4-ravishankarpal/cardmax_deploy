@@ -1,0 +1,91 @@
+.policy-update-banner {
+  background: #1e1b4b;
+  color: #e0e7ff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  font-size: 0.875rem;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .banner-text {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      line-height: 1.4;
+
+      .banner-badge {
+        background: #4338ca;
+        color: #c7d2fe;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+      }
+
+      a {
+        color: #93c5fd;
+        text-decoration: underline;
+        font-weight: 500;
+
+        &:hover {
+          color: #bfdbfe;
+        }
+      }
+    }
+
+    .banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .btn-ack {
+        background: #4f46e5;
+        color: #ffffff;
+        border: none;
+        padding: 0.35rem 0.85rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+
+        &:hover:not(:disabled) {
+          background: #4338ca;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+
+      .btn-later {
+        background: transparent;
+        color: #a5b4fc;
+        border: none;
+        padding: 0.35rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+
+        &:hover {
+          color: #ffffff;
+        }
+      }
+    }
+  }
+}

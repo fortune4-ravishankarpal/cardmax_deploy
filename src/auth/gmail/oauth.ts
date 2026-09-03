@@ -25,16 +25,27 @@ const gmailRedirectUri = (): string => {
 
 /** Whether Gmail OAuth is configured (client ID + secret present). */
 export const gmailOAuthEnabled = (): boolean => Boolean(clientId() && clientSecret())
+ 
+export interface GmailConsentIntent {
+  persist_derived: boolean
+}
+
+interface GmailStateRecord {
+  userId: number
+  expiry: number
+  consentIntent?: GmailConsentIntent
+}
 
 /**
  * In-memory state store for CSRF protection during the Gmail OAuth flow.
- * Maps `state` → `{ userId, expiry }`.
+ * Maps `state` → `{ userId, expiry, consentIntent }`.
  *
- * The user ID stored here is tied to the CSRF nonce so the callback
- * can verify that the OAuth response belongs to the same user who
- * initiated the flow.
+ * The user ID and server-side consent choices are tied to the CSRF nonce so
+ * the callback can verify that the OAuth response belongs to the same user who
+ * initiated the flow and finalize the exact consent preferences without
+ * trusting client-controlled parameters.
  */
-const gmailStateStore = new Map<string, { userId: number; expiry: number }>()
+const gmailStateStore = new Map<string, GmailStateRecord>()
 
 export interface GmailOAuthUrlResult {
   url: string
@@ -53,7 +64,10 @@ export interface GmailOAuthUrlResult {
  * is always returned (Google only returns a refresh token on the
  * first consent otherwise).
  */
-export const createGmailOAuthUrl = (userId: number): GmailOAuthUrlResult => {
+export const createGmailOAuthUrl = (
+  userId: number,
+  consentIntent?: GmailConsentIntent,
+): GmailOAuthUrlResult => {
   if (!gmailOAuthEnabled()) {
     throw new AuthorizationError('GMAIL_OAUTH_DISABLED', 'Gmail integration is not configured.', 501)
   }
@@ -61,7 +75,7 @@ export const createGmailOAuthUrl = (userId: number): GmailOAuthUrlResult => {
   const resolvedRedirectUri = gmailRedirectUri()
   const state = randomHex(16)
   const now = Date.now()
-  gmailStateStore.set(state, { userId, expiry: now + GMAIL_OAUTH_STATE_TTL_MS })
+  gmailStateStore.set(state, { userId, expiry: now + GMAIL_OAUTH_STATE_TTL_MS, consentIntent })
 
   const params = new URLSearchParams({
     client_id: clientId(),
@@ -82,8 +96,13 @@ export const createGmailOAuthUrl = (userId: number): GmailOAuthUrlResult => {
  *
  * Throws `AuthorizationError` if the state is missing, expired, or
  * does not match the requesting user.
+ *
+ * Returns any server-side consent intent associated with this state session.
  */
-export const validateGmailState = (state: string, userId: number): void => {
+export const validateGmailState = (
+  state: string,
+  userId: number,
+): GmailConsentIntent | undefined => {
   if (!state) {
     throw new AuthorizationError('INVALID_STATE', 'Missing OAuth state parameter.', 400)
   }
@@ -98,7 +117,9 @@ export const validateGmailState = (state: string, userId: number): void => {
       403,
     )
   }
-    gmailStateStore.delete(state)
+  const consentIntent = record.consentIntent
+  gmailStateStore.delete(state)
+  return consentIntent
 }
 
 /**

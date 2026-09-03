@@ -2,7 +2,7 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 export interface ConsentActionOptions {
-  userId: string
+  userId: string | number
   purpose: 'analyse_inbox' | 'persist_derived' | 'improve_merchants'
   version: string
   source?: string
@@ -12,9 +12,28 @@ export interface ConsentActionOptions {
 
 export class ConsentService {
   /**
+   * Get all consent records for a user
+   */
+  static async getAllConsents(userId: string | number) {
+    const payload = await getPayload({ config: configPromise })
+    const consents = await payload.find({
+      collection: 'consents',
+      where: {
+        user: {
+          equals: userId,
+        },
+      },
+      limit: 100,
+      overrideAccess: true,
+      depth: 0,
+    })
+    return consents.docs
+  }
+
+  /**
    * Check if a user currently has active consent for a given purpose
    */
-  static async hasConsent(userId: string, purpose: string): Promise<boolean> {
+  static async hasConsent(userId: string | number, purpose: string): Promise<boolean> {
     const payload = await getPayload({ config: configPromise })
     
     const consents = await payload.find({
@@ -47,7 +66,7 @@ export class ConsentService {
   /**
    * Get the current consent state for a user and purpose
    */
-  static async getState(userId: string, purpose: string) {
+  static async getState(userId: string | number, purpose: string) {
     const payload = await getPayload({ config: configPromise })
     
     const consents = await payload.find({
@@ -95,32 +114,34 @@ export class ConsentService {
           version: options.version,
           grantedAt: now,
           revokedAt: null,
+          source: options.source,
         }
       })
     } else {
       consentDoc = await payload.create({
         collection: 'consents',
         data: {
-          user: options.userId,
+          user: options.userId as any,
           purpose: options.purpose,
           status: 'granted',
           version: options.version,
           grantedAt: now,
-        }
+          source: options.source,
+        },
       })
     }
 
     await payload.create({
       collection: 'consent-events',
       data: {
-        user: options.userId,
+        user: options.userId as any,
         purpose: options.purpose,
         action: 'grant',
         version: options.version,
         source: options.source,
         ipAddress: options.ipAddress,
         userAgent: options.userAgent,
-      }
+      },
     })
 
     return consentDoc
@@ -144,33 +165,35 @@ export class ConsentService {
           status: 'revoked',
           version: options.version,
           revokedAt: now,
-        }
+          source: options.source,
+        },
       })
     } else {
         // Technically shouldn't happen that they revoke before granting, but just in case
         consentDoc = await payload.create({
             collection: 'consents',
             data: {
-              user: options.userId,
+              user: options.userId as any,
               purpose: options.purpose,
               status: 'revoked',
               version: options.version,
               revokedAt: now,
-            }
+              source: options.source,
+            },
         })
     }
 
     await payload.create({
       collection: 'consent-events',
       data: {
-        user: options.userId,
+        user: options.userId as any,
         purpose: options.purpose,
         action: 'revoke',
         version: options.version,
         source: options.source,
         ipAddress: options.ipAddress,
         userAgent: options.userAgent,
-      }
+      },
     })
 
     return consentDoc

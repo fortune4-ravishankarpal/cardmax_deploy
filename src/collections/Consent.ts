@@ -2,10 +2,11 @@ import { CollectionConfig } from 'payload'
 
 export const Consent: CollectionConfig = {
   slug: 'consents',
+  timestamps: true,
   admin: {
     group: 'Privacy & Settings',
     useAsTitle: 'purpose',
-    defaultColumns: ['user', 'purpose', 'status', 'version', 'grantedAt'],
+    defaultColumns: ['user', 'purpose', 'status', 'version', 'source', 'grantedAt'],
   },
   access: {
     read: ({ req: { user } }) => {
@@ -69,7 +70,14 @@ export const Consent: CollectionConfig = {
     {
       name: 'lastNotifiedAt',
       type: 'date',
-    }
+    },
+    {
+      name: 'source',
+      type: 'text',
+      admin: {
+        description: 'Where this consent record was created or last updated. E.g. "gmail_connect_flow", "settings_page", "legacy_migration", "api".',
+      },
+    },
   ],
   endpoints: [
     {

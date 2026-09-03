@@ -18,6 +18,7 @@ import {
 } from '@/auth/endpoints'
 import {
   gmailConnectHandler,
+  gmailInitiateConsentHandler,
   gmailCallbackHandler,
   gmailStatusHandler,
   gmailDisconnectHandler,
@@ -126,6 +127,67 @@ export const Users: CollectionConfig = {
       required: true,
       admin: { position: 'sidebar' },
     },
+    // ── Legal acceptance audit fields ────────────────────────────────────────
+    // These complement the legacy boolean fields above with proper versioning
+    // and timestamps.  Values are set on profile completion and re-acknowledgement.
+    // 'legacy' sentinel = user accepted before versioning was introduced;
+    // the exact timestamp is unknown and must NOT be fabricated.
+    {
+      name: 'tosVersion',
+      type: 'text',
+      admin: {
+        position: 'sidebar',
+        description: 'Version of Terms of Service accepted. "legacy" = accepted before versioning; null = not yet accepted.',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'acceptedTermsAt',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        description: 'When the Terms of Service were accepted. Null for legacy or not-yet-accepted.',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'privacyNoticeVersion',
+      type: 'text',
+      admin: {
+        position: 'sidebar',
+        description: 'Version of Privacy Notice acknowledged. "legacy" = acknowledged before versioning.',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'acknowledgedPrivacyAt',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        description: 'When the Privacy Notice was acknowledged. Null for legacy or not-yet-acknowledged.',
+        readOnly: true,
+      },
+    },
+    // ── Optional processing preferences ──────────────────────────────────────
+    {
+      name: 'marketingConsent',
+      type: 'checkbox',
+      label: 'Opted in to marketing emails',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Whether the user has opted in to promotional/product-update emails. Default false. Does not affect transactional/system emails.',
+      },
+    },
+    {
+      name: 'marketingConsentAt',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        description: 'When the marketing consent preference was last changed.',
+        readOnly: true,
+      },
+    },
   ],
   endpoints: [
     {
@@ -162,6 +224,11 @@ export const Users: CollectionConfig = {
       path: '/gmail/connect',
       method: 'get',
       handler: gmailConnectHandler,
+    },
+    {
+      path: '/gmail/initiate-consent',
+      method: 'post',
+      handler: gmailInitiateConsentHandler,
     },
     {
       path: '/gmail/callback',
