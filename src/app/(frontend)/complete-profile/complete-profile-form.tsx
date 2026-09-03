@@ -147,7 +147,16 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
             {...register('acceptedTermsAndConditions', { required: true })}
           />
           <label htmlFor="acceptedTermsAndConditions" style={{ margin: 0, fontSize: '0.9rem' }}>
-            I accept the Terms and Conditions <span style={{ color: 'red' }}>*</span>
+            I accept the{' '}
+            <a
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: 'underline', color: '#4b4bebff' }}
+            >
+              Terms and Conditions
+            </a>{' '}
+            <span style={{ color: 'red' }}>*</span>
           </label>
         </div>
         {errors.acceptedTermsAndConditions && (
@@ -172,7 +181,16 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
             {...register('acceptedPrivacyPolicy', { required: true })}
           />
           <label htmlFor="acceptedPrivacyPolicy" style={{ margin: 0, fontSize: '0.9rem' }}>
-            I accept the Privacy Policy <span style={{ color: 'red' }}>*</span>
+            I accept the{' '}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: 'underline', color: '#4b4bebff' }}
+            >
+              Privacy Policy
+            </a>{' '}
+            <span style={{ color: 'red' }}>*</span>
           </label>
         </div>
         {errors.acceptedPrivacyPolicy && (
