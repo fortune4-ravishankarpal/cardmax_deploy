@@ -81,7 +81,8 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       type: 'tab',
       icon: 'Shield',
       label: { en: 'Privacy & Settings' },
-      collections: ['consents', 'consent-events', 'feature-flags'],
+      // collections: ['consents', 'consent-events', 'feature-flags'],
+      collections: ['consent-events', 'feature-flags'],
       access: SideBarAccessViewChecker,
     },
     {

@@ -58,6 +58,89 @@ export const consentEndpoints: Endpoint[] = [
     },
   },
   {
+    path: '/consent/required-onboarding',
+    method: 'post',
+    handler: async (req) => {
+      try {
+        if (!req.user || req.user.collection !== 'users') {
+          return Response.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const body = req.json ? await req.json() : (req as any).body
+        const { acceptTerms, acknowledgePrivacy } = body || {}
+
+        if (!acceptTerms || !acknowledgePrivacy) {
+          return Response.json(
+            { error: 'You must accept the Terms of Service and acknowledge the Privacy Notice to continue.' },
+            { status: 400 },
+          )
+        }
+
+        const now = new Date().toISOString()
+        const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || undefined
+        const userAgent = req.headers.get('user-agent') || undefined
+
+        // 1. Update user record with current versions and timestamps
+        const updatedUser = await req.payload.update({
+          collection: 'users',
+          id: req.user.id,
+          data: {
+            acceptedTermsAndConditions: true,
+            tosVersion: CURRENT_TOS_VERSION,
+            acceptedTermsAt: now,
+            acceptedPrivacyPolicy: true,
+            privacyNoticeVersion: CURRENT_PRIVACY_VERSION,
+            acknowledgedPrivacyAt: now,
+          },
+          overrideAccess: true,
+          depth: 0,
+        })
+
+        // 2. Create immutable audit events in consent-events
+        await req.payload.create({
+          collection: 'consent-events',
+          data: {
+            user: req.user.id as any,
+            purpose: 'terms_of_service',
+            action: 'grant',
+            version: CURRENT_TOS_VERSION,
+            source: 'consent_onboarding_screen',
+            ipAddress: ip,
+            userAgent,
+          },
+          overrideAccess: true,
+        })
+
+        await req.payload.create({
+          collection: 'consent-events',
+          data: {
+            user: req.user.id as any,
+            purpose: 'privacy_notice',
+            action: 'grant',
+            version: CURRENT_PRIVACY_VERSION,
+            source: 'consent_onboarding_screen',
+            ipAddress: ip,
+            userAgent,
+          },
+          overrideAccess: true,
+        })
+
+        const isComplete = Boolean(
+          (updatedUser as any).profileCompleted ||
+          ((updatedUser as any).name && ((updatedUser as any).email || ((updatedUser as any) as any).phone)),
+        )
+
+        return Response.json({
+          success: true,
+          nextUrl: isComplete ? '/' : '/complete-profile',
+        })
+      } catch (error) {
+        req.payload.logger.error({ msg: 'Error recording required onboarding consent', error })
+        return Response.json({ error: 'Internal Server Error' }, { status: 500 })
+      }
+    },
+  },
+  {
     path: '/consent/acknowledge-policy',
     method: 'post',
     handler: async (req) => {

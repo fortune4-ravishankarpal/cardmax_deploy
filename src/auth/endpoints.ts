@@ -14,6 +14,7 @@ import {
   authorizeGoogleOAuth,
 } from '@/auth/google/oauth'
 import type { User } from '@/payload-types'
+import { hasRequiredConsent } from '@/auth/guard'
 
 const json = (data: unknown, status = 200, cookie?: string): Response => {
   const headers = new Headers({ 'Content-Type': 'application/json' })
@@ -79,6 +80,7 @@ export const verifyOtpHandler = async (req: PayloadRequest): Promise<Response> =
         email: user.email,
         name: user.name || null,
         profileComplete: isProfileComplete(user as User),
+        consentRequired: !hasRequiredConsent(user as User),
       },
       200,
       buildSessionCookie(session.token!),
@@ -112,16 +114,10 @@ export const logoutHandler = async (_req: PayloadRequest): Promise<Response> => 
   return json({ ok: true }, 200, clearSessionCookie())
 }
 
-const missingProfile = (user: unknown): string | null => {
-  const u = user as User
-  if (!u.profileCompleted && !(u.name && (u.email || u.phone))) return '/complete-profile'
-  return null
-}
-
-const normalizeNextUrl = (next: string | null, profilePath: string | null): string => {
-  if (profilePath) return profilePath
-  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/'
-  return next
+const resolvePostAuthRedirect = (user: User): string => {
+  if (!hasRequiredConsent(user)) return '/consent-onboarding'
+  if (!user.profileCompleted && !(user.name && (user.email || user.phone))) return '/complete-profile'
+  return '/'
 }
 
 const createRedirect = (location: string, cookie?: string): Response => {
@@ -155,7 +151,7 @@ export const googleCallbackHandler = async (req: PayloadRequest): Promise<Respon
     const { user } = await findOrCreateByGoogleProfile(req.payload, profile)
     const session = await issueSession(req.payload, user as User)
     const cookie = buildSessionCookie(session.token!)
-    return createRedirect(normalizeNextUrl('/', missingProfile(user)), cookie)
+    return createRedirect(resolvePostAuthRedirect(user as User), cookie)
   } catch (e) {
     const err = e as AuthorizationError
     const reason = encodeURIComponent((err && err.message) || 'Google sign-in failed.')

@@ -12,8 +12,6 @@ type FormValues = {
   phone: string
   income: string
   employmentType: string
-  acceptedTermsAndConditions: boolean
-  acceptedPrivacyPolicy: boolean
   marketingConsent: boolean
 }
 
@@ -39,8 +37,6 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
       phone: user.phone || '',
       income: user.income != null ? String(user.income) : '',
       employmentType: user.employmentType || '',
-      acceptedTermsAndConditions: false,
-      acceptedPrivacyPolicy: false,
       marketingConsent: false,   // OFF by default — explicit opt-in required
     },
   })
@@ -54,8 +50,6 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
     if (values.income.trim()) payload.income = values.income.trim()
     if (values.employmentType) payload.employmentType = values.employmentType
 
-    payload.acceptedTermsAndConditions = values.acceptedTermsAndConditions
-    payload.acceptedPrivacyPolicy = values.acceptedPrivacyPolicy
     // Marketing consent: passed as explicit boolean (false if unchecked)
     payload.marketingConsent = values.marketingConsent === true
 
@@ -140,75 +134,6 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
             </option>
           ))}
         </select>
-
-        {/* ── Legal ─────────────────────────────────────────────────────── */}
-        <div className="auth-section-label" style={{ marginTop: '1.5rem', marginBottom: '0.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
-          Legal
-        </div>
-
-        <div
-          className="auth-checkbox-group"
-          style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginTop: '0.5rem' }}
-        >
-          <input
-            id="acceptedTermsAndConditions"
-            type="checkbox"
-            style={{ marginTop: '2px', flexShrink: 0 }}
-            {...register('acceptedTermsAndConditions', { required: true })}
-          />
-          <label htmlFor="acceptedTermsAndConditions" style={{ margin: 0, fontSize: '0.9rem' }}>
-            I have read and accept the{' '}
-            <a
-              href="/terms-and-conditions"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'underline', color: '#4b4bebff' }}
-            >
-              Terms of Service
-            </a>{' '}
-            <span style={{ color: 'red' }}>*</span>
-          </label>
-        </div>
-        {errors.acceptedTermsAndConditions && (
-          <span className="auth-field-error" style={{ display: 'block' }}>
-            You must accept the Terms of Service to continue.
-          </span>
-        )}
-
-        <div
-          className="auth-checkbox-group"
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '0.5rem',
-            marginTop: '0.75rem',
-            marginBottom: '0.5rem',
-          }}
-        >
-          <input
-            id="acceptedPrivacyPolicy"
-            type="checkbox"
-            style={{ marginTop: '2px', flexShrink: 0 }}
-            {...register('acceptedPrivacyPolicy', { required: true })}
-          />
-          <label htmlFor="acceptedPrivacyPolicy" style={{ margin: 0, fontSize: '0.9rem' }}>
-            I have read the{' '}
-            <a
-              href="/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'underline', color: '#4b4bebff' }}
-            >
-              Privacy Notice
-            </a>{' '}
-            <span style={{ color: 'red' }}>*</span>
-          </label>
-        </div>
-        {errors.acceptedPrivacyPolicy && (
-          <span className="auth-field-error" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Please confirm you have read the Privacy Notice.
-          </span>
-        )}
 
         {/* ── Optional: Communications ───────────────────────────────────── */}
         <div className="auth-section-label" style={{ marginTop: '1.5rem', marginBottom: '0.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>

@@ -123,7 +123,11 @@ export const LoginForm = () => {
       return
     }
 
-    window.location.href = data.profileComplete ? '/' : '/complete-profile'
+    if (data.consentRequired) {
+      window.location.href = '/consent-onboarding'
+    } else {
+      window.location.href = data.profileComplete ? '/' : '/complete-profile'
+    }
   }
 
   return (
