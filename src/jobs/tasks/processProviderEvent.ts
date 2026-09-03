@@ -50,6 +50,34 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
                 syncResult = await SubscriptionService.syncSubscription(subId)
              }
          }
+         
+         // Payment success or failure notification
+         if (payloadObj.event === 'payment.captured' || payloadObj.event === 'payment.failed') {
+             // Look for subscription ID on the payment entity to link to a user
+             const subId = payloadObj.payload?.payment?.entity?.subscription_id || payloadObj.payload?.payment?.entity?.notes?.subscription_id;
+             if (subId) {
+                 const subs = await req.payload.find({
+                     collection: 'subscriptions',
+                     where: { providerSubscriptionId: { equals: subId } },
+                     limit: 1
+                 });
+                 if (subs.docs.length > 0) {
+                     const sub = subs.docs[0];
+                     const userId = typeof sub.user === 'string' ? sub.user : (sub.user as any)?.id;
+                     const statusText = payloadObj.event === 'payment.captured' ? 'succeeded' : 'failed';
+                     if (userId) {
+                         await req.payload.jobs.queue({
+                             task: 'sendNotification',
+                             input: {
+                                 userId,
+                                 subject: `Payment ${statusText} for your CardMax Subscription`,
+                                 html: `<p>Your recent subscription payment has ${statusText}.</p>`
+                             }
+                         });
+                     }
+                 }
+             }
+         }
       }
 
       await req.payload.update({

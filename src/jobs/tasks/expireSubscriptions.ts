@@ -46,6 +46,19 @@ export const expireSubscriptionsTask: TaskConfig<'expireSubscriptions'> = {
                   notes: 'Grace period expired automatically by job'
               }
           })
+          
+          const userId = typeof sub.user === 'string' ? sub.user : (sub.user as any)?.id;
+          if (userId) {
+              await payload.jobs.queue({
+                  task: 'sendNotification',
+                  input: {
+                      userId,
+                      subject: 'Your CardMax Subscription has expired',
+                      html: '<p>Your grace period has ended and your subscription is now expired. Please renew to keep your Max Pro benefits.</p>'
+                  }
+              });
+          }
+          
           count++
       }
 

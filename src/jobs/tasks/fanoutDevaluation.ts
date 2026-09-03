@@ -11,14 +11,33 @@ export const fanoutDevaluationTask: TaskConfig<'fanoutDevaluation'> = {
   ],
   handler: async ({ input, req }) => {
     try {
-      // Phase 2B Placeholder
-      // This will find all UserCards linked to this CreditCard,
-      // and generate MaxProEvent 'devaluation_detected' for each affected user
+      // Find all UserCards linked to this CreditCard
+      const affectedUserCards = await req.payload.find({
+          collection: 'user-cards',
+          where: { card: { equals: input.creditCardId } },
+          limit: 1000 // In a production app, we would paginate this
+      });
+      
+      let queuedCount = 0;
+      for (const userCard of affectedUserCards.docs) {
+          const userId = typeof userCard.user === 'string' ? userCard.user : (userCard.user as any)?.id;
+          if (userId) {
+              await req.payload.jobs.queue({
+                  task: 'sendNotification',
+                  input: {
+                      userId,
+                      subject: 'Alert: Credit Card Devaluation Detected',
+                      html: '<p>We detected a devaluation on one of your saved credit cards. Check your CardMax dashboard for details.</p>'
+                  }
+              });
+              queuedCount++;
+          }
+      }
       
       return {
         output: {
           success: true,
-          notes: 'Stubbed: implement fan-out in Phase 2B'
+          notes: `Fan-out complete. Queued ${queuedCount} notifications.`
         },
       }
     } catch (e: any) {
