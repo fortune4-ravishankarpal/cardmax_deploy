@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
     try {
       const dbEvent = await payload.create({
         collection: 'provider-events',
+        overrideAccess: true,
         data: {
           provider: 'razorpay',
           providerEventId: eventId,
@@ -53,8 +54,8 @@ export async function POST(req: NextRequest) {
       
       throw dbError
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Webhook error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error', details: error.message || error.toString() }, { status: 500 })
   }
 }

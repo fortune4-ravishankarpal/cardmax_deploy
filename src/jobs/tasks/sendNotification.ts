@@ -24,6 +24,14 @@ export const sendNotificationTask: TaskConfig<'sendNotification'> = {
     try {
       await NotificationService.sendEmailNotification(input.userId, input.subject, input.html)
       
+      // Also create an in-app notification so it appears in the database and Admin UI
+      await NotificationService.createNotification({
+          userId: input.userId,
+          type: 'payment', // using payment since these are usually payment/subscription related
+          title: input.subject,
+          message: input.html
+      })
+      
       return {
         output: {
           success: true,
