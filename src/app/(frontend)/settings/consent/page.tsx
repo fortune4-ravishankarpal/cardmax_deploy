@@ -350,7 +350,7 @@ export default function ConsentPage() {
                   ? `Version ${summary.legalVersions.privacyNoticeVersion}`
                   : 'Not recorded'}
               </span>
-              <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+              <Link href="/privacy-and-policy" target="_blank" rel="noopener noreferrer">
                 View Privacy Notice
               </Link>
             </div>

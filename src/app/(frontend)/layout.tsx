@@ -16,9 +16,7 @@ const EXEMPT_PATHS = [
   '/login',
   '/logout',
   '/consent-onboarding',
-  '/terms',
   '/terms-and-conditions',
-  '/privacy',
   '/privacy-and-policy',
 ]
 

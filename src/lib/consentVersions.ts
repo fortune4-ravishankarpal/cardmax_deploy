@@ -15,7 +15,7 @@
  * IMPORTANT: these values are placeholder strings until real legal
  * documents are approved and published.  Do NOT promote to a real
  * version number until the corresponding page (/terms-and-conditions
- * and /privacy) contains real, legally reviewed content.
+ * and /privacy-and-policy) contains real, legally reviewed content.
  */
 
 /** Current Terms of Service version. */

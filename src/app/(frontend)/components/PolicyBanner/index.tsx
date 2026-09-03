@@ -69,7 +69,7 @@ export const PolicyBanner: React.FC = () => {
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+            <Link href="/privacy-and-policy" target="_blank" rel="noopener noreferrer">
               Privacy Notice
             </Link>
             . Please review what has changed.

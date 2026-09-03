@@ -116,7 +116,7 @@ export const ConsentOnboardingForm: React.FC = () => {
             />
             <label htmlFor="acknowledgePrivacy">
               I have read and acknowledge the{' '}
-              <Link href="/privacy" target="_blank" rel="noopener noreferrer">
+              <Link href="/privacy-and-policy" target="_blank" rel="noopener noreferrer">
                 Privacy Notice
               </Link>
               <span className="required-star">*</span>
