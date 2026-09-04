@@ -44,7 +44,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
     employmentType: initialUser.employmentType || '',
   })
 
-  const [formErrors, setFormErrors] = useState<{ name?: string; phone?: string; income?: string }>({})
+  const [formErrors, setFormErrors] = useState<{ name?: string; phone?: string; income?: string }>(
+    {},
+  )
 
   // Format currency
   const formatCurrency = (val: number | null) => {
@@ -158,7 +160,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
 
       setUser((prev) => ({ ...prev, marketingConsent: nextVal }))
       setAlert({
-        text: nextVal ? 'Subscribed to product updates & reward tips.' : 'Unsubscribed from marketing communications.',
+        text: nextVal
+          ? 'Subscribed to product updates & reward tips.'
+          : 'Unsubscribed from marketing communications.',
         type: 'success',
       })
     } catch (err: any) {
@@ -218,22 +222,46 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                     {user.accountStatus || 'Active'}
                   </span>
                   <span className="badge provider-badge">
-                    {user.authenticationProvider === 'google' ? 'Google Account' : 'Verified Member'}
+                    {user.authenticationProvider === 'google'
+                      ? 'Google Account'
+                      : 'Verified Member'}
                   </span>
                 </div>
                 <div className="contact-info">
                   {user.email && (
                     <span>
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <svg
+                        width="15"
+                        height="15"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                        />
                       </svg>
                       {user.email}
                     </span>
                   )}
                   {user.phone && (
                     <span>
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <svg
+                        width="15"
+                        height="15"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                        />
                       </svg>
                       {user.phone}
                     </span>
@@ -250,23 +278,41 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                   className="btn-hero primary"
                   onClick={handleStartEdit}
                 >
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <svg
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
                   </svg>
                   Edit Profile
                 </button>
               ) : (
-                <button
-                  type="button"
-                  className="btn-hero secondary"
-                  onClick={handleCancelEdit}
-                >
+                <button type="button" className="btn-hero secondary" onClick={handleCancelEdit}>
                   Cancel Edit
                 </button>
               )}
               <Link href="/settings/consent" className="btn-hero secondary">
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <svg
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
                 </svg>
                 Privacy & Consent
               </Link>
@@ -280,9 +326,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
             <div className="stat-content">
               <div className="stat-label">Wallet Cards</div>
               <div className="stat-value">{user.stats?.activeCardsCount ?? 0} Active</div>
-              <div className="stat-link">
-                Manage wallet &rarr;
-              </div>
+              <div className="stat-link">Manage wallet &rarr;</div>
             </div>
             <div className="stat-icon cards" aria-hidden="true">
               💳
@@ -295,9 +339,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
               <div className="stat-value">
                 {user.stats?.subscriptionStatus === 'active' ? 'CardMax Pro' : 'Free Tier'}
               </div>
-              <div className="stat-link">
-                View benefits &rarr;
-              </div>
+              <div className="stat-link">View benefits &rarr;</div>
             </div>
             <div className="stat-icon plan" aria-hidden="true">
               ⭐
@@ -308,9 +350,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
             <div className="stat-content">
               <div className="stat-label">Consent & Security</div>
               <div className="stat-value">Compliant</div>
-              <div className="stat-link">
-                Review permissions &rarr;
-              </div>
+              <div className="stat-link">Review permissions &rarr;</div>
             </div>
             <div className="stat-icon security" aria-hidden="true">
               🛡️
@@ -365,7 +405,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                   <div className="detail-item">
                     <span className="detail-label">Monthly Income</span>
                     <span className={`detail-value ${user.income == null ? 'empty' : ''}`}>
-                      {user.income != null ? `${formatCurrency(user.income)} / month` : 'Not specified'}
+                      {user.income != null
+                        ? `${formatCurrency(user.income)} / month`
+                        : 'Not specified'}
                     </span>
                   </div>
 
@@ -379,7 +421,13 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                   <div className="detail-item">
                     <span className="detail-label">Member Since</span>
                     <span className="detail-value">
-                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recent'}
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })
+                        : 'Recent'}
                     </span>
                   </div>
                 </div>
@@ -409,7 +457,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                         disabled
                         title="Email is locked to your authenticated identity."
                       />
-                      <span className="field-help">Locked to your authenticated account credentials.</span>
+                      <span className="field-help">
+                        Locked to your authenticated account credentials.
+                      </span>
                     </div>
 
                     <div className="form-group">
@@ -438,8 +488,12 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                           placeholder="75000"
                         />
                       </div>
-                      {formErrors.income && <span className="field-error">{formErrors.income}</span>}
-                      <span className="field-help">Used to tailor reward thresholds and card recommendations.</span>
+                      {formErrors.income && (
+                        <span className="field-error">{formErrors.income}</span>
+                      )}
+                      <span className="field-help">
+                        Used to tailor reward thresholds and card recommendations.
+                      </span>
                     </div>
 
                     <div className="form-group">
@@ -447,7 +501,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                       <select
                         id="employment-select"
                         value={formData.employmentType}
-                        onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, employmentType: e.target.value })
+                        }
                       >
                         <option value="">Select employment status...</option>
                         {EMPLOYMENT_TYPES.map((type) => (
@@ -485,51 +541,6 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                   </div>
                 </form>
               )}
-            </article>
-
-            {/* Account & Security Information */}
-            <article className="profile-card">
-              <div className="card-header">
-                <div className="card-title-group">
-                  <h2>Account Credentials & Security</h2>
-                  <p>Authentication provider and security status.</p>
-                </div>
-              </div>
-
-              <div className="details-grid">
-                <div className="detail-item">
-                  <span className="detail-label">Authentication Method</span>
-                  <span className="detail-value" style={{ textTransform: 'capitalize' }}>
-                    {user.authenticationProvider === 'google'
-                      ? 'Google OAuth 2.0'
-                      : user.authenticationProvider === 'phone'
-                      ? 'SMS One-Time Password'
-                      : 'Email Authentication'}
-                  </span>
-                  <span className="detail-hint">Secured with session cookies</span>
-                </div>
-
-                <div className="detail-item">
-                  <span className="detail-label">Account Identifier</span>
-                  <span className="detail-value" style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>
-                    USER-{user.id}
-                  </span>
-                  <span className="detail-hint">Internal CardMax ID</span>
-                </div>
-
-                <div className="detail-item">
-                  <span className="detail-label">Profile Completion</span>
-                  <span className="detail-value">
-                    {user.profileCompleted ? '✓ 100% Completed' : 'Pending requirements'}
-                  </span>
-                </div>
-
-                <div className="detail-item">
-                  <span className="detail-label">Terms & Privacy</span>
-                  <span className="detail-value">Accepted & Versioned</span>
-                  <span className="detail-hint">Audit logs stored</span>
-                </div>
-              </div>
             </article>
           </div>
 
@@ -589,7 +600,9 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
               <div className="preference-row">
                 <div className="pref-text">
                   <h3>Product Updates & Tips</h3>
-                  <p>Receive occasional updates about new features and rewards optimization advice.</p>
+                  <p>
+                    Receive occasional updates about new features and rewards optimization advice.
+                  </p>
                 </div>
                 <label className="toggle-switch">
                   <input
@@ -619,8 +632,19 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                 onClick={handleLogout}
                 disabled={loggingOut}
               >
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <svg
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
                 </svg>
                 {loggingOut ? 'Signing out…' : 'Sign Out of Account'}
               </button>
