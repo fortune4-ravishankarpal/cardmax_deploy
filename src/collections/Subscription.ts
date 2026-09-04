@@ -6,6 +6,7 @@ export const Subscription: CollectionConfig = {
     group: 'Subscription & Max Pro',
     useAsTitle: 'providerSubscriptionId',
     defaultColumns: ['user', 'plan', 'status', 'currentPeriodEnd'],
+    description: 'This collection manages a user\'s active or past subscription details (likely integrating with a payment provider like Stripe or RevenueCat).',
   },
   access: {
     read: ({ req: { user } }) => {
@@ -29,12 +30,18 @@ export const Subscription: CollectionConfig = {
       relationTo: 'users',
       required: true,
       index: true,
+      admin: {
+        description: 'The user who owns this subscription.',
+      }
     },
     {
       name: 'plan',
       type: 'relationship',
       relationTo: 'subscription-plans',
       required: true,
+      admin: {
+        description: 'The specific subscription plan they are subscribed to (links to a SubscriptionPlan collection).',
+      }
     },
     {
       name: 'providerSubscriptionId',
@@ -42,6 +49,9 @@ export const Subscription: CollectionConfig = {
       required: true,
       unique: true,
       index: true,
+      admin: {
+        description: 'The unique ID given by the payment provider (e.g., sub_12345 in Stripe). Used to map our database to the provider.',
+      }
     },
     {
       name: 'status',
@@ -59,41 +69,65 @@ export const Subscription: CollectionConfig = {
       ],
       required: true,
       index: true,
+      admin: {
+        description: 'The current state of the subscription. trialing, active, past_due, canceled, expired, halted, pending, created, authenticated.',
+      }
     },
     {
       name: 'currentPeriodStart',
       type: 'date',
+      admin: {
+        description: 'The start date of the current billing cycle. (e.g., July 1st to August 1st).',
+      }
     },
     {
       name: 'currentPeriodEnd',
       type: 'date',
+      admin: {
+        description: 'The end date of the current billing cycle. (e.g., July 1st to August 1st).',
+      }
     },
     {
       name: 'cancelAtPeriodEnd',
       type: 'checkbox',
       defaultValue: false,
+      admin: {
+        description: 'A boolean (true/false) indicating if the user has requested to cancel their subscription, but it should remain active until the currentPeriodEnd is reached.',
+      }
     },
     {
       name: 'canceledAt',
       type: 'date',
+      admin: {
+        description: 'The exact date/time the user hit the cancel button.',
+      }
     },
     {
       name: 'endedAt',
       type: 'date',
+      admin: {
+        description: 'The exact date/time the subscription completely expired and they lost access.',
+      }
     },
     {
       name: 'gracePeriodStartedAt',
       type: 'date',
+      admin: {
+        description: 'If a payment fails, the subscription might enter a "past due" state where they still get access for a few days to fix their payment method. These dates track when this leniency period starts.',
+      }
     },
     {
       name: 'gracePeriodEndsAt',
       type: 'date',
+      admin: {
+        description: 'These dates track when this leniency period strictly cuts them off.',
+      }
     },
     {
       name: 'providerCustomerId',
       type: 'text',
       admin: {
-        description: 'Customer ID returned from the provider',
+        description: 'The ID of the customer in the payment provider\'s system (e.g., cus_67890 in Stripe).',
       }
     }
   ],

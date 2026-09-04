@@ -6,6 +6,7 @@ export const FeatureFlag: CollectionConfig = {
     group: 'Privacy & Settings',
     useAsTitle: 'name',
     defaultColumns: ['name', 'key', 'enabled', 'updatedAt'],
+    description: 'Feature flags allow you to turn parts of the app on or off instantly without deploying new code.',
   },
   access: {
     read: () => true,
@@ -18,6 +19,9 @@ export const FeatureFlag: CollectionConfig = {
       name: 'name',
       type: 'text',
       required: true,
+      admin: {
+        description: 'A human-readable name (e.g., "Max Pro Trial Enabled").',
+      }
     },
     {
       name: 'key',
@@ -26,7 +30,7 @@ export const FeatureFlag: CollectionConfig = {
       unique: true,
       index: true,
       admin: {
-        description: 'Unique identifier used in code (e.g. max_pro_active)',
+        description: 'The unique variable name used in the codebase to check if the feature is on (e.g., max_pro_active).',
       }
     },
     {
@@ -34,12 +38,15 @@ export const FeatureFlag: CollectionConfig = {
       type: 'checkbox',
       defaultValue: false,
       admin: {
-        description: 'Whether this feature is globally enabled',
+        description: 'A checkbox. If true, the feature is visible/active globally. If false, it\'s hidden.',
       },
     },
     {
       name: 'description',
       type: 'textarea',
+      admin: {
+        description: 'Notes for the admin team about what this flag actually does.',
+      }
     },
   ],
 }

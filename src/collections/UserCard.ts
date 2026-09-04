@@ -6,6 +6,7 @@ export const UserCard: CollectionConfig = {
     group: 'Wallets & Users',
     useAsTitle: 'displayName',
     defaultColumns: ['user', 'card', 'status', 'creditLimit', 'createdAt'],
+    description: 'This collection links the global database of Credit Cards (the CreditCard collection) to specific users, turning them into "Wallets".',
   },
   access: {
     read: ({ req: { user } }) => {
@@ -44,6 +45,9 @@ export const UserCard: CollectionConfig = {
       relationTo: 'users',
       required: true,
       index: true,
+      admin: {
+        description: 'The user who owns this specific wallet entry.',
+      }
     },
     {
       name: 'card',
@@ -51,6 +55,9 @@ export const UserCard: CollectionConfig = {
       relationTo: 'CreditCard',
       required: true,
       index: true,
+      admin: {
+        description: 'A link to the master CreditCard collection (e.g., Chase Sapphire Reserve).',
+      }
     },
     {
       name: 'displayName',
@@ -70,30 +77,48 @@ export const UserCard: CollectionConfig = {
       required: true,
       defaultValue: 'active',
       index: true,
+      admin: {
+        description: 'Whether the card is currently Active, Deactivated (maybe they lost it), or Closed (canceled the account).',
+      }
     },
     {
       name: 'creditLimit',
       type: 'number',
+      admin: {
+        description: 'The user\'s specific credit limit on this card.',
+      }
     },
     {
       name: 'billingCycleDay',
       type: 'number',
       min: 1,
       max: 31,
+      admin: {
+        description: 'The day of the month their billing cycle usually resets (1-31).',
+      }
     },
     {
       name: 'statementDay',
       type: 'number',
       min: 1,
       max: 31,
+      admin: {
+        description: 'The day of the month their statement is generated.',
+      }
     },
     {
       name: 'openedAt',
       type: 'date',
+      admin: {
+        description: 'When the user originally opened this credit card account.',
+      }
     },
     {
       name: 'closedAt',
       type: 'date',
+      admin: {
+        description: 'When the user closed this credit card account.',
+      }
     }
   ],
   endpoints: [
