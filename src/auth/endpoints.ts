@@ -122,7 +122,7 @@ export const logoutHandler = async (_req: PayloadRequest): Promise<Response> => 
 const resolvePostAuthRedirect = (user: User): string => {
   if (!hasRequiredConsent(user)) return '/consent-onboarding'
   if (!user.profileCompleted && !(user.name && (user.email || user.phone))) return '/complete-profile'
-  return '/'
+  return '/profile'
 }
 
 const createRedirect = (location: string, cookie?: string): Response => {

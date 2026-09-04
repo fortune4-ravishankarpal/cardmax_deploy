@@ -132,7 +132,7 @@ export const consentEndpoints: Endpoint[] = [
 
         return Response.json({
           success: true,
-          nextUrl: isComplete ? '/' : '/complete-profile',
+          nextUrl: isComplete ? '/profile' : '/complete-profile',
         })
       } catch (error) {
         req.payload.logger.error({ msg: 'Error recording required onboarding consent', error })

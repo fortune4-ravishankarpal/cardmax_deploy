@@ -34,7 +34,7 @@ export const ConsentOnboardingForm: React.FC = () => {
       }
 
       // Navigate to destination (dashboard or complete profile)
-      window.location.href = data.nextUrl || '/'
+      window.location.href = data.nextUrl || '/profile'
     } catch {
       setError('Network error. Please try again.')
       setSubmitting(false)

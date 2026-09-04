@@ -61,7 +61,7 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
       return
     }
 
-    window.location.href = '/'
+    window.location.href = '/profile'
   }
 
   return (

@@ -126,7 +126,7 @@ export const LoginForm = () => {
     if (data.consentRequired) {
       window.location.href = '/consent-onboarding'
     } else {
-      window.location.href = data.profileComplete ? '/' : '/complete-profile'
+      window.location.href = data.profileComplete ? '/profile' : '/complete-profile'
     }
   }
 
