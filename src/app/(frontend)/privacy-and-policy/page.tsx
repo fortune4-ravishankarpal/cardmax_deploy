@@ -1,17 +1,42 @@
 export default function PrivacyPolicy() {
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '40px 20px', fontFamily: 'sans-serif' }}>
+    <div
+      style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '40px 20px',
+        fontFamily: 'sans-serif',
+      }}
+    >
       <h1 style={{ marginBottom: '20px' }}>Privacy Policy</h1>
       <p style={{ lineHeight: '1.6', marginBottom: '20px' }}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus. Mauris iaculis porttitor posuere. Praesent id metus massa, ut blandit odio. Proin quis tortor orci.
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+        been the industry's standard dummy text ever since 1966, when designers at Letraset and
+        James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero
+        translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has
+        survived not only many decades, but also the leap into electronic typesetting, remaining
+        essentially unchanged. It was popularised thanks to these sheets and more recently with
+        desktop publishing software like Aldus PageMaker and Microsoft Word including versions of
+        Lorem Ipsum.
       </p>
       <h2 style={{ marginTop: '30px', marginBottom: '15px' }}>Data Collection</h2>
       <p style={{ lineHeight: '1.6', marginBottom: '20px' }}>
-        Etiam pellentesque mauris ut lectus nunc, vitae commodo sapien aliquet id. Maecenas ac mi dictum, auctor dolor at, egestas tortor. Sed eget velit iaculis, tempor orci quis, venenatis odio. Ut id ex vitae eros gravida cursus eget a ligula. Suspendisse at enim quis ante dictum dictum eu sit amet nisl. Proin ac nibh vel urna vulputate consectetur id fermentum ipsum.
+        It is a long established fact that a reader will be distracted by the readable content of a
+        page when looking at its layout. The point of using Lorem Ipsum is that it has a
+        more-or-less normal distribution of letters, as opposed to using 'Content here, content
+        here', making it look like readable English. Many desktop publishing packages and web page
+        editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will
+        uncover many web sites still in their infancy.
       </p>
       <h2 style={{ marginTop: '30px', marginBottom: '15px' }}>Data Usage</h2>
       <p style={{ lineHeight: '1.6', marginBottom: '20px' }}>
-        Fusce vehicula dolor arcu, sit amet blandit dolor mollis nec. Donec viverra eleifend lacus, vitae ullamcorper metus. Sed sollicitudin ipsum quis nunc sollicitudin ultrices. Donec euismod scelerisque ligula. Maecenas eu varius risus, eu aliquet arcu. Curabitur dictum enim dui.
+        Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece
+        of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock,
+        a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure
+        Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the
+        word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from
+        sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and
+        Evil) by Cicero, written in 45 BC.
       </p>
     </div>
   )
