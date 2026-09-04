@@ -420,7 +420,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
 
                   <div className="detail-item">
                     <span className="detail-label">Member Since</span>
-                    <span className="detail-value">
+                    <span className="detail-value" suppressHydrationWarning>
                       {user.createdAt
                         ? new Date(user.createdAt).toLocaleDateString(undefined, {
                             year: 'numeric',
