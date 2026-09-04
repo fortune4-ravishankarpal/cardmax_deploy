@@ -50,6 +50,62 @@ export const Users: CollectionConfig = {
       sameSite: COOKIE_SAME_SITE as 'Lax' | 'Strict' | 'None',
     },
   },
+  hooks: {
+    beforeDelete: [
+      async ({ req, id }) => {
+        if (!id) return
+
+        try {
+          // 1. Subscriptions children
+          const subscriptions = await req.payload.find({
+            collection: 'subscriptions',
+            where: { user: { equals: id } },
+            req,
+            depth: 0,
+          })
+          for (const sub of subscriptions.docs) {
+            await req.payload.delete({
+              collection: 'subscription-events',
+              where: { subscription: { equals: sub.id } },
+              req,
+            })
+            await req.payload.delete({
+              collection: 'subscription-payments',
+              where: { subscription: { equals: sub.id } },
+              req,
+            })
+          }
+
+          // 2. Dependents
+          const dependentsToCascade = ['user-goals'] as const
+          for (const collection of dependentsToCascade) {
+            await req.payload.delete({ collection, where: { user: { equals: id } }, req })
+          }
+
+          // 3. Main collections
+          const mainCollectionsToCascade = [
+            'analytics-events',
+            'cards',
+            'consents',
+            'consent-events',
+            'gmail-connections',
+            'max-pro-events',
+            'notifications',
+            'statements',
+            'subscriptions',
+            'trial-eligibility',
+            'user-cards',
+          ] as const
+          for (const collection of mainCollectionsToCascade) {
+            await req.payload.delete({ collection, where: { user: { equals: id } }, req })
+          }
+        } catch (error) {
+          req.payload.logger.error({ msg: `Failed to cascade delete for user ${id}`, error })
+          throw error
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: 'name',
