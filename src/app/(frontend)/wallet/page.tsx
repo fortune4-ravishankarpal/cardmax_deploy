@@ -46,17 +46,22 @@ export default function WalletPage() {
         <p>Loading your cards...</p>
       ) : cards.length === 0 ? (
         <div className="empty-state">
-          <p>Your wallet is empty. Add a credit card to start tracking your rewards and spending.</p>
+          <p>
+            Your wallet is empty. Add a credit card to start tracking your rewards and spending.
+          </p>
         </div>
       ) : (
         <div className="card-grid">
-          {cards.map(card => (
-            <div key={card.id} className={`wallet-card ${card.status !== 'active' ? 'inactive' : ''}`}>
+          {cards.map((card) => (
+            <div
+              key={card.id}
+              className={`wallet-card ${card.status !== 'active' ? 'inactive' : ''}`}
+            >
               <div className="card-branding">
                 <div className="bank-name">{card.creditCard?.bank?.name || 'Bank'}</div>
                 <div className="card-name">{card.creditCard?.name || 'Credit Card'}</div>
               </div>
-              
+
               <div className="card-details">
                 {card.creditLimit && (
                   <div className="detail">
