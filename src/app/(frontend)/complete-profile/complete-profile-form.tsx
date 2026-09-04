@@ -29,6 +29,7 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -37,7 +38,7 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
       phone: user.phone || '',
       income: user.income != null ? String(user.income) : '',
       employmentType: user.employmentType || '',
-      marketingConsent: false,   // OFF by default — explicit opt-in required
+      marketingConsent: false, // OFF by default — explicit opt-in required
     },
   })
 
@@ -136,8 +137,23 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
         </select>
 
         {/* ── Optional: Communications ───────────────────────────────────── */}
-        <div className="auth-section-label" style={{ marginTop: '1.5rem', marginBottom: '0.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em', opacity: 0.6 }}>
-          Communications <span style={{ fontWeight: 'normal', textTransform: 'none', letterSpacing: 0, opacity: 1 }}>(optional)</span>
+        <div
+          className="auth-section-label"
+          style={{
+            marginTop: '1.5rem',
+            marginBottom: '0.5rem',
+            fontSize: '0.8rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            opacity: 0.6,
+          }}
+        >
+          Communications{' '}
+          <span
+            style={{ fontWeight: 'normal', textTransform: 'none', letterSpacing: 0, opacity: 1 }}
+          >
+            (optional)
+          </span>
         </div>
 
         <div
@@ -157,13 +173,16 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
             {...register('marketingConsent')}
           />
           <div>
-            <label htmlFor="marketingConsent" style={{ margin: 0, fontSize: '0.9rem', display: 'block' }}>
+            <label
+              htmlFor="marketingConsent"
+              style={{ margin: 0, fontSize: '0.9rem', display: 'block' }}
+            >
               Send me product updates and tips
             </label>
             <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
-              Occasionally send me emails about new CardMax features and credit card tips.
-              You can unsubscribe at any time in Settings. Account and billing emails are
-              always sent regardless of this setting.
+              Occasionally send me emails about new CardMax features and credit card tips. You can
+              unsubscribe at any time in Settings. Account and billing emails are always sent
+              regardless of this setting.
             </p>
           </div>
         </div>
@@ -175,4 +194,3 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
     </div>
   )
 }
-

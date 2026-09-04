@@ -292,4 +292,4 @@ export const updateProfileHandler = async (req: PayloadRequest): Promise<Respons
   } catch (e) {
     return errorResponse(e)
   }
-}
+}
