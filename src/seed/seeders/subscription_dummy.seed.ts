@@ -18,8 +18,11 @@ export const seedDummyData = async (payload: Payload) => {
           email: 'dummy@cardmax.com',
           password: 'password123',
           name: 'Dummy User',
-          account_status: 'active',
-          authentication_provider: 'email'
+          accountStatus: 'active',
+          authenticationProvider: 'email',
+          profileCompleted: false,
+          acceptedTermsAndConditions: false,
+          acceptedPrivacyPolicy: false,
         }
       })
       userId = user.id
@@ -148,6 +151,6 @@ export const seedDummyData = async (payload: Payload) => {
     }
     payload.logger.info('Finished seeding Phase 2 dummy data!')
   } catch (error) {
-    payload.logger.error('Error seeding dummy data', error)
+    payload.logger.error({ err: error }, 'Error seeding dummy data')
   }
 }

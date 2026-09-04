@@ -81,14 +81,14 @@ export class SubscriptionService {
     let gracePeriodEndsAt = sub.gracePeriodEndsAt
 
     // Handle grace period transition
-    if (providerSub.status === 'past_due' && sub.status !== 'past_due') {
+    if ((providerSub.status as string) === 'past_due' && (sub.status as unknown as string) !== 'past_due') {
       gracePeriodStartedAt = new Date().toISOString()
       
       const graceDays = env.MAX_PRO_GRACE_PERIOD_DAYS
       const end = new Date()
       end.setDate(end.getDate() + graceDays)
       gracePeriodEndsAt = end.toISOString()
-    } else if (providerSub.status === 'active' && sub.status === 'past_due') {
+    } else if (providerSub.status === 'active' && (sub.status as unknown as string) === 'past_due') {
       // Recovered from past due
       gracePeriodStartedAt = null
       gracePeriodEndsAt = null
@@ -109,7 +109,7 @@ export class SubscriptionService {
     })
 
     // If it just transitioned to active or trialing, record trial usage
-    if ((newStatus === 'active' || newStatus === 'trialing') && (sub.status !== 'active' && sub.status !== 'trialing')) {
+    if (((newStatus as string) === 'active' || (newStatus as string) === 'trialing') && (sub.status !== 'active' && (sub.status as unknown as string) !== 'trialing')) {
        // Mark trial as used
        const existingEligibility = await payload.find({
           collection: 'trial-eligibility',

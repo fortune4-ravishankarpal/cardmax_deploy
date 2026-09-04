@@ -46,6 +46,8 @@ export const createUser = async (payload: Payload, data: UserData) => {
       profileCompleted: data.profileCompleted ?? false,
       accountStatus: 'active',
       password: randomHex(32),
+      acceptedTermsAndConditions: false,
+      acceptedPrivacyPolicy: false,
     },
     overrideAccess: true,
     depth: 0,

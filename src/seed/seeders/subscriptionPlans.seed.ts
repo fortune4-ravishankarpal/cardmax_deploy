@@ -30,6 +30,6 @@ export const seedSubscriptionPlans = async (payload: Payload) => {
       payload.logger.info('Annual Pro Plan already exists')
     }
   } catch (error) {
-    payload.logger.error('Error seeding subscription plans', error)
+    payload.logger.error({ err: error }, 'Error seeding subscription plans')
   }
 }

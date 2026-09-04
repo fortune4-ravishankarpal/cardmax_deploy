@@ -78,7 +78,7 @@ export class NotificationService {
             html,
         })
     } catch (e) {
-        payload.logger.error(`Failed to send email to ${user.email}`, e)
+        payload.logger.error({ err: e }, `Failed to send email to ${user.email}`)
         throw e
     }
   }

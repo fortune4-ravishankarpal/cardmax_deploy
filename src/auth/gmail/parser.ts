@@ -79,7 +79,7 @@ export class LocalStatementParser implements StatementParser {
     pdf: Buffer,
     context: Omit<ParseContext, 'userId'>,
   ): Promise<ParseResult | null> {
-    let mediaId: number | undefined
+    let mediaId: string | number | undefined
     try {
       const media = await this.payload.create({
         collection: 'media',

@@ -33,6 +33,11 @@ export const env = createEnv({
     STATEMENT_PARSER_ENDPOINT: z.string().url().optional(),
     GMAIL_ISSUER_PATTERNS: z.string().min(1).optional(),
 
+    // Cards
+    CARD_ENCRYPTION_KEYS: z.string().min(1).optional(),
+    CARD_ENCRYPTION_KEY: z.string().min(1).optional(),
+    CARD_ENCRYPTION_CURRENT_KEY_VERSION: z.string().min(1).optional(),
+
     // Sessions & cookies
     SESSION_MAX_AGE_SECONDS: z.coerce.number().int().positive().default(60 * 60 * 24 * 30),
     COOKIE_SECURE: z
@@ -101,6 +106,11 @@ export const env = createEnv({
     GOOGLE_GMAIL_REDIRECT_URI: process.env.GOOGLE_GMAIL_REDIRECT_URI,
     STATEMENT_PARSER_ENDPOINT: process.env.STATEMENT_PARSER_ENDPOINT,
     GMAIL_ISSUER_PATTERNS: process.env.GMAIL_ISSUER_PATTERNS,
+
+    // Cards
+    CARD_ENCRYPTION_KEYS: process.env.CARD_ENCRYPTION_KEYS,
+    CARD_ENCRYPTION_KEY: process.env.CARD_ENCRYPTION_KEY,
+    CARD_ENCRYPTION_CURRENT_KEY_VERSION: process.env.CARD_ENCRYPTION_CURRENT_KEY_VERSION,
 
     // Sessions & cookies
     SESSION_MAX_AGE_SECONDS: process.env.SESSION_MAX_AGE_SECONDS,

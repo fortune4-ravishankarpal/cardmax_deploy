@@ -150,7 +150,7 @@ export const UserCard: CollectionConfig = {
           return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const pathSegments = req.url.split('?')[0].split('/')
+        const pathSegments = (req.url || '').split('?')[0].split('/')
         const id = pathSegments[pathSegments.length - 2] // The :id from /:id/deactivate
 
         try {

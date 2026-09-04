@@ -106,7 +106,7 @@ export const Notification: CollectionConfig = {
           return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const pathSegments = req.url.split('?')[0].split('/')
+        const pathSegments = (req.url || '').split('?')[0].split('/')
         const id = pathSegments[pathSegments.length - 2]
 
         try {
