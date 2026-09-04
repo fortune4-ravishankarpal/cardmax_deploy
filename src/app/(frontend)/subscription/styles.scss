@@ -1,28 +1,35 @@
 .subscription-page {
-  max-width: 800px;
+  max-width: 700px; /* Reduced from 800px */
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 3rem 1.5rem; /* Reduced vertical padding */
   font-family: var(--font-inter, system-ui, -apple-system, sans-serif);
   color: #e5e7eb;
 
   h1 {
-    font-size: 2.5rem;
+    font-size: 2rem; /* Reduced from 2.5rem */
     font-weight: 700;
     color: #f9fafb;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem; /* Reduced */
     letter-spacing: -0.02em;
   }
 
   .subscription-details {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 2.5rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    margin-bottom: 2rem;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 1.75rem; /* Reduced from 2.5rem */
+    border-radius: 16px; /* Slightly smaller radius */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    margin-bottom: 1.75rem;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(12px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
 
     /* Decorative overlay glow */
     &::after {
@@ -30,9 +37,9 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 250px;
-      height: 250px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.04) 0%, transparent 70%);
       transform: translate(30%, -30%);
       border-radius: 50%;
       pointer-events: none;
@@ -40,13 +47,13 @@
 
     .status-badge {
       display: inline-block;
-      padding: 0.4rem 1.25rem;
+      padding: 0.3rem 0.85rem; /* Reduced padding */
       border-radius: 9999px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      font-size: 0.75rem;
-      margin-bottom: 2rem;
+      font-size: 0.7rem; /* Reduced */
+      margin-bottom: 1.5rem;
       backdrop-filter: blur(8px);
       border: 1px solid transparent;
 
@@ -54,7 +61,7 @@
         background: rgba(16, 185, 129, 0.15); 
         color: #34d399; 
         border-color: rgba(16, 185, 129, 0.2);
-        box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
       }
       &.trialing { 
         background: rgba(59, 130, 246, 0.15); 
@@ -67,9 +74,9 @@
         border-color: rgba(245, 158, 11, 0.2);
       }
       &.canceled { 
-        background: rgba(255, 255, 255, 0.08); 
+        background: rgba(255, 255, 255, 0.06); 
         color: #d1d5db; 
-        border-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.08);
       }
       &.expired { 
         background: rgba(239, 68, 68, 0.15); 
@@ -82,8 +89,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.25rem 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0.85rem 0.5rem; /* Reduced vertical, added slight horizontal for hover */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      margin: 0 -0.5rem; /* Offset the padding */
+      border-radius: 6px;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
 
       &:last-child {
         border-bottom: none;
@@ -92,57 +106,58 @@
       .label {
         color: #94a3b8;
         font-weight: 500;
-        font-size: 0.9rem;
+        font-size: 0.85rem; /* Reduced */
       }
 
       .value {
-        font-weight: 600;
+        font-weight: 500; /* Softened from 600 */
         color: #f8fafc;
-        font-size: 1.05rem;
+        font-size: 0.95rem; /* Reduced */
         font-family: var(--font-mono, monospace);
+        letter-spacing: 0.02em;
       }
     }
   }
 
   .actions {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem; /* Reduced */
     position: relative;
     z-index: 2;
 
     .btn {
-      padding: 0.85rem 1.75rem;
-      border-radius: 8px;
-      font-weight: 600;
+      padding: 0.65rem 1.25rem; /* Reduced */
+      border-radius: 6px;
+      font-weight: 500; /* Softened from 600 */
       cursor: pointer;
       border: 1px solid transparent;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       backdrop-filter: blur(8px);
-      font-size: 0.9rem;
+      font-size: 0.85rem; /* Reduced */
 
       &.btn-danger {
         background: rgba(239, 68, 68, 0.1);
         color: #fca5a5;
-        border-color: rgba(239, 68, 68, 0.2);
+        border-color: rgba(239, 68, 68, 0.15);
 
         &:hover {
           background: rgba(239, 68, 68, 0.2);
           color: #f87171;
           border-color: rgba(239, 68, 68, 0.3);
-          transform: translateY(-2px);
+          transform: translateY(-1px);
         }
       }
       
       &.btn-secondary {
-        background: rgba(255, 255, 255, 0.05);
-        color: #e2e8f0;
-        border-color: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        color: #cbd5e1;
+        border-color: rgba(255, 255, 255, 0.08);
 
         &:hover {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.08);
           color: #fff;
-          border-color: rgba(255, 255, 255, 0.2);
-          transform: translateY(-2px);
+          border-color: rgba(255, 255, 255, 0.15);
+          transform: translateY(-1px);
         }
       }
     }
@@ -151,10 +166,11 @@
   .error-message {
     background: rgba(239, 68, 68, 0.1);
     color: #fca5a5;
-    padding: 1.25rem;
-    border-radius: 12px;
+    padding: 1rem; /* Reduced */
+    border-radius: 8px; /* Smaller radius */
     margin-bottom: 1.5rem;
     border: 1px solid rgba(239, 68, 68, 0.2);
     backdrop-filter: blur(8px);
+    font-size: 0.85rem;
   }
 }
