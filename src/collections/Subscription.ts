@@ -6,17 +6,17 @@ export const Subscription: CollectionConfig = {
     group: 'Subscription & Max Pro',
     useAsTitle: 'providerSubscriptionId',
     defaultColumns: ['user', 'plan', 'status', 'currentPeriodEnd'],
-    description: 'This collection manages a user\'s active or past subscription details (likely integrating with a payment provider like Stripe or RevenueCat).',
+    description: 'This collection manages a user\'s active or past subscription details (likely integrating with a payment provider like razorpay or stripe).',
   },
   access: {
     read: ({ req: { user } }) => {
-        if (!user) return false;
-        if (user.collection === 'admin') return true;
-        return {
-            user: {
-                equals: user.id
-            }
-        };
+      if (!user) return false;
+      if (user.collection === 'admin') return true;
+      return {
+        user: {
+          equals: user.id
+        }
+      };
     },
     // Application manages this, not admins/users directly
     create: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
@@ -133,79 +133,79 @@ export const Subscription: CollectionConfig = {
   ],
   endpoints: [
     {
-        path: '/me',
-        method: 'get',
-        handler: async (req) => {
-            if (!req.user || req.user.collection !== 'users') {
-                return Response.json({ error: 'Unauthorized' }, { status: 401 })
-            }
-
-            const subscriptions = await req.payload.find({
-                collection: 'subscriptions',
-                where: {
-                    user: {
-                        equals: req.user.id
-                    }
-                },
-                sort: '-createdAt'
-            })
-
-            return Response.json(subscriptions.docs)
+      path: '/me',
+      method: 'get',
+      handler: async (req) => {
+        if (!req.user || req.user.collection !== 'users') {
+          return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
+
+        const subscriptions = await req.payload.find({
+          collection: 'subscriptions',
+          where: {
+            user: {
+              equals: req.user.id
+            }
+          },
+          sort: '-createdAt'
+        })
+
+        return Response.json(subscriptions.docs)
+      }
     },
     {
-        path: '/checkout',
-        method: 'post',
-        handler: async (req) => {
-            if (!req.user || req.user.collection !== 'users') {
-                return Response.json({ error: 'Unauthorized' }, { status: 401 })
-            }
-
-            try {
-                // Use dynamic import to avoid circular dependencies
-                const { SubscriptionService } = await import('../subscriptions/service')
-                
-                const body = req.json ? await req.json() : (req as any).body
-                const { planId } = body
-
-                if (!planId) {
-                    return Response.json({ error: 'Missing planId' }, { status: 400 })
-                }
-
-                const result = await SubscriptionService.createCheckout(req.user.id as string, planId)
-                
-                return Response.json({ success: true, ...result })
-            } catch (error: any) {
-                return Response.json({ error: error.message || 'Failed to create checkout' }, { status: 400 })
-            }
+      path: '/checkout',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user || req.user.collection !== 'users') {
+          return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
+
+        try {
+          // Use dynamic import to avoid circular dependencies
+          const { SubscriptionService } = await import('../subscriptions/service')
+
+          const body = req.json ? await req.json() : (req as any).body
+          const { planId } = body
+
+          if (!planId) {
+            return Response.json({ error: 'Missing planId' }, { status: 400 })
+          }
+
+          const result = await SubscriptionService.createCheckout(req.user.id as string, planId)
+
+          return Response.json({ success: true, ...result })
+        } catch (error: any) {
+          return Response.json({ error: error.message || 'Failed to create checkout' }, { status: 400 })
+        }
+      }
     },
     {
-        path: '/cancel',
-        method: 'post',
-        handler: async (req) => {
-            if (!req.user || req.user.collection !== 'users') {
-                return Response.json({ error: 'Unauthorized' }, { status: 401 })
-            }
-
-            try {
-                // Use dynamic import to avoid circular dependencies
-                const { SubscriptionService } = await import('../subscriptions/service')
-                
-                const body = req.json ? await req.json() : (req as any).body
-                const { subscriptionId } = body
-
-                if (!subscriptionId) {
-                    return Response.json({ error: 'Missing subscriptionId' }, { status: 400 })
-                }
-
-                const result = await SubscriptionService.cancelSubscription(req.user.id as string, subscriptionId)
-                
-                return Response.json({ success: true, subscription: result })
-            } catch (error: any) {
-                return Response.json({ error: error.message || 'Failed to cancel subscription' }, { status: 400 })
-            }
+      path: '/cancel',
+      method: 'post',
+      handler: async (req) => {
+        if (!req.user || req.user.collection !== 'users') {
+          return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
+
+        try {
+          // Use dynamic import to avoid circular dependencies
+          const { SubscriptionService } = await import('../subscriptions/service')
+
+          const body = req.json ? await req.json() : (req as any).body
+          const { subscriptionId } = body
+
+          if (!subscriptionId) {
+            return Response.json({ error: 'Missing subscriptionId' }, { status: 400 })
+          }
+
+          const result = await SubscriptionService.cancelSubscription(req.user.id as string, subscriptionId)
+
+          return Response.json({ success: true, subscription: result })
+        } catch (error: any) {
+          return Response.json({ error: error.message || 'Failed to cancel subscription' }, { status: 400 })
+        }
+      }
     }
   ]
 }
