@@ -2,55 +2,104 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 4rem 2rem;
-  font-family: var(--font-inter, sans-serif);
+  font-family: var(--font-inter, system-ui, -apple-system, sans-serif);
+  color: #e5e7eb;
 
   h1 {
     font-size: 2.5rem;
+    font-weight: 700;
+    color: #f9fafb;
     margin-bottom: 2rem;
-    color: #2c3e50;
+    letter-spacing: -0.02em;
   }
 
   .subscription-details {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+
+    /* Decorative overlay glow */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+      transform: translate(30%, -30%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
 
     .status-badge {
       display: inline-block;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
+      padding: 0.4rem 1.25rem;
+      border-radius: 9999px;
       font-weight: 600;
       text-transform: uppercase;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid transparent;
 
-      &.active { background: #d4edda; color: #155724; }
-      &.trialing { background: #cce5ff; color: #004085; }
-      &.past_due { background: #fff3cd; color: #856404; }
-      &.canceled { background: #e2e3e5; color: #383d41; }
-      &.expired { background: #f8d7da; color: #721c24; }
+      &.active { 
+        background: rgba(16, 185, 129, 0.15); 
+        color: #34d399; 
+        border-color: rgba(16, 185, 129, 0.2);
+        box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+      }
+      &.trialing { 
+        background: rgba(59, 130, 246, 0.15); 
+        color: #60a5fa; 
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+      &.past_due { 
+        background: rgba(245, 158, 11, 0.15); 
+        color: #fbbf24; 
+        border-color: rgba(245, 158, 11, 0.2);
+      }
+      &.canceled { 
+        background: rgba(255, 255, 255, 0.08); 
+        color: #d1d5db; 
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+      &.expired { 
+        background: rgba(239, 68, 68, 0.15); 
+        color: #f87171; 
+        border-color: rgba(239, 68, 68, 0.2);
+      }
     }
 
     .detail-row {
       display: flex;
       justify-content: space-between;
-      padding: 1rem 0;
-      border-bottom: 1px solid #eee;
+      align-items: center;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
       &:last-child {
         border-bottom: none;
       }
 
       .label {
-        color: #7f8c8d;
+        color: #94a3b8;
         font-weight: 500;
+        font-size: 0.9rem;
       }
 
       .value {
         font-weight: 600;
-        color: #2c3e50;
+        color: #f8fafc;
+        font-size: 1.05rem;
+        font-family: var(--font-mono, monospace);
       }
     }
   }
@@ -58,40 +107,54 @@
   .actions {
     display: flex;
     gap: 1rem;
+    position: relative;
+    z-index: 2;
 
     .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
+      padding: 0.85rem 1.75rem;
+      border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
-      border: none;
-      transition: all 0.2s;
+      border: 1px solid transparent;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(8px);
+      font-size: 0.9rem;
 
       &.btn-danger {
-        background: #e74c3c;
-        color: #fff;
+        background: rgba(239, 68, 68, 0.1);
+        color: #fca5a5;
+        border-color: rgba(239, 68, 68, 0.2);
 
         &:hover {
-          background: #c0392b;
+          background: rgba(239, 68, 68, 0.2);
+          color: #f87171;
+          border-color: rgba(239, 68, 68, 0.3);
+          transform: translateY(-2px);
         }
       }
       
       &.btn-secondary {
-        background: #95a5a6;
-        color: #fff;
+        background: rgba(255, 255, 255, 0.05);
+        color: #e2e8f0;
+        border-color: rgba(255, 255, 255, 0.1);
 
         &:hover {
-          background: #7f8c8d;
+          background: rgba(255, 255, 255, 0.1);
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
         }
       }
     }
   }
 
   .error-message {
-    background: #fee;
-    color: #e74c3c;
-    padding: 1rem;
-    border-radius: 6px;
-    margin-bottom: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    backdrop-filter: blur(8px);
   }
 }
