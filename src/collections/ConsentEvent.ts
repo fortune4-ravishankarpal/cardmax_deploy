@@ -4,19 +4,19 @@ export const ConsentEvent: CollectionConfig = {
   slug: 'consent-events',
   timestamps: true,
   admin: {
-    group: 'Privacy & Settings',
+    group: 'Users',
     useAsTitle: 'action',
     defaultColumns: ['user', 'purpose', 'action', 'version', 'createdAt'],
   },
   access: {
     read: ({ req: { user } }) => {
-        if (!user) return false;
-        if (user.collection === 'admin') return true;
-        return {
-            user: {
-                equals: user.id
-            }
-        };
+      if (!user) return false;
+      if (user.collection === 'admin') return true;
+      return {
+        user: {
+          equals: user.id
+        }
+      };
     },
     create: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
     update: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),

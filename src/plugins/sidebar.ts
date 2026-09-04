@@ -49,7 +49,7 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       type: 'tab',
       icon: 'FileText',
       label: { en: 'Content' },
-      collections: ['media', "users", "admin"],
+      collections: ['media', "users", "admin", "consent-events"],
       access: SideBarAccessViewChecker,
     },
     {
@@ -82,7 +82,7 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       icon: 'Shield',
       label: { en: 'Privacy & Settings' },
       // collections: ['consents', 'consent-events', 'feature-flags'],
-      collections: ['consent-events', 'feature-flags'],
+      collections: ['feature-flags'],
       access: SideBarAccessViewChecker,
     },
     {

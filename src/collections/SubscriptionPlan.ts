@@ -3,7 +3,7 @@ import { CollectionConfig } from 'payload'
 export const SubscriptionPlan: CollectionConfig = {
   slug: 'subscription-plans',
   admin: {
-    group: 'Subscription & Max Pro',
+    group: 'Master',
     useAsTitle: 'name',
     defaultColumns: ['name', 'dataVersion', 'providerPlanId', 'price', 'billingInterval'],
   },
@@ -31,9 +31,9 @@ export const SubscriptionPlan: CollectionConfig = {
       name: 'dataVersion',
       type: 'text',
       admin: {
-          readOnly: true,
-          position: "sidebar",
-          description: 'Human-readable identifier for the published version.',
+        readOnly: true,
+        position: "sidebar",
+        description: 'Human-readable identifier for the published version.',
       },
       hooks: {
         beforeValidate: [({ value, operation }) => {
@@ -97,24 +97,24 @@ export const SubscriptionPlan: CollectionConfig = {
     }
   ],
   hooks: {
-      beforeChange: [
-          ({ data, operation, originalDoc }) => {
-              // Draft and autosave operations must not alter the published label.
-              if (data?._status !== 'published') {
-                  return data
-              }
+    beforeChange: [
+      ({ data, operation, originalDoc }) => {
+        // Draft and autosave operations must not alter the published label.
+        if (data?._status !== 'published') {
+          return data
+        }
 
-              if (operation === 'create') {
-                  data.dataVersion = 'v1'
-                  return data
-              }
+        if (operation === 'create') {
+          data.dataVersion = 'v1'
+          return data
+        }
 
-              const currentVersion = originalDoc?.dataVersion
-              const versionNumber = /^v(\d+)$/.exec(currentVersion ?? '')?.[1]
-              data.dataVersion = `v${Number(versionNumber ?? 0) + 1}`
+        const currentVersion = originalDoc?.dataVersion
+        const versionNumber = /^v(\d+)$/.exec(currentVersion ?? '')?.[1]
+        data.dataVersion = `v${Number(versionNumber ?? 0) + 1}`
 
-              return data
-          },
-      ],
+        return data
+      },
+    ],
   },
 }
