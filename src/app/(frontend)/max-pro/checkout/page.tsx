@@ -38,6 +38,17 @@ export default function CheckoutPage() {
       return
     }
 
+    // Fire the analytics event
+    fetch('/api/track', {
+      method: 'POST',
+      body: JSON.stringify({
+        event: 'checkout_button_clicked',
+        category: 'monetization',
+        properties: { planId: selectedPlanId },
+        url: window.location.pathname
+      })
+    }).catch(() => {}) // Catch network errors so it doesn't break checkout
+
     setLoading(true)
     setError('')
     try {
