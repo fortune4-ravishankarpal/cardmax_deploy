@@ -7,6 +7,7 @@ import { auditFieldsConfig } from './audit'
 // import { contentFreezeConfig } from './contentFreezing' 
 
 import { gatekeeperPluginConfig } from './getKeeper'
+// import { privacyPluginConfig } from './privacyGdpr'
 export const plugins: Plugin[] = [
   gatekeeperPluginConfig,
   auditFieldsConfig,
@@ -14,4 +15,5 @@ export const plugins: Plugin[] = [
   enhancedSidebarConfig,
   // contentFreezeConfig,
   // seoPluginConfig,
+  // privacyPluginConfig
 ]
