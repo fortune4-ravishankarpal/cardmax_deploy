@@ -59,11 +59,10 @@ export const SubscriptionPlan: CollectionConfig = {
     {
       name: 'providerPlanId',
       type: 'text',
-      required: true,
       unique: true,
       index: true,
       admin: {
-        description: 'The plan ID from Razorpay (e.g. plan_N4Rxxxxx)',
+        description: 'Leave empty to automatically create in Razorpay, or enter an existing Razorpay Plan ID (e.g. plan_N4Rxxxxx).',
       }
     },
     {
@@ -108,7 +107,36 @@ export const SubscriptionPlan: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      ({ data, operation, originalDoc }) => {
+      async ({ data, operation, originalDoc }) => {
+        // Enforce immutability of pricing on existing Razorpay plans
+        if (originalDoc?.providerPlanId && operation === 'update') {
+          if (data.price !== undefined && Number(data.price) !== Number(originalDoc.price)) {
+            throw new Error('Price cannot be modified once linked to a Razorpay plan. To change prices, please create a new plan.')
+          }
+          if (data.billingInterval !== undefined && data.billingInterval !== originalDoc.billingInterval) {
+            throw new Error('Billing interval cannot be modified once linked to a Razorpay plan. To change billing interval, please create a new plan.')
+          }
+        }
+
+        // Auto-create plan in Razorpay if not provided
+        if (!data.providerPlanId && data.price && data.billingInterval && data?._status === 'published') {
+          try {
+            const { RazorpayProvider } = await import('../payments/providers/razorpay')
+            const provider = new RazorpayProvider()
+            const created = await provider.createPlan({
+              name: data.name || 'CardMax Pro Plan',
+              description: data.description || undefined,
+              amount: Math.round(Number(data.price) * 100), // convert to paise
+              currency: data.currency || 'INR',
+              interval: data.billingInterval,
+            })
+            data.providerPlanId = created.id
+          } catch (err: any) {
+            const errorDesc = err?.error?.description || err?.message || 'Failed to create plan in Razorpay'
+            throw new Error(`Razorpay plan creation failed: ${errorDesc}`)
+          }
+        }
+
         // Draft and autosave operations must not alter the published label.
         if (data?._status !== 'published') {
           return data

@@ -202,7 +202,12 @@ export const Subscription: CollectionConfig = {
           return Response.json({ success: true, ...result })
         } catch (error: any) {
           console.error("Checkout Error:", error);
-          return Response.json({ error: error.message || 'Failed to create checkout' }, { status: 400 })
+          const errorMsg =
+            error?.error?.description ||
+            error?.description ||
+            error?.message ||
+            'Failed to create checkout'
+          return Response.json({ error: errorMsg }, { status: 400 })
         }
       }
     },

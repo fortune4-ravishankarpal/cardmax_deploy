@@ -29,6 +29,12 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   jobs: {
+    autoRun: [
+      {
+        cron: '* * * * *',
+        allQueues: true,
+      },
+    ],
     tasks: [
       processProviderEventTask,
       expireSubscriptionsTask,

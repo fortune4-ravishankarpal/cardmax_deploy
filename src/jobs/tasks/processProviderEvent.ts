@@ -43,41 +43,88 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
       let syncResult = null;
 
       if (event.provider === 'razorpay') {
-         // Subscriptions webhook
-         if (payloadObj.event && payloadObj.event.startsWith('subscription.')) {
-             const subId = payloadObj.payload?.subscription?.entity?.id
-             if (subId) {
-                syncResult = await SubscriptionService.syncSubscription(subId)
-             }
-         }
-         
-         // Payment success or failure notification
-         if (payloadObj.event === 'payment.captured' || payloadObj.event === 'payment.failed') {
-             // Look for subscription ID on the payment entity to link to a user
-             const subId = payloadObj.payload?.payment?.entity?.subscription_id || payloadObj.payload?.payment?.entity?.notes?.subscription_id;
-             if (subId) {
-                 const subs = await req.payload.find({
-                     collection: 'subscriptions',
-                     where: { providerSubscriptionId: { equals: subId } },
-                     limit: 1
-                 });
-                 if (subs.docs.length > 0) {
-                     const sub = subs.docs[0];
-                     const userId = typeof sub.user === 'string' ? sub.user : (sub.user as any)?.id;
-                     const statusText = payloadObj.event === 'payment.captured' ? 'succeeded' : 'failed';
-                     if (userId) {
-                         await req.payload.jobs.queue({
-                             task: 'sendNotification',
-                             input: {
-                                 userId,
-                                 subject: `Payment ${statusText} for your CardMax Subscription`,
-                                 html: `<p>Your recent subscription payment has ${statusText}.</p>`
-                             }
-                         });
-                     }
-                 }
-             }
-         }
+          // Subscriptions webhook
+          if (payloadObj.event && payloadObj.event.startsWith('subscription.')) {
+              const subId = payloadObj.payload?.subscription?.entity?.id
+              if (subId) {
+                 syncResult = await SubscriptionService.syncSubscription(subId)
+              }
+          }
+          
+          // Handle payment records (payment.captured, payment.failed, subscription.charged)
+          const paymentEntity = payloadObj.payload?.payment?.entity
+          const subIdForPayment =
+            paymentEntity?.subscription_id ||
+            paymentEntity?.notes?.subscription_id ||
+            payloadObj.payload?.subscription?.entity?.id
+
+          if (paymentEntity && subIdForPayment) {
+            const subs = await req.payload.find({
+              collection: 'subscriptions',
+              where: { providerSubscriptionId: { equals: subIdForPayment } },
+              limit: 1,
+            })
+
+            if (subs.docs.length > 0) {
+              const sub = subs.docs[0]
+              const paymentStatusMap: Record<string, 'authorized' | 'captured' | 'failed' | 'refunded'> = {
+                authorized: 'authorized',
+                captured: 'captured',
+                failed: 'failed',
+                refunded: 'refunded',
+              }
+              const paymentStatus =
+                paymentStatusMap[paymentEntity.status] ||
+                (payloadObj.event === 'payment.failed' ? 'failed' : 'captured')
+
+              try {
+                const existingPayments = await req.payload.find({
+                  collection: 'subscription-payments',
+                  where: { providerPaymentId: { equals: paymentEntity.id } },
+                  limit: 1,
+                })
+
+                if (existingPayments.docs.length > 0) {
+                  await req.payload.update({
+                    collection: 'subscription-payments',
+                    id: existingPayments.docs[0].id,
+                    data: {
+                      status: paymentStatus,
+                      rawEvent: payloadObj,
+                    },
+                  })
+                } else {
+                  await req.payload.create({
+                    collection: 'subscription-payments',
+                    data: {
+                      subscription: sub.id,
+                      providerPaymentId: paymentEntity.id,
+                      amount: Number(paymentEntity.amount) / 100, // in Rupees
+                      currency: paymentEntity.currency || 'INR',
+                      status: paymentStatus,
+                      rawEvent: payloadObj,
+                    },
+                  })
+                }
+              } catch (paymentErr) {
+                req.payload.logger.error({ err: paymentErr }, 'Error recording subscription-payment')
+              }
+
+              // Send notification if applicable
+              const userId = typeof sub.user === 'string' ? sub.user : (sub.user as any)?.id
+              const statusText = paymentStatus === 'captured' ? 'succeeded' : paymentStatus
+              if (userId) {
+                await req.payload.jobs.queue({
+                  task: 'sendNotification',
+                  input: {
+                    userId,
+                    subject: `Payment ${statusText} for your CardMax Subscription`,
+                    html: `<p>Your recent subscription payment has ${statusText}.</p>`,
+                  },
+                })
+              }
+            }
+          }
       }
 
       await req.payload.update({

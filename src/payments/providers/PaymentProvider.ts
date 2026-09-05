@@ -25,6 +25,17 @@ export interface PaymentProvider {
   readonly id: string
 
   /**
+   * Creates a new plan in the payment provider
+   */
+  createPlan?(params: {
+    name: string
+    description?: string
+    amount: number
+    currency: string
+    interval: 'monthly' | 'yearly'
+  }): Promise<{ id: string }>
+
+  /**
    * Retrieves plan details from the provider
    */
   getPlan(providerPlanId: string): Promise<SubscriptionPlanDetails>

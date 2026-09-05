@@ -14,6 +14,28 @@ export class RazorpayProvider implements PaymentProvider {
     })
   }
 
+  async createPlan(params: {
+    name: string
+    description?: string
+    amount: number
+    currency?: string
+    interval: 'monthly' | 'yearly'
+  }): Promise<{ id: string }> {
+    const period = params.interval === 'yearly' ? 'yearly' : 'monthly'
+    const plan = await this.client.plans.create({
+      period,
+      interval: 1,
+      item: {
+        name: params.name,
+        amount: params.amount, // in paise
+        currency: params.currency || 'INR',
+        description: params.description || undefined,
+      },
+    })
+
+    return { id: plan.id }
+  }
+
   async getPlan(providerPlanId: string): Promise<SubscriptionPlanDetails> {
     const plan = await this.client.plans.fetch(providerPlanId)
     

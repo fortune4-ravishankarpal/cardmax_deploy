@@ -114,6 +114,24 @@ export const Users: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
+      name: "firstName",
+      type: "text",
+      required: false,
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: "lastName",
+      type: "text",
+      required: false,
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: "dob",
+      type: "date",
+      required: false,
+      admin: { position: 'sidebar' },
+    },
+    {
       name: 'phone',
       type: 'text',
       index: true,

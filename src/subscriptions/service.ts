@@ -97,6 +97,7 @@ export class SubscriptionService {
     const updated = await payload.update({
       collection: 'subscriptions',
       id: sub.id,
+      overrideAccess: true,
       data: {
         status: newStatus as any,
         currentPeriodStart: providerSub.currentStart.toISOString(),
@@ -108,19 +109,22 @@ export class SubscriptionService {
       }
     })
 
-    // If it just transitioned to active or trialing, record trial usage
-    if (((newStatus as string) === 'active' || (newStatus as string) === 'trialing') && (sub.status !== 'active' && (sub.status as unknown as string) !== 'trialing')) {
+    // If it just transitioned to active, trialing, or authenticated, record trial usage & event
+    const isActiveStatus = (status: string) => ['active', 'trialing', 'authenticated'].includes(status)
+    if (isActiveStatus(newStatus as string) && !isActiveStatus(sub.status as unknown as string)) {
        // Mark trial as used
        const existingEligibility = await payload.find({
           collection: 'trial-eligibility',
           where: { user: { equals: (sub.user as any).id || sub.user } },
-          limit: 1
+          limit: 1,
+          overrideAccess: true,
        })
 
        if (existingEligibility.docs.length > 0) {
            await payload.update({
                collection: 'trial-eligibility',
                id: existingEligibility.docs[0].id,
+               overrideAccess: true,
                data: {
                    trialUsed: true,
                    trialUsedAt: existingEligibility.docs[0].trialUsedAt || new Date().toISOString(),
@@ -130,6 +134,7 @@ export class SubscriptionService {
        } else {
            await payload.create({
                collection: 'trial-eligibility',
+               overrideAccess: true,
                data: {
                    user: (sub.user as any).id || sub.user,
                    trialUsed: true,
@@ -141,6 +146,7 @@ export class SubscriptionService {
 
        await payload.create({
           collection: 'subscription-events',
+          overrideAccess: true,
           data: {
             subscription: sub.id,
             eventType: 'activated',
@@ -163,6 +169,9 @@ export class SubscriptionService {
          throw new Error('Not found')
      }
 
+     // Ensure subscription is synced first to establish current active state
+     await this.syncSubscription(sub.providerSubscriptionId)
+
      await this.provider.cancelSubscription(sub.providerSubscriptionId, cancelAtPeriodEnd)
 
      // Wait for webhook or immediately mark pending cancel
@@ -170,6 +179,7 @@ export class SubscriptionService {
          await payload.update({
              collection: 'subscriptions',
              id: sub.id,
+             overrideAccess: true,
              data: {
                  cancelAtPeriodEnd: true
              }
@@ -178,6 +188,7 @@ export class SubscriptionService {
 
      await payload.create({
           collection: 'subscription-events',
+          overrideAccess: true,
           data: {
             subscription: sub.id,
             eventType: 'canceled',
@@ -185,6 +196,12 @@ export class SubscriptionService {
           }
      })
 
-     return await this.syncSubscription(sub.providerSubscriptionId)
+     const refreshed = await payload.findByID({
+         collection: 'subscriptions',
+         id: sub.id,
+         overrideAccess: true,
+     })
+
+     return refreshed
   }
 }

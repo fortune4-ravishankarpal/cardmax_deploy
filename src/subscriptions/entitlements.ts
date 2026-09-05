@@ -23,6 +23,7 @@ export class EntitlementsService {
             or: [
               { status: { equals: 'active' } },
               { status: { equals: 'trialing' } },
+              { status: { equals: 'authenticated' } },
               { status: { equals: 'past_due' } }, // In grace period
               { status: { equals: 'canceled' } }, // Canceled but active until period end
             ]
@@ -34,7 +35,7 @@ export class EntitlementsService {
     const now = new Date()
 
     for (const sub of subscriptions.docs) {
-      if (sub.status === 'active' || sub.status === 'trialing') {
+      if (sub.status === 'active' || sub.status === 'trialing' || sub.status === 'authenticated') {
         return true
       }
 

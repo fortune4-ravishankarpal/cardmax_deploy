@@ -45,6 +45,13 @@ export async function POST(req: NextRequest) {
           }
       })
 
+      // Immediately run the job so webhook sync happens in real-time
+      try {
+        await (payload.jobs as any).run({ allQueues: true })
+      } catch (runErr) {
+        payload.logger.warn({ err: runErr }, 'Background jobs run notice')
+      }
+
       return NextResponse.json({ success: true })
     } catch (dbError: any) {
       // If it's a unique constraint violation, we've already received this webhook
