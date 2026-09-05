@@ -10,18 +10,28 @@ export async function POST(req: NextRequest) {
     
     // 1. Verify signature
     const signature = req.headers.get('x-razorpay-signature')
-    
+    console.log(`[Webhook] Incoming request received. Signature: ${signature ? 'present' : 'missing'}`)
+
     if (!signature) {
+      console.error('[Webhook] Rejected: Missing x-razorpay-signature header')
       return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
     }
 
     const provider = new RazorpayProvider()
     if (!provider.verifyWebhookSignature(bodyText, signature)) {
+      console.error('[Webhook] Signature verification failed! Make sure RAZORPAY_WEBHOOK_SECRET in .env matches the Secret in Razorpay Dashboard exactly.')
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
     }
 
     const event = JSON.parse(bodyText)
-    const eventId = event.id // Razorpay event ID
+    const headerEventId = req.headers.get('x-razorpay-event-id')
+    const eventId =
+      headerEventId ||
+      event.id ||
+      event.event_id ||
+      `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+
+    console.log(`[Webhook] Signature verified! Event: ${event.event}, EventID: ${eventId}`)
 
     // 2. Persist event immediately (will throw on unique constraint if duplicate)
     try {
@@ -31,7 +41,7 @@ export async function POST(req: NextRequest) {
         data: {
           provider: 'razorpay',
           providerEventId: eventId,
-          eventType: event.event,
+          eventType: event.event || 'unknown',
           status: 'pending',
           rawPayload: event,
         }
@@ -45,11 +55,15 @@ export async function POST(req: NextRequest) {
           }
       })
 
-      // Immediately run the job so webhook sync happens in real-time
+      // 4. Process event immediately so database updates in real-time
       try {
-        await (payload.jobs as any).run({ allQueues: true })
-      } catch (runErr) {
-        payload.logger.warn({ err: runErr }, 'Background jobs run notice')
+        const { processProviderEventTask } = await import('../../../../jobs/tasks/processProviderEvent')
+        await (processProviderEventTask as any).handler({
+          input: { eventId: dbEvent.id },
+          req: { payload },
+        })
+      } catch (procErr) {
+        payload.logger.error({ err: procErr }, 'Error processing provider event immediately')
       }
 
       return NextResponse.json({ success: true })

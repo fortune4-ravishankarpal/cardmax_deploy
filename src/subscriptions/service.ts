@@ -68,7 +68,8 @@ export class SubscriptionService {
       where: {
         providerSubscriptionId: { equals: providerSubscriptionId }
       },
-      limit: 1
+      limit: 1,
+      overrideAccess: true,
     })
 
     if (subs.docs.length === 0) return null

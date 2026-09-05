@@ -16,10 +16,11 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
       
       const event = await req.payload.findByID({
         collection: 'provider-events',
-        id: eventId
+        id: eventId,
+        overrideAccess: true,
       })
 
-      if (!event || event.status !== 'pending') {
+      if (!event || (event.status !== 'pending' && event.status !== 'processing')) {
          return {
              output: {
                  success: false,
@@ -31,6 +32,7 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
       await req.payload.update({
           collection: 'provider-events',
           id: eventId,
+          overrideAccess: true,
           data: {
               status: 'processing'
           }
@@ -59,10 +61,20 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
             payloadObj.payload?.subscription?.entity?.id
 
           if (paymentEntity && subIdForPayment) {
+            // Ensure subscription state is synced upon payment confirmation
+            if (!syncResult && subIdForPayment) {
+              try {
+                syncResult = await SubscriptionService.syncSubscription(subIdForPayment)
+              } catch (syncErr) {
+                req.payload.logger.error({ err: syncErr }, 'Error syncing subscription from payment event')
+              }
+            }
+
             const subs = await req.payload.find({
               collection: 'subscriptions',
               where: { providerSubscriptionId: { equals: subIdForPayment } },
               limit: 1,
+              overrideAccess: true,
             })
 
             if (subs.docs.length > 0) {
@@ -82,12 +94,14 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
                   collection: 'subscription-payments',
                   where: { providerPaymentId: { equals: paymentEntity.id } },
                   limit: 1,
+                  overrideAccess: true,
                 })
 
                 if (existingPayments.docs.length > 0) {
                   await req.payload.update({
                     collection: 'subscription-payments',
                     id: existingPayments.docs[0].id,
+                    overrideAccess: true,
                     data: {
                       status: paymentStatus,
                       rawEvent: payloadObj,
@@ -96,6 +110,7 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
                 } else {
                   await req.payload.create({
                     collection: 'subscription-payments',
+                    overrideAccess: true,
                     data: {
                       subscription: sub.id,
                       providerPaymentId: paymentEntity.id,
@@ -130,6 +145,7 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
       await req.payload.update({
           collection: 'provider-events',
           id: eventId,
+          overrideAccess: true,
           data: {
               status: 'processed',
               processedAt: new Date().toISOString()
@@ -143,10 +159,11 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
         },
       }
     } catch (e: any) {
-        req.payload.logger.error('Error processing provider event', e)
+        req.payload.logger.error({ err: e }, 'Error processing provider event')
         await req.payload.update({
             collection: 'provider-events',
             id: input.eventId,
+            overrideAccess: true,
             data: {
                 status: 'failed',
                 errorDetails: e.message || 'Unknown error'
