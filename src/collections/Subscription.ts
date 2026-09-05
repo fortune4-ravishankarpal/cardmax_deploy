@@ -23,6 +23,31 @@ export const Subscription: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
     delete: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
   },
+  hooks: {
+    beforeDelete: [
+      async ({ req, id }) => {
+        if (!id) return;
+        
+        try {
+          // Delete related events and payments to prevent foreign key constraint errors
+          await req.payload.delete({
+            collection: 'subscription-events',
+            where: { subscription: { equals: id } },
+            req,
+          });
+          
+          await req.payload.delete({
+            collection: 'subscription-payments',
+            where: { subscription: { equals: id } },
+            req,
+          });
+        } catch (error) {
+          req.payload.logger.error({ msg: `Failed to cascade delete for subscription ${id}`, error });
+          throw error;
+        }
+      }
+    ]
+  },
   fields: [
     {
       name: 'user',
@@ -176,6 +201,7 @@ export const Subscription: CollectionConfig = {
 
           return Response.json({ success: true, ...result })
         } catch (error: any) {
+          console.error("Checkout Error:", error);
           return Response.json({ error: error.message || 'Failed to create checkout' }, { status: 400 })
         }
       }

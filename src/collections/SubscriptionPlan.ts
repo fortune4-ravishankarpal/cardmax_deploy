@@ -8,7 +8,17 @@ export const SubscriptionPlan: CollectionConfig = {
     defaultColumns: ['name', 'dataVersion', 'providerPlanId', 'price', 'billingInterval'],
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      if (user && user.collection === 'admin') {
+        return true
+      }
+      return {
+        _status: {
+          equals: 'published'
+        }
+      }
+    },
+    readVersions: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
     create: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
     update: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
     delete: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
@@ -117,4 +127,21 @@ export const SubscriptionPlan: CollectionConfig = {
       },
     ],
   },
+  endpoints: [
+    {
+      path: '/active',
+      method: 'get',
+      handler: async (req) => {
+        const plans = await req.payload.find({
+          collection: 'subscription-plans',
+          where: {
+            isActive: { equals: true },
+            _status: { equals: 'published' }
+          },
+          overrideAccess: true,
+        })
+        return Response.json(plans)
+      }
+    }
+  ]
 }
