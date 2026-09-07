@@ -26,6 +26,7 @@ export class AnalyticsService {
     
     await payload.create({
       collection: 'analytics-events',
+      overrideAccess: true,
       data: {
         user: options.userId,
         anonymousId: options.anonymousId,
