@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
 import './styles.scss'
 
 export default function WalletPage() {
@@ -35,60 +36,138 @@ export default function WalletPage() {
     }
   }
 
+  const activeCardsCount = cards.filter((c) => c.status === 'active').length
+
   return (
-    <div className="wallet-page">
-      <header className="wallet-header">
-        <h1>My Wallet</h1>
-        <button className="btn-add">Add Card</button>
-      </header>
-
-      {loading ? (
-        <p>Loading your cards...</p>
-      ) : cards.length === 0 ? (
-        <div className="empty-state">
-          <p>
-            Your wallet is empty. Add a credit card to start tracking your rewards and spending.
-          </p>
+    <div className="wallet-page-wrapper">
+      <div className="wallet-container">
+        {/* Navigation / Header */}
+        <div className="wallet-breadcrumb">
+          <Link href="/profile" className="btn-back">
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Profile
+          </Link>
         </div>
-      ) : (
-        <div className="card-grid">
-          {cards.map((card) => (
-            <div
-              key={card.id}
-              className={`wallet-card ${card.status !== 'active' ? 'inactive' : ''}`}
-            >
-              <div className="card-branding">
-                <div className="bank-name">{card.creditCard?.bank?.name || 'Bank'}</div>
-                <div className="card-name">{card.creditCard?.name || 'Credit Card'}</div>
-              </div>
 
-              <div className="card-details">
-                {card.creditLimit && (
-                  <div className="detail">
-                    <span className="label">Limit</span>
-                    <span className="value">₹{card.creditLimit.toLocaleString()}</span>
-                  </div>
-                )}
-                {card.statementDay && (
-                  <div className="detail">
-                    <span className="label">Statement</span>
-                    <span className="value">{card.statementDay}th</span>
-                  </div>
-                )}
-              </div>
+        <header className="wallet-header">
+          <div className="header-text">
+            <h1>My Credit Cards</h1>
+            <p>Manage your linked credit cards, statement dates, and reward limits.</p>
+          </div>
+          <button type="button" className="btn-add">
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Card
+          </button>
+        </header>
 
-              <div className="card-actions">
-                <button className="btn-edit">Edit</button>
-                {card.status === 'active' && (
-                  <button className="btn-remove" onClick={() => deactivateCard(card.id)}>
-                    Remove
-                  </button>
-                )}
-              </div>
+        {/* Overview Stats Bar */}
+        {!loading && cards.length > 0 && (
+          <section className="wallet-stats-bar" aria-label="Wallet Overview">
+            <div className="stat-item">
+              <span className="stat-label">Total Cards</span>
+              <span className="stat-val">{cards.length}</span>
             </div>
-          ))}
-        </div>
-      )}
+            <div className="stat-divider" />
+            <div className="stat-item">
+              <span className="stat-label">Active Cards</span>
+              <span className="stat-val">{activeCardsCount}</span>
+            </div>
+            <div className="stat-divider" />
+            <div className="stat-item">
+              <span className="stat-label">Wallet Status</span>
+              <span className="stat-val status-good">Optimized</span>
+            </div>
+          </section>
+        )}
+
+        {/* Content Area */}
+        {loading ? (
+          <div className="wallet-loading">
+            <span className="loading-spinner" />
+            <p>Loading your cards…</p>
+          </div>
+        ) : cards.length === 0 ? (
+          <div className="empty-state-card">
+            <div className="empty-icon" aria-hidden="true">
+              <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
+            </div>
+            <h3>Your wallet is empty</h3>
+            <p>
+              Add a credit card to track rewards, statement dates, and personalized card perks.
+            </p>
+            <button type="button" className="btn-add">
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Your First Card
+            </button>
+          </div>
+        ) : (
+          <div className="card-grid">
+            {cards.map((card) => {
+              const isActive = card.status === 'active'
+              return (
+                <article
+                  key={card.id}
+                  className={`wallet-card ${!isActive ? 'inactive' : ''}`}
+                >
+                  <div className="card-top">
+                    <div className="card-branding">
+                      <span className="bank-name">{card.creditCard?.bank?.name || 'Bank'}</span>
+                      <h2 className="card-name">{card.creditCard?.name || 'Credit Card'}</h2>
+                    </div>
+                    <span className={`badge ${isActive ? 'status-active' : 'status-inactive'}`}>
+                      {isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </div>
+
+                  <div className="card-details-grid">
+                    {card.creditLimit != null && (
+                      <div className="detail-item">
+                        <span className="detail-label">Credit Limit</span>
+                        <span className="detail-value">
+                          ₹{Number(card.creditLimit).toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    )}
+                    {card.statementDay != null && (
+                      <div className="detail-item">
+                        <span className="detail-label">Statement Day</span>
+                        <span className="detail-value">{card.statementDay}th of month</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="card-actions">
+                    <button type="button" className="btn-card-action secondary">
+                      Edit
+                    </button>
+                    {isActive && (
+                      <button
+                        type="button"
+                        className="btn-card-action danger"
+                        onClick={() => deactivateCard(card.id)}
+                      >
+                        <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

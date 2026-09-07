@@ -16,8 +16,8 @@ export default async function GmailPage() {
   }
 
   return (
-    <main className="auth-page">
+    <div className="gmail-page-wrapper">
       <GmailForm />
-    </main>
+    </div>
   )
 }

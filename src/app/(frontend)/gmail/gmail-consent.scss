@@ -1,101 +1,499 @@
-.gmail-consent-container {
+// ==========================================================================
+// CardMax SaaS Gmail Integration Stylesheet
+// Clean, light SaaS design with unified primary accent
+// ==========================================================================
+
+$color-bg: #f8fafc;
+$color-surface: #ffffff;
+$color-surface-hover: #f1f5f9;
+$color-surface-subtle: #f8fafc;
+
+$color-text-primary: #0f172a;
+$color-text-secondary: #64748b;
+$color-text-muted: #94a3b8;
+
+$color-border: #e2e8f0;
+$color-border-subtle: #f1f5f9;
+
+$color-accent: #4f46e5;
+$color-accent-hover: #4338ca;
+$color-accent-subtle: #eef2ff;
+$color-accent-border: #c7d2fe;
+
+$color-success-text: #065f46;
+$color-success-bg: #ecfdf5;
+$color-success-border: #a7f3d0;
+$color-success-dot: #10b981;
+
+$color-danger-text: #b91c1c;
+$color-danger-hover: #991b1b;
+$color-danger-bg: #fef2f2;
+$color-danger-border: #fecaca;
+
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 10px;
+$radius-full: 9999px;
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+
+$font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+
+.gmail-page-wrapper {
+  min-height: calc(100vh - 60px);
+  background-color: $color-bg;
+  color: $color-text-primary;
+  font-family: $font-sans;
+  padding: 1.25rem 1rem 2.5rem;
+  -webkit-font-smoothing: antialiased;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  a,
+  button,
+  input {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 2px;
+  }
+}
+
+.gmail-container {
+  max-width: 680px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin-top: 1rem;
-  text-align: left;
+  gap: 1rem;
 
-  .consent-section {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-
-    &.required {
-      border-left: 3px solid #6366f1;
-    }
-
-    &.optional {
-      border-left: 3px solid #10b981;
-    }
-
-    .section-header {
-      display: flex;
+  .gmail-breadcrumb {
+    .btn-back {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.5rem;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: $color-text-secondary;
+      text-decoration: none;
+      transition: color 0.15s ease;
 
-      .badge {
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        padding: 0.15rem 0.5rem;
-        border-radius: 9999px;
-        font-weight: 600;
-
-        &.required-badge {
-          background: rgba(99, 102, 241, 0.15);
-          color: #818cf8;
-        }
-
-        &.optional-badge {
-          background: rgba(16, 185, 129, 0.15);
-          color: #34d399;
-        }
-      }
-
-      h3 {
-        margin: 0;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #f3f4f6;
-      }
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.85rem;
-      line-height: 1.45;
-      color: #9ca3af;
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-
-      input[type='checkbox'] {
-        margin-top: 0.2rem;
-        cursor: pointer;
-        width: 1rem;
-        height: 1rem;
-        accent-color: #6366f1;
-      }
-
-      .toggle-label {
-        font-size: 0.85rem;
-        color: #e5e7eb;
-        font-weight: 500;
-        cursor: pointer;
-        margin: 0;
-      }
-
-      .toggle-desc {
-        font-size: 0.775rem;
-        color: #9ca3af;
-        margin-top: 0.2rem;
-        line-height: 1.4;
+      &:hover {
+        color: $color-accent;
       }
     }
   }
 
-  .consent-notice {
-    font-size: 0.775rem;
-    color: #6b7280;
-    line-height: 1.4;
-    margin: 0;
+  .gmail-card {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 1.5rem;
+    box-shadow: $shadow-sm;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    .card-top-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid $color-border-subtle;
+
+      .header-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: $color-accent-subtle;
+        color: $color-accent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.25rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: $color-text-primary;
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: $color-text-secondary;
+        line-height: 1.45;
+        max-width: 520px;
+      }
+    }
+  }
+
+  .gmail-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: $radius-sm;
+    font-size: 0.85rem;
+    font-weight: 500;
+
+    &.error {
+      background-color: $color-danger-bg;
+      color: $color-danger-text;
+      border: 1px solid $color-danger-border;
+    }
+  }
+
+  .gmail-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    color: $color-text-secondary;
+    gap: 0.75rem;
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid $color-border;
+      border-top-color: $color-accent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+
+  // Connected View
+  .connected-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .status-banner {
+      background-color: $color-surface-subtle;
+      border: 1px solid $color-border;
+      border-radius: $radius-sm;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .status-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        h2 {
+          margin: 0.2rem 0 0;
+          font-size: 1.05rem;
+          font-weight: 700;
+          color: $color-text-primary;
+        }
+
+        .meta-text {
+          font-size: 0.75rem;
+          color: $color-text-muted;
+        }
+      }
+    }
+
+    .action-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 1rem 0;
+
+      .btn-sync {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        height: 38px;
+        padding: 0 1.25rem;
+        border-radius: $radius-sm;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background-color: $color-accent;
+        color: #ffffff;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+
+        &:hover:not(:disabled) {
+          background-color: $color-accent-hover;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .btn-spinner {
+          width: 14px;
+          height: 14px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-top-color: #ffffff;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+      }
+
+      .helper-text {
+        font-size: 0.775rem;
+        color: $color-text-muted;
+        text-align: center;
+      }
+    }
+
+    .ingest-results-card {
+      background-color: $color-surface-subtle;
+      border: 1px solid $color-border;
+      border-radius: $radius-sm;
+      padding: 0.85rem 1rem;
+      font-size: 0.825rem;
+
+      .results-summary {
+        font-weight: 600;
+        color: $color-text-primary;
+        margin-bottom: 0.5rem;
+      }
+
+      .results-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+
+        .result-item {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 0.8rem;
+
+          .result-status-tag {
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.05rem 0.35rem;
+            border-radius: 4px;
+            background-color: #e2e8f0;
+            color: #334155;
+          }
+
+          &.parsed .result-status-tag {
+            background-color: $color-success-bg;
+            color: $color-success-text;
+          }
+
+          &.error .result-status-tag {
+            background-color: $color-danger-bg;
+            color: $color-danger-text;
+          }
+
+          .result-filename {
+            font-weight: 600;
+            color: $color-text-primary;
+          }
+
+          .result-issuer {
+            color: $color-text-secondary;
+          }
+
+          .result-err {
+            color: $color-danger-text;
+          }
+        }
+      }
+    }
+
+    .disconnect-row {
+      display: flex;
+      justify-content: center;
+      padding-top: 0.5rem;
+      border-top: 1px solid $color-border-subtle;
+
+      .btn-disconnect {
+        background: transparent;
+        border: none;
+        color: $color-danger-text;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: color 0.15s ease;
+
+        &:hover:not(:disabled) {
+          color: $color-danger-hover;
+          text-decoration: underline;
+        }
+
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
+    }
+  }
+
+  // Disconnected View
+  .disconnected-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .notice-lead {
+      margin: 0;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: $color-text-primary;
+    }
+
+    .consent-block {
+      background-color: $color-surface-subtle;
+      border: 1px solid $color-border;
+      border-radius: $radius-sm;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      &.required {
+        border-left: 3px solid $color-accent;
+      }
+
+      &.optional {
+        border-left: 3px solid #10b981;
+      }
+
+      .block-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        h3 {
+          margin: 0;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: $color-text-primary;
+        }
+      }
+
+      p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: $color-text-secondary;
+        line-height: 1.4;
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.35rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid $color-border-subtle;
+
+        input[type='checkbox'] {
+          width: 16px;
+          height: 16px;
+          accent-color: $color-accent;
+          cursor: pointer;
+        }
+
+        .checkbox-label {
+          font-size: 0.8rem;
+          font-weight: 500;
+          color: $color-text-primary;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .privacy-assurance {
+      margin: 0;
+      font-size: 0.75rem;
+      color: $color-text-muted;
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    .btn-google-connect {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      width: 100%;
+      height: 42px;
+      border-radius: $radius-sm;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background-color: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover:not(:disabled) {
+        background-color: #f9fafb;
+        border-color: #9ca3af;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: $radius-full;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: capitalize;
+
+    &.badge-active {
+      background-color: $color-success-bg;
+      color: $color-success-text;
+      border: 1px solid $color-success-border;
+
+      .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background-color: $color-success-dot;
+      }
+    }
+
+    &.badge-required {
+      background-color: $color-accent-subtle;
+      color: $color-accent;
+      border: 1px solid $color-accent-border;
+    }
+
+    &.badge-optional {
+      background-color: $color-success-bg;
+      color: $color-success-text;
+      border: 1px solid $color-success-border;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

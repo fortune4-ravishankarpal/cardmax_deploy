@@ -152,214 +152,255 @@ export default function ConsentPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="consent-page">
-        <div className="loading-state">
-          <p>Loading your privacy & consent settings…</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="consent-page">
-      <div className="header-section">
-        <h1>Privacy & Consent Settings</h1>
-        <p className="description">
-          Manage how CardMax processes your personal and financial data. Required services
-          are essential for account operation and cannot be turned off.
-        </p>
-      </div>
-
-      {message && (
-        <div className={`message ${message.type}`} role="status">
-          {message.text}
+    <div className="consent-page-wrapper">
+      <div className="consent-container">
+        {/* Breadcrumb */}
+        <div className="consent-breadcrumb">
+          <Link href="/profile" className="btn-back">
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Profile
+          </Link>
         </div>
-      )}
 
-      {/* ── 1. Account & Service ── */}
-      <div className="section-block">
-        <div className="section-title">Account & Core Service</div>
-        <div className="consent-list">
-          <div className="consent-item">
-            <div className="info">
-              <div className="item-header">
-                <h3>Identity & Account Profile</h3>
-                <span className="status-badge required">Required</span>
-              </div>
-              <p>
-                Your name, verified email, and phone number are used to identify you, secure your login,
-                and send critical account security notices.
-              </p>
-            </div>
+        {/* Header */}
+        <header className="consent-header">
+          <div className="header-text">
+            <h1>Privacy & Data Consent</h1>
+            <p>Control how CardMax processes, analyzes, and stores your financial metadata.</p>
           </div>
+        </header>
 
-          <div className="consent-item">
-            <div className="info">
-              <div className="item-header">
-                <h3>Billing & Subscriptions</h3>
-                <span className="status-badge required">Required</span>
-              </div>
-              <p>
-                Subscription status, invoices, and payment event records necessary to administer
-                your CardMax account and fulfill contractual obligations.
-              </p>
+        {/* Status Message */}
+        {message && (
+          <div className={`consent-alert ${message.type}`} role="alert">
+            <div className="alert-content">
+              <span className="alert-icon">
+                {message.type === 'success' ? (
+                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                )}
+              </span>
+              <span>{message.text}</span>
             </div>
+            <button type="button" className="alert-close" onClick={() => setMessage(null)} aria-label="Dismiss">
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* ── 2. Gmail Integration ── */}
-      <div className="section-block">
-        <div className="section-title">Gmail & Statement Data</div>
-        <div className="consent-list">
-          {summary?.gmailConnected ? (
-            <>
-              <div className="consent-item">
-                <div className="info">
-                  <div className="item-header">
-                    <h3>Gmail Connection</h3>
-                    <span className="status-badge active">Connected</span>
-                  </div>
-                  <p>
-                    Connected as <strong>{summary.gmailAddress}</strong>.
-                    CardMax uses read-only access to scan for credit card statement emails.
-                  </p>
-                  {summary.gmailConnectedAt && (
-                    <div className="meta-info">
-                      Connected since {new Date(summary.gmailConnectedAt).toLocaleDateString()}
+        {loading ? (
+          <div className="consent-loading">
+            <span className="loading-spinner" />
+            <p>Loading privacy settings…</p>
+          </div>
+        ) : (
+          <div className="consent-sections-wrapper">
+            {/* 1. Account & Core Service */}
+            <section className="consent-card">
+              <div className="card-header">
+                <h2>Account & Core Service</h2>
+                <p>Required services essential for account security and platform operations.</p>
+              </div>
+
+              <div className="consent-items-list">
+                <div className="consent-row">
+                  <div className="row-info">
+                    <div className="row-title">
+                      <h3>Identity & Account Profile</h3>
+                      <span className="badge badge-required">Required</span>
                     </div>
-                  )}
+                    <p>
+                      Your name, verified email, and phone number are used to identify your account, secure your logins, and send security alerts.
+                    </p>
+                  </div>
                 </div>
-                <div className="action-control">
-                  <button
-                    type="button"
-                    className="btn-action btn-disconnect"
-                    onClick={handleDisconnectGmail}
-                    disabled={updating === 'disconnect_gmail'}
-                  >
-                    {updating === 'disconnect_gmail' ? 'Disconnecting…' : 'Disconnect Gmail'}
-                  </button>
+
+                <div className="consent-row">
+                  <div className="row-info">
+                    <div className="row-title">
+                      <h3>Billing & Subscriptions</h3>
+                      <span className="badge badge-required">Required</span>
+                    </div>
+                    <p>
+                      Records of active tiers, invoices, and payment events necessary to administer your CardMax plan.
+                    </p>
+                  </div>
                 </div>
               </div>
+            </section>
 
-              <div className="consent-item">
-                <div className="info">
-                  <div className="item-header">
-                    <h3>Store Financial Summaries</h3>
-                    <span className={`status-badge ${summary.consents.persist_derived === 'granted' ? 'active' : 'inactive'}`}>
-                      {summary.consents.persist_derived === 'granted' ? 'Active' : 'Disabled'}
+            {/* 2. Gmail & Statement Data */}
+            <section className="consent-card">
+              <div className="card-header">
+                <h2>Gmail Statement Digestion</h2>
+                <p>Permissions regarding statement digestion and financial summary persistence.</p>
+              </div>
+
+              <div className="consent-items-list">
+                {summary?.gmailConnected ? (
+                  <>
+                    <div className="consent-row">
+                      <div className="row-info">
+                        <div className="row-title">
+                          <h3>Gmail Account Connection</h3>
+                          <span className="badge badge-active">Connected</span>
+                        </div>
+                        <p>
+                          Connected as <strong>{summary.gmailAddress}</strong>. CardMax holds read-only access strictly for statement discovery.
+                        </p>
+                        {summary.gmailConnectedAt && (
+                          <span className="meta-text">
+                            Connected since {new Date(summary.gmailConnectedAt).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="row-action">
+                        <button
+                          type="button"
+                          className="btn-disconnect"
+                          onClick={handleDisconnectGmail}
+                          disabled={updating === 'disconnect_gmail'}
+                        >
+                          {updating === 'disconnect_gmail' ? 'Disconnecting…' : 'Disconnect Gmail'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="consent-row">
+                      <div className="row-info">
+                        <div className="row-title">
+                          <h3>Store Derived Financial Summaries</h3>
+                          <span className={`badge ${summary.consents.persist_derived === 'granted' ? 'badge-active' : 'badge-inactive'}`}>
+                            {summary.consents.persist_derived === 'granted' ? 'Active' : 'Disabled'}
+                          </span>
+                        </div>
+                        <p>
+                          Allow CardMax to securely save derived summary metadata (billing cycle dates, statement amounts due) to track spending trends over time.
+                        </p>
+                      </div>
+                      <div className="row-action">
+                        <label className="switch-wrapper">
+                          <input
+                            type="checkbox"
+                            checked={summary.consents.persist_derived === 'granted'}
+                            onChange={() => handleConsentToggle('persist_derived', summary.consents.persist_derived)}
+                            disabled={updating === 'persist_derived'}
+                            aria-label="Toggle store financial summaries"
+                          />
+                          <span className="switch-slider" />
+                        </label>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="consent-row">
+                    <div className="row-info">
+                      <div className="row-title">
+                        <h3>Gmail Statements</h3>
+                        <span className="badge badge-inactive">Not Connected</span>
+                      </div>
+                      <p>
+                        Connect your Gmail with read-only access to automatically discover statements and unlock optimal reward recommendations.
+                      </p>
+                    </div>
+                    <div className="row-action">
+                      <Link href="/gmail" className="btn-connect">
+                        Connect Gmail
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* 3. Communications */}
+            <section className="consent-card">
+              <div className="card-header">
+                <h2>Marketing & Product Communications</h2>
+                <p>Control optional updates and card perk advice.</p>
+              </div>
+
+              <div className="consent-items-list">
+                <div className="consent-row">
+                  <div className="row-info">
+                    <div className="row-title">
+                      <h3>Product Updates & Credit Card Tips</h3>
+                      <span className={`badge ${summary?.marketing ? 'badge-active' : 'badge-inactive'}`}>
+                        {summary?.marketing ? 'Subscribed' : 'Off'}
+                      </span>
+                    </div>
+                    <p>
+                      Receive occasional advice on maximizing credit card bonuses, reward alerts, and new features. Unsubscribe anytime.
+                    </p>
+                    <span className="meta-text">
+                      Critical security and authentication alerts are always sent regardless of this preference.
                     </span>
                   </div>
-                  <p>
-                    Allow CardMax to store derived summary metadata (billing period dates, total amount due,
-                    and transaction counts) so you can view spending history over time. If disabled, statements
-                    are analyzed only in-session and derived summaries are not saved.
-                  </p>
-                </div>
-                <div className="action-control">
-                  <label className="toggle">
-                    <input
-                      type="checkbox"
-                      checked={summary.consents.persist_derived === 'granted'}
-                      onChange={() => handleConsentToggle('persist_derived', summary.consents.persist_derived)}
-                      disabled={updating === 'persist_derived'}
-                    />
-                    <span className="slider"></span>
-                  </label>
+                  <div className="row-action">
+                    <label className="switch-wrapper">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(summary?.marketing)}
+                        onChange={handleMarketingToggle}
+                        disabled={updating === 'marketing'}
+                        aria-label="Toggle marketing emails"
+                      />
+                      <span className="switch-slider" />
+                    </label>
+                  </div>
                 </div>
               </div>
-            </>
-          ) : (
-            <div className="consent-item">
-              <div className="info">
-                <div className="item-header">
-                  <h3>Gmail Statements</h3>
-                  <span className="status-badge inactive">Not Connected</span>
+            </section>
+
+            {/* 4. Legal Documents & Acknowledgements */}
+            <section className="consent-card">
+              <div className="card-header">
+                <h2>Legal Terms & Policies</h2>
+                <p>Governing legal documentation and accepted policy versions.</p>
+              </div>
+
+              <div className="legal-links-list">
+                <div className="legal-row">
+                  <span className="legal-name">Terms of Service</span>
+                  <div className="legal-action-group">
+                    <span className="version-pill">
+                      {summary?.legalVersions.tosVersion
+                        ? `v${summary.legalVersions.tosVersion}`
+                        : 'Accepted'}
+                    </span>
+                    <Link href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="legal-link">
+                      View Terms &rarr;
+                    </Link>
+                  </div>
                 </div>
-                <p>
-                  Connect your Gmail with read-only access to automatically import credit card statements
-                  and discover reward opportunities.
-                </p>
-              </div>
-              <div className="action-control">
-                <Link href="/gmail" className="btn-action btn-connect">
-                  Connect Gmail
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
 
-      {/* ── 3. Communications ── */}
-      <div className="section-block">
-        <div className="section-title">Communications</div>
-        <div className="consent-list">
-          <div className="consent-item">
-            <div className="info">
-              <div className="item-header">
-                <h3>Product Updates & Credit Card Tips</h3>
-                <span className={`status-badge ${summary?.marketing ? 'active' : 'inactive'}`}>
-                  {summary?.marketing ? 'Subscribed' : 'Off'}
-                </span>
+                <div className="legal-row">
+                  <span className="legal-name">Privacy Policy</span>
+                  <div className="legal-action-group">
+                    <span className="version-pill">
+                      {summary?.legalVersions.privacyNoticeVersion
+                        ? `v${summary.legalVersions.privacyNoticeVersion}`
+                        : 'Accepted'}
+                    </span>
+                    <Link href="/privacy-and-policy" target="_blank" rel="noopener noreferrer" className="legal-link">
+                      View Privacy Notice &rarr;
+                    </Link>
+                  </div>
+                </div>
               </div>
-              <p>
-                Receive occasional emails about new CardMax features, credit card reward strategies,
-                and milestone tips. You can unsubscribe at any time.
-              </p>
-              <div className="meta-info">
-                Transactional notifications (OTP codes, billing alerts, security notices) are always sent.
-              </div>
-            </div>
-            <div className="action-control">
-              <label className="toggle">
-                <input
-                  type="checkbox"
-                  checked={Boolean(summary?.marketing)}
-                  onChange={handleMarketingToggle}
-                  disabled={updating === 'marketing'}
-                />
-                <span className="slider"></span>
-              </label>
-            </div>
+            </section>
           </div>
-        </div>
-      </div>
-
-      {/* ── 4. Legal Documents & Acknowledgements ── */}
-      <div className="section-block">
-        <div className="section-title">Legal Terms & Policies</div>
-        <div className="legal-card">
-          <div className="legal-row">
-            <span className="legal-label">Terms of Service</span>
-            <div className="legal-status">
-              <span className="version-tag">
-                {summary?.legalVersions.tosVersion
-                  ? `Version ${summary.legalVersions.tosVersion}`
-                  : 'Not recorded'}
-              </span>
-              <Link href="/terms-and-conditions" target="_blank" rel="noopener noreferrer">
-                View Terms
-              </Link>
-            </div>
-          </div>
-
-          <div className="legal-row">
-            <span className="legal-label">Privacy Notice</span>
-            <div className="legal-status">
-              <span className="version-tag">
-                {summary?.legalVersions.privacyNoticeVersion
-                  ? `Version ${summary.legalVersions.privacyNoticeVersion}`
-                  : 'Not recorded'}
-              </span>
-              <Link href="/privacy-and-policy" target="_blank" rel="noopener noreferrer">
-                View Privacy Notice
-              </Link>
-            </div>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )

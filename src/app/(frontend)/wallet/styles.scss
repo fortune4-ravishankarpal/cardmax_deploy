@@ -1,213 +1,428 @@
-.wallet-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 4rem 2rem;
-  font-family: var(--font-inter, system-ui, -apple-system, sans-serif);
-  color: #e5e7eb;
+// ==========================================================================
+// CardMax SaaS Wallet Stylesheet
+// Clean, light SaaS design with unified primary accent
+// ==========================================================================
+
+$color-bg: #f8fafc;
+$color-surface: #ffffff;
+$color-surface-hover: #f1f5f9;
+$color-surface-subtle: #f8fafc;
+
+$color-text-primary: #0f172a;
+$color-text-secondary: #64748b;
+$color-text-muted: #94a3b8;
+
+$color-border: #e2e8f0;
+$color-border-subtle: #f1f5f9;
+
+$color-accent: #4f46e5;
+$color-accent-hover: #4338ca;
+$color-accent-subtle: #eef2ff;
+$color-accent-border: #c7d2fe;
+
+$color-success-text: #065f46;
+$color-success-bg: #ecfdf5;
+$color-success-border: #a7f3d0;
+
+$color-danger-text: #b91c1c;
+$color-danger-hover: #991b1b;
+$color-danger-bg: #fef2f2;
+$color-danger-border: #fecaca;
+
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 10px;
+$radius-full: 9999px;
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+
+$font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+
+.wallet-page-wrapper {
+  min-height: calc(100vh - 60px);
+  background-color: $color-bg;
+  color: $color-text-primary;
+  font-family: $font-sans;
+  padding: 1.25rem 1rem 2.5rem;
+  -webkit-font-smoothing: antialiased;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid $color-accent;
+    outline-offset: 2px;
+  }
+
+  .wallet-container {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .wallet-breadcrumb {
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: $color-text-secondary;
+      text-decoration: none;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: $color-accent;
+      }
+    }
+  }
 
   .wallet-header {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 1rem 1.25rem;
+    box-shadow: $shadow-sm;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 3rem;
+    flex-direction: column;
+    gap: 0.85rem;
 
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #f9fafb;
-      margin: 0;
-      letter-spacing: -0.02em;
+    @media (min-width: 640px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-text {
+      h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: $color-text-primary;
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0.2rem 0 0;
+        font-size: 0.825rem;
+        color: $color-text-secondary;
+      }
     }
 
     .btn-add {
-      background: linear-gradient(135deg, #4f46e5, #3b82f6);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.75rem 1.75rem;
-      border-radius: 9999px; /* Pill shape */
-      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      height: 36px;
+      padding: 0 0.95rem;
+      border-radius: $radius-sm;
+      font-size: 0.8rem;
       font-weight: 600;
+      background-color: $color-accent;
+      color: #ffffff;
+      border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      transition: background-color 0.15s ease;
+      white-space: nowrap;
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
-        background: linear-gradient(135deg, #4338ca, #2563eb);
-      }
-
-      &:active {
-        transform: translateY(0);
+        background-color: $color-accent-hover;
       }
     }
   }
 
-  .empty-state {
-    text-align: center;
-    padding: 5rem 2rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 16px;
-    border: 2px dashed rgba(255, 255, 255, 0.1);
-    color: #9ca3af;
-    backdrop-filter: blur(10px);
-    transition: border-color 0.3s ease;
+  // Overview Stats Bar
+  .wallet-stats-bar {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 0.5rem 1rem;
+    box-shadow: $shadow-sm;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 
-    &:hover {
-      border-color: rgba(255, 255, 255, 0.2);
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+
+      .stat-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: $color-text-secondary;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .stat-val {
+        font-size: 0.925rem;
+        font-weight: 700;
+        color: $color-text-primary;
+        margin-top: 0.05rem;
+
+        &.status-good {
+          color: $color-success-text;
+        }
+      }
     }
-    
-    p {
+
+    .stat-divider {
+      width: 1px;
+      height: 28px;
+      background-color: $color-border;
+    }
+  }
+
+  // Loading State
+  .wallet-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    color: $color-text-secondary;
+    gap: 0.75rem;
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid $color-border;
+      border-top-color: $color-accent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+
+  // Empty State Card
+  .empty-state-card {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 3rem 1.5rem;
+    box-shadow: $shadow-sm;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+
+    .empty-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background-color: $color-accent-subtle;
+      color: $color-accent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.25rem;
+    }
+
+    h3 {
       font-size: 1.1rem;
+      font-weight: 700;
+      color: $color-text-primary;
       margin: 0;
     }
+
+    p {
+      max-width: 440px;
+      font-size: 0.85rem;
+      color: $color-text-secondary;
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .btn-add {
+      margin-top: 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      height: 36px;
+      padding: 0 1rem;
+      border-radius: $radius-sm;
+      font-size: 0.825rem;
+      font-weight: 600;
+      background-color: $color-accent;
+      color: #ffffff;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background-color: $color-accent-hover;
+      }
+    }
   }
 
+  // Cards Grid
   .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: 960px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 
   .wallet-card {
-    /* Premium Glassmorphism Gradient */
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 1.75rem;
-    color: #fff;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 1.15rem;
+    box-shadow: $shadow-sm;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 220px;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(12px);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+    min-height: 180px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 
-    /* Micro-animation on hover */
     &:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      border-color: rgba(255, 255, 255, 0.2);
-
-      &::after {
-        opacity: 0.8;
-      }
-    }
-
-    /* Decorative overlay glow */
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
-      transform: translate(30%, -30%);
-      border-radius: 50%;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-      opacity: 0.5;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border-color: $color-accent-border;
     }
 
     &.inactive {
-      filter: grayscale(100%);
-      opacity: 0.6;
-      
-      &:hover {
-        transform: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        border-color: rgba(255, 255, 255, 0.08);
-      }
+      opacity: 0.7;
     }
 
-    .card-branding {
-      z-index: 1;
-      
-      .bank-name {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: #94a3b8;
-        margin-bottom: 0.4rem;
-        font-weight: 600;
-      }
-      
-      .card-name {
-        font-size: 1.4rem;
-        font-weight: 700;
-        letter-spacing: -0.01em;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      }
-    }
-
-    .card-details {
+    .card-top {
       display: flex;
-      gap: 2rem;
-      margin-top: 2.5rem;
-      z-index: 1;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
 
-      .detail {
+      .card-branding {
+        .bank-name {
+          font-size: 0.7rem;
+          font-weight: 600;
+          color: $color-text-secondary;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .card-name {
+          margin: 0.15rem 0 0;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: $color-text-primary;
+          line-height: 1.25;
+        }
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.45rem;
+        border-radius: $radius-full;
+        font-size: 0.68rem;
+        font-weight: 600;
+        text-transform: capitalize;
+
+        &.status-active {
+          background-color: $color-success-bg;
+          color: $color-success-text;
+          border: 1px solid $color-success-border;
+        }
+
+        &.status-inactive {
+          background-color: $color-surface-subtle;
+          color: $color-text-secondary;
+          border: 1px solid $color-border;
+        }
+      }
+    }
+
+    .card-details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      padding: 0.75rem 0;
+      border-top: 1px solid $color-border-subtle;
+      border-bottom: 1px solid $color-border-subtle;
+      margin: 0.75rem 0;
+
+      .detail-item {
         display: flex;
         flex-direction: column;
 
-        .label {
-          font-size: 0.75rem;
-          color: #94a3b8;
+        .detail-label {
+          font-size: 0.68rem;
+          font-weight: 500;
+          color: $color-text-secondary;
           text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 0.2rem;
         }
 
-        .value {
-          font-size: 1.1rem;
+        .detail-value {
+          font-size: 0.85rem;
           font-weight: 600;
-          font-family: var(--font-mono, monospace);
+          color: $color-text-primary;
+          margin-top: 0.1rem;
         }
       }
     }
 
     .card-actions {
-      position: absolute;
-      bottom: 1.5rem;
-      right: 1.5rem;
       display: flex;
-      gap: 0.75rem;
-      z-index: 1;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.4rem;
 
-      button {
-        background: rgba(255, 255, 255, 0.05);
-        color: #e2e8f0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 500;
+      .btn-card-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        height: 28px;
+        padding: 0 0.6rem;
+        border-radius: $radius-sm;
+        font-size: 0.75rem;
+        font-weight: 600;
         cursor: pointer;
-        backdrop-filter: blur(8px);
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
 
-        &:hover {
-          background: rgba(255, 255, 255, 0.15);
-          color: #fff;
-          border-color: rgba(255, 255, 255, 0.2);
+        &.secondary {
+          background-color: transparent;
+          color: $color-text-secondary;
+          border: 1px solid $color-border;
+
+          &:hover {
+            background-color: $color-surface-hover;
+            color: $color-text-primary;
+          }
         }
 
-        &.btn-remove {
-          background: rgba(239, 68, 68, 0.1);
-          color: #fca5a5;
-          border-color: rgba(239, 68, 68, 0.2);
-          
+        &.danger {
+          background-color: transparent;
+          color: $color-danger-text;
+          border: 1px solid $color-danger-border;
+
           &:hover {
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            border-color: rgba(239, 68, 68, 0.3);
+            background-color: $color-danger-bg;
+            color: $color-danger-hover;
           }
         }
       }
     }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
