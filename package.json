@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@payload-bites/audit-fields": "^1.7.0",
-    "@payload-pln/soft-delete": "1.0.3",
     "@payloadcms/db-postgres": "3.88.0",
     "@payloadcms/email-nodemailer": "^3.88.0",
     "@payloadcms/next": "3.88.0",
