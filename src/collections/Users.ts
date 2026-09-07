@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { ValidationError, type CollectionConfig } from 'payload'
 
 import { COOKIE_SECURE, COOKIE_SAME_SITE, SESSION_MAX_AGE_SECONDS } from '@/auth/constants'
 import { EMPLOYMENT_TYPES, ACCOUNT_STATUS_OPTIONS } from '@/auth/profileOptions'
@@ -51,6 +51,42 @@ export const Users: CollectionConfig = {
     },
   },
   hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (data && data.password) {
+          const pwd = String(data.password)
+          if (pwd.length < 8) {
+            throw new ValidationError({
+              errors: [{ message: 'Password must be at least 8 characters long.', path: 'password' }],
+            })
+          }
+          if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(pwd)) {
+            throw new ValidationError({
+              errors: [
+                {
+                  message:
+                    'Password must contain at least one uppercase letter, one lowercase letter, and one number.',
+                  path: 'password',
+                },
+              ],
+            })
+          }
+        }
+        return data
+      },
+    ],
+    beforeChange: [
+      ({ data, originalDoc }) => {
+        if (data) {
+          const first = data.firstName !== undefined ? data.firstName : originalDoc?.firstName
+          const last = data.lastName !== undefined ? data.lastName : originalDoc?.lastName
+          if (first || last) {
+            data.name = [first, last].filter(Boolean).join(' ').trim()
+          }
+        }
+        return data
+      },
+    ],
     beforeDelete: [
       async ({ req, id }) => {
         if (!id) return
@@ -108,26 +144,92 @@ export const Users: CollectionConfig = {
   },
   fields: [
     {
+      name: 'email',
+      type: 'email',
+      required: true,
+      unique: true,
+      index: true,
+      admin: { position: 'sidebar' },
+      validate: (value: unknown) => {
+        if (!value || typeof value !== 'string') return 'Email address is required.'
+        const trimmed = value.trim()
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        if (!emailRegex.test(trimmed)) {
+          return 'Please enter a valid email address (e.g. user@example.com).'
+        }
+        return true
+      },
+    },
+    {
       name: 'name',
       type: 'text',
       required: false,
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        description: 'Auto-generated from First Name and Last Name',
+      },
+      validate: (value: unknown) => {
+        if (!value) return true
+        if (typeof value !== 'string') return 'Name must be text.'
+        const trimmed = value.trim()
+        if (!trimmed) return true
+        if (!/^[a-zA-Z\s'-]+$/.test(trimmed)) {
+          return 'Name can only contain letters, spaces, hyphens, and apostrophes (no numbers).'
+        }
+        return true
+      },
+      hooks: {
+        beforeChange: [
+          ({ siblingData, originalDoc, value }) => {
+            const first = siblingData?.firstName !== undefined ? siblingData.firstName : originalDoc?.firstName
+            const last = siblingData?.lastName !== undefined ? siblingData.lastName : originalDoc?.lastName
+            if (first || last) {
+              return [first, last].filter(Boolean).join(' ').trim()
+            }
+            return value ?? originalDoc?.name ?? ''
+          },
+        ],
+      },
     },
     {
-      name: "firstName",
-      type: "text",
+      name: 'firstName',
+      type: 'text',
       required: false,
       admin: { position: 'sidebar' },
+      validate: (value: unknown) => {
+        if (!value) return true
+        if (typeof value !== 'string') return 'First name must be text.'
+        const trimmed = value.trim()
+        if (!trimmed) return true
+        if (trimmed.length < 2) return 'First name must be at least 2 characters.'
+        if (trimmed.length > 50) return 'First name cannot exceed 50 characters.'
+        if (!/^[a-zA-Z\s'-]+$/.test(trimmed)) {
+          return 'First name can only contain letters, spaces, hyphens, and apostrophes (numbers not allowed).'
+        }
+        return true
+      },
     },
     {
-      name: "lastName",
-      type: "text",
+      name: 'lastName',
+      type: 'text',
       required: false,
       admin: { position: 'sidebar' },
+      validate: (value: unknown) => {
+        if (!value) return true
+        if (typeof value !== 'string') return 'Last name must be text.'
+        const trimmed = value.trim()
+        if (!trimmed) return true
+        if (trimmed.length > 50) return 'Last name cannot exceed 50 characters.'
+        if (!/^[a-zA-Z\s'-]+$/.test(trimmed)) {
+          return 'Last name can only contain letters, spaces, hyphens, and apostrophes (numbers not allowed).'
+        }
+        return true
+      },
     },
     {
-      name: "dob",
-      type: "date",
+      name: 'dob',
+      type: 'date',
       required: false,
       admin: { position: 'sidebar' },
     },
@@ -135,7 +237,21 @@ export const Users: CollectionConfig = {
       name: 'phone',
       type: 'text',
       index: true,
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        placeholder: 'e.g. 9876543210 or +919876543210',
+      },
+      validate: (value: unknown) => {
+        if (!value) return true
+        if (typeof value !== 'string') return 'Phone number must be text.'
+        const trimmed = value.trim()
+        if (!trimmed) return true
+        const clean = trimmed.replace(/[\s-]/g, '')
+        if (!/^\+?[0-9]{10,15}$/.test(clean)) {
+          return 'Please enter a valid phone number (10 to 15 digits only, letters not allowed).'
+        }
+        return true
+      },
     },
     {
       name: 'authenticationProvider',
