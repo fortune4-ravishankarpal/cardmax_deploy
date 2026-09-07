@@ -39,7 +39,6 @@ $radius-lg: 10px;
 $radius-full: 9999px;
 
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-$shadow-md: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
 
 $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
 
@@ -48,7 +47,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   background-color: $color-bg;
   color: $color-text-primary;
   font-family: $font-sans;
-  padding: 1.5rem 1rem 3rem;
+  padding: 1.25rem 1rem 2.5rem;
   -webkit-font-smoothing: antialiased;
 
   * {
@@ -68,11 +67,11 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   }
 
   .profile-container {
-    max-width: 1060px;
+    max-width: 1040px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
   }
 
   // ==========================================================================
@@ -82,9 +81,9 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.75rem 1rem;
+    padding: 0.65rem 0.85rem;
     border-radius: $radius-md;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 500;
     box-shadow: $shadow-sm;
     animation: alertSlideIn 0.2s ease-out;
@@ -112,7 +111,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .alert-content {
       display: flex;
       align-items: center;
-      gap: 0.625rem;
+      gap: 0.5rem;
     }
 
     .alert-icon {
@@ -125,7 +124,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .alert-close {
       background: transparent;
       border: none;
-      padding: 0.25rem;
+      padding: 0.2rem;
       border-radius: $radius-sm;
       cursor: pointer;
       color: currentColor;
@@ -147,12 +146,12 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   .profile-header {
     background-color: $color-surface;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
-    padding: 1.25rem 1.5rem;
+    border-radius: $radius-md;
+    padding: 1rem 1.25rem;
     box-shadow: $shadow-sm;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
 
     @media (min-width: 768px) {
       flex-direction: row;
@@ -163,12 +162,12 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .header-primary {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
       min-width: 0;
 
       .avatar {
-        width: 52px;
-        height: 52px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         background-color: $color-accent-subtle;
         color: $color-accent;
@@ -176,7 +175,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.15rem;
+        font-size: 1.1rem;
         font-weight: 700;
         letter-spacing: -0.02em;
         flex-shrink: 0;
@@ -189,12 +188,12 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         .name-line {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.45rem;
           flex-wrap: wrap;
 
           h1 {
             margin: 0;
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: $color-text-primary;
             letter-spacing: -0.02em;
@@ -204,19 +203,19 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
           .status-indicator {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.15rem 0.5rem;
+            gap: 0.3rem;
+            padding: 0.1rem 0.45rem;
             background-color: $color-success-bg;
             color: $color-success-text;
             border: 1px solid $color-success-border;
             border-radius: $radius-full;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: capitalize;
 
             .dot {
-              width: 6px;
-              height: 6px;
+              width: 5px;
+              height: 5px;
               border-radius: 50%;
               background-color: $color-success-dot;
             }
@@ -225,12 +224,12 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
           .provider-pill {
             display: inline-flex;
             align-items: center;
-            padding: 0.15rem 0.5rem;
+            padding: 0.1rem 0.45rem;
             background-color: $color-surface-subtle;
             color: $color-text-secondary;
             border: 1px solid $color-border;
             border-radius: $radius-full;
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             font-weight: 500;
           }
         }
@@ -238,16 +237,16 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         .meta-list {
           display: flex;
           align-items: center;
-          gap: 0.85rem;
+          gap: 0.75rem;
           flex-wrap: wrap;
-          margin-top: 0.35rem;
-          font-size: 0.825rem;
+          margin-top: 0.25rem;
+          font-size: 0.8rem;
           color: $color-text-secondary;
 
           .meta-item {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: 0.3rem;
 
             svg {
               color: $color-text-muted;
@@ -267,10 +266,10 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       .btn-action {
         display: inline-flex;
         align-items: center;
-        gap: 0.375rem;
-        padding: 0.45rem 0.85rem;
+        gap: 0.35rem;
+        padding: 0.4rem 0.75rem;
         border-radius: $radius-sm;
-        font-size: 0.825rem;
+        font-size: 0.8rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.15s ease;
@@ -302,13 +301,13 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   }
 
   // ==========================================================================
-  // 2. Compact Overview Strip (At-a-Glance Info)
+  // 2. Compact Overview Section (At-a-Glance)
   // ==========================================================================
   .overview-strip {
     background-color: $color-surface;
     border: 1px solid $color-border;
-    border-radius: $radius-lg;
-    padding: 0.5rem 0.75rem;
+    border-radius: $radius-md;
+    padding: 0.35rem 0.5rem;
     box-shadow: $shadow-sm;
     display: grid;
     grid-template-columns: 1fr;
@@ -321,9 +320,9 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .overview-divider {
       display: none;
       width: 1px;
-      height: 36px;
+      height: 32px;
       background-color: $color-border;
-      margin: 0 0.5rem;
+      margin: 0 0.35rem;
 
       @media (min-width: 640px) {
         display: block;
@@ -333,9 +332,9 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .overview-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.6rem 0.75rem;
-      border-radius: $radius-md;
+      gap: 0.65rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: $radius-sm;
       text-decoration: none;
       color: inherit;
       transition: background-color 0.15s ease;
@@ -350,8 +349,8 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       }
 
       .item-icon {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         border-radius: $radius-sm;
         background-color: $color-accent-subtle;
         color: $color-accent;
@@ -368,7 +367,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         flex: 1;
 
         .item-label {
-          font-size: 0.72rem;
+          font-size: 0.7rem;
           font-weight: 600;
           color: $color-text-secondary;
           text-transform: uppercase;
@@ -376,11 +375,11 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         }
 
         .item-value {
-          font-size: 0.925rem;
+          font-size: 0.875rem;
           font-weight: 700;
           color: $color-text-primary;
           line-height: 1.25;
-          margin-top: 0.1rem;
+          margin-top: 0.05rem;
         }
       }
 
@@ -405,11 +404,11 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   .profile-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 1rem;
     align-items: start;
 
     @media (min-width: 900px) {
-      grid-template-columns: minmax(0, 1fr) 330px;
+      grid-template-columns: minmax(0, 1fr) 310px;
     }
   }
 
@@ -422,52 +421,26 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .content-panel {
       background-color: $color-surface;
       border: 1px solid $color-border;
-      border-radius: $radius-lg;
-      padding: 1.25rem 1.5rem;
+      border-radius: $radius-md;
+      padding: 1.15rem 1.35rem;
       box-shadow: $shadow-sm;
 
       .panel-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 1rem;
-        padding-bottom: 0.85rem;
+        padding-bottom: 0.75rem;
         border-bottom: 1px solid $color-border;
 
         h2 {
           font-size: 1.05rem;
           font-weight: 700;
           color: $color-text-primary;
-          margin: 0 0 0.2rem;
+          margin: 0 0 0.15rem;
         }
 
         p {
-          font-size: 0.825rem;
+          font-size: 0.8rem;
           color: $color-text-secondary;
           margin: 0;
           line-height: 1.35;
-        }
-
-        .btn-text-edit {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.3rem;
-          background-color: transparent;
-          border: 1px solid $color-border;
-          border-radius: $radius-sm;
-          padding: 0.35rem 0.65rem;
-          font-size: 0.775rem;
-          font-weight: 600;
-          color: $color-text-secondary;
-          cursor: pointer;
-          transition: all 0.15s ease;
-          flex-shrink: 0;
-
-          &:hover {
-            color: $color-accent;
-            border-color: $color-accent-border;
-            background-color: $color-accent-subtle;
-          }
         }
       }
     }
@@ -477,28 +450,28 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   .profile-fields-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
-    margin-top: 1rem;
+    gap: 1.15rem;
+    margin-top: 0.85rem;
 
     .fields-section {
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 0.5rem;
 
       .section-title {
-        font-size: 0.75rem;
+        font-size: 0.725rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: $color-text-secondary;
-        padding-bottom: 0.35rem;
+        padding-bottom: 0.25rem;
         border-bottom: 1px solid $color-border-subtle;
       }
 
       .fields-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 0.75rem 1.25rem;
+        gap: 0.65rem 1rem;
 
         @media (min-width: 600px) {
           grid-template-columns: repeat(2, 1fr);
@@ -508,17 +481,17 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       .field-block {
         display: flex;
         flex-direction: column;
-        padding: 0.45rem 0;
+        padding: 0.35rem 0;
 
         .field-label {
-          font-size: 0.75rem;
+          font-size: 0.725rem;
           font-weight: 500;
           color: $color-text-secondary;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.2rem;
         }
 
         .field-value {
-          font-size: 0.925rem;
+          font-size: 0.9rem;
           font-weight: 600;
           color: $color-text-primary;
           word-break: break-word;
@@ -532,18 +505,18 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
           &.email-value {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex-wrap: wrap;
 
             .verified-badge {
               display: inline-flex;
               align-items: center;
-              gap: 0.25rem;
-              padding: 0.1rem 0.4rem;
+              gap: 0.2rem;
+              padding: 0.08rem 0.35rem;
               border-radius: $radius-sm;
               background-color: $color-surface-subtle;
               border: 1px solid $color-border;
-              font-size: 0.68rem;
+              font-size: 0.65rem;
               font-weight: 600;
               color: $color-text-secondary;
               text-transform: uppercase;
@@ -553,10 +526,10 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         }
 
         .field-note {
-          font-size: 0.725rem;
+          font-size: 0.7rem;
           color: $color-text-muted;
-          margin-top: 0.25rem;
-          line-height: 1.3;
+          margin-top: 0.2rem;
+          line-height: 1.25;
         }
       }
     }
@@ -566,15 +539,15 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   // Form Styling (Edit Mode)
   // ==========================================================================
   .edit-form {
-    margin-top: 1rem;
+    margin-top: 0.85rem;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
 
     .form-fields-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1rem 1.25rem;
+      gap: 0.85rem 1rem;
 
       @media (min-width: 600px) {
         grid-template-columns: repeat(2, 1fr);
@@ -584,7 +557,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .form-field {
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.3rem;
 
       &.full-width {
         @media (min-width: 600px) {
@@ -593,7 +566,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       }
 
       label {
-        font-size: 0.785rem;
+        font-size: 0.775rem;
         font-weight: 600;
         color: $color-text-primary;
         display: flex;
@@ -601,7 +574,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         justify-content: space-between;
 
         .locked-tag {
-          font-size: 0.68rem;
+          font-size: 0.65rem;
           font-weight: 500;
           color: $color-text-muted;
           text-transform: uppercase;
@@ -612,11 +585,11 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       input,
       select {
         width: 100%;
-        height: 38px;
-        padding: 0 0.75rem;
+        height: 36px;
+        padding: 0 0.65rem;
         border: 1px solid $color-border;
         border-radius: $radius-sm;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
         color: $color-text-primary;
         background-color: $color-surface;
         font-family: inherit;
@@ -650,26 +623,26 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
 
         .currency-prefix {
           position: absolute;
-          left: 0.75rem;
-          font-size: 0.875rem;
+          left: 0.65rem;
+          font-size: 0.85rem;
           font-weight: 600;
           color: $color-text-secondary;
           pointer-events: none;
         }
 
         input {
-          padding-left: 1.6rem;
+          padding-left: 1.5rem;
         }
       }
 
       .field-help-text {
-        font-size: 0.725rem;
+        font-size: 0.7rem;
         color: $color-text-muted;
-        line-height: 1.3;
+        line-height: 1.25;
       }
 
       .field-error-msg {
-        font-size: 0.75rem;
+        font-size: 0.725rem;
         font-weight: 500;
         color: #dc2626;
       }
@@ -680,7 +653,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       align-items: center;
       justify-content: flex-end;
       gap: 0.5rem;
-      padding-top: 1rem;
+      padding-top: 0.85rem;
       border-top: 1px solid $color-border;
 
       .btn-control {
@@ -688,10 +661,10 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         align-items: center;
         justify-content: center;
         gap: 0.35rem;
-        height: 38px;
-        padding: 0 1rem;
+        height: 36px;
+        padding: 0 0.95rem;
         border-radius: $radius-sm;
-        font-size: 0.825rem;
+        font-size: 0.8rem;
         font-weight: 600;
         cursor: pointer;
         transition: all 0.15s ease;
@@ -723,8 +696,8 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         }
 
         .btn-spinner {
-          width: 14px;
-          height: 14px;
+          width: 13px;
+          height: 13px;
           border: 2px solid rgba(255, 255, 255, 0.3);
           border-top-color: #ffffff;
           border-radius: 50%;
@@ -735,28 +708,34 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   }
 
   // ==========================================================================
-  // Sidebar Column
+  // Sidebar Column: Unified Card with Clean Sections
   // ==========================================================================
   .sidebar-column {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
+    min-width: 0;
 
-    .side-panel {
+    .sidebar-card {
       background-color: $color-surface;
       border: 1px solid $color-border;
-      border-radius: $radius-lg;
-      padding: 1rem 1.25rem;
+      border-radius: $radius-md;
       box-shadow: $shadow-sm;
+      display: flex;
+      flex-direction: column;
 
-      .side-panel-header {
-        margin-bottom: 0.75rem;
+      .sidebar-section {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid $color-border-subtle;
 
-        h3 {
-          font-size: 0.875rem;
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .section-heading {
+          font-size: 0.75rem;
           font-weight: 700;
-          color: $color-text-primary;
-          margin: 0;
+          color: $color-text-secondary;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin: 0 0 0.6rem;
         }
       }
     }
@@ -765,13 +744,13 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     .nav-services-list {
       display: flex;
       flex-direction: column;
-      gap: 0.35rem;
+      gap: 0.25rem;
 
       .nav-service-item {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        padding: 0.6rem 0.65rem;
+        gap: 0.65rem;
+        padding: 0.5rem 0.55rem;
         border-radius: $radius-sm;
         text-decoration: none;
         color: inherit;
@@ -787,8 +766,8 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         }
 
         .service-icon {
-          width: 28px;
-          height: 28px;
+          width: 26px;
+          height: 26px;
           border-radius: $radius-sm;
           background-color: $color-accent-subtle;
           color: $color-accent;
@@ -805,19 +784,19 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
           min-width: 0;
 
           .service-title {
-            font-size: 0.825rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: $color-text-primary;
             line-height: 1.2;
           }
 
           .service-desc {
-            font-size: 0.72rem;
+            font-size: 0.7rem;
             color: $color-text-secondary;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-top: 0.1rem;
+            margin-top: 0.05rem;
           }
         }
 
@@ -829,36 +808,36 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       }
     }
 
-    // Communications Toggle Card
+    // Communications Toggle Row
     .toggle-row {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 0.65rem;
 
       .toggle-info {
         flex: 1;
 
         .toggle-title {
-          font-size: 0.825rem;
+          font-size: 0.8rem;
           font-weight: 600;
           color: $color-text-primary;
           display: block;
         }
 
         .toggle-desc {
-          font-size: 0.725rem;
+          font-size: 0.7rem;
           color: $color-text-secondary;
-          margin: 0.2rem 0 0;
-          line-height: 1.35;
+          margin: 0.15rem 0 0;
+          line-height: 1.3;
         }
       }
 
       .switch-wrapper {
         position: relative;
         display: inline-block;
-        width: 38px;
-        height: 22px;
+        width: 36px;
+        height: 20px;
         flex-shrink: 0;
         margin-top: 0.1rem;
 
@@ -892,8 +871,8 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
           &:before {
             position: absolute;
             content: '';
-            height: 16px;
-            width: 16px;
+            height: 14px;
+            width: 14px;
             left: 3px;
             bottom: 3px;
             background-color: #ffffff;
@@ -905,18 +884,18 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       }
     }
 
-    // Session / Sign Out Panel (Restrained, Professional Danger Treatment)
-    .session-panel {
+    // Session / Sign Out Section
+    .session-section {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: 0.65rem;
 
       .session-info {
         display: flex;
         flex-direction: column;
 
         .session-label {
-          font-size: 0.75rem;
+          font-size: 0.725rem;
           font-weight: 600;
           color: $color-text-secondary;
           text-transform: uppercase;
@@ -924,9 +903,9 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         }
 
         .session-desc {
-          font-size: 0.8rem;
+          font-size: 0.775rem;
           color: $color-text-muted;
-          margin-top: 0.15rem;
+          margin-top: 0.1rem;
           word-break: break-all;
         }
       }
@@ -935,11 +914,11 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.4rem;
-        height: 36px;
+        gap: 0.35rem;
+        height: 34px;
         width: 100%;
         border-radius: $radius-sm;
-        font-size: 0.8rem;
+        font-size: 0.775rem;
         font-weight: 600;
         background-color: transparent;
         color: $color-danger-text;
@@ -967,29 +946,29 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
 // ==========================================================================
 @media (max-width: 767px) {
   .profile-page-wrapper {
-    padding: 1rem 0.75rem 2rem;
+    padding: 0.85rem 0.65rem 2rem;
 
     .profile-header {
-      padding: 1rem;
+      padding: 0.85rem;
 
       .header-primary {
         align-items: flex-start;
 
         .avatar {
-          width: 44px;
-          height: 44px;
-          font-size: 1rem;
+          width: 42px;
+          height: 42px;
+          font-size: 0.95rem;
         }
 
         .user-details {
           .name-line {
             h1 {
-              font-size: 1.15rem;
+              font-size: 1.1rem;
             }
           }
 
           .meta-list {
-            gap: 0.5rem;
+            gap: 0.4rem;
             flex-direction: column;
             align-items: flex-start;
           }
@@ -1007,16 +986,16 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     }
 
     .overview-strip {
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.4rem;
       gap: 0.25rem;
 
       .overview-item {
-        padding: 0.5rem 0.6rem;
+        padding: 0.45rem 0.5rem;
       }
     }
 
     .main-column .content-panel {
-      padding: 1rem;
+      padding: 0.85rem;
     }
 
     .edit-form .form-action-bar {
