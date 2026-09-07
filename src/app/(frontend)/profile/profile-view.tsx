@@ -135,7 +135,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
       }))
 
       setIsEditing(false)
-      setAlert({ text: 'Profile updated successfully!', type: 'success' })
+      setAlert({ text: 'Profile updated successfully.', type: 'success' })
     } catch (err: any) {
       setAlert({ text: err.message || 'Error updating profile.', type: 'error' })
     } finally {
@@ -161,7 +161,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
       setUser((prev) => ({ ...prev, marketingConsent: nextVal }))
       setAlert({
         text: nextVal
-          ? 'Subscribed to product updates & reward tips.'
+          ? 'Subscribed to product updates & recommendations.'
           : 'Unsubscribed from marketing communications.',
         type: 'success',
       })
@@ -194,7 +194,17 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
         {alert && (
           <div className={`profile-alert ${alert.type}`} role="alert">
             <div className="alert-content">
-              <span className="alert-icon">{alert.type === 'success' ? '✓' : '⚠️'}</span>
+              <span className="alert-icon" aria-hidden="true">
+                {alert.type === 'success' ? (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                )}
+              </span>
               <span>{alert.text}</span>
             </div>
             <button
@@ -203,239 +213,247 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
               onClick={() => setAlert(null)}
               aria-label="Dismiss notification"
             >
-              &times;
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         )}
 
-        {/* Hero Identity Banner */}
-        <section className="profile-hero">
-          <div className="hero-main">
-            <div className="hero-identity">
-              <div className="avatar" aria-hidden="true">
-                {getInitials(user.name, user.email)}
-              </div>
-              <div className="user-meta">
-                <div className="name-row">
-                  <h1>{user.name || 'CardMax Member'}</h1>
-                  <span className={`badge status-${user.accountStatus || 'active'}`}>
-                    {user.accountStatus || 'Active'}
-                  </span>
-                  <span className="badge provider-badge">
-                    {user.authenticationProvider === 'google'
-                      ? 'Google Account'
-                      : 'Verified Member'}
-                  </span>
-                </div>
-                <div className="contact-info">
-                  {user.email && (
-                    <span>
-                      <svg
-                        width="15"
-                        height="15"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        />
-                      </svg>
-                      {user.email}
-                    </span>
-                  )}
-                  {user.phone && (
-                    <span>
-                      <svg
-                        width="15"
-                        height="15"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                        />
-                      </svg>
-                      {user.phone}
-                    </span>
-                  )}
-                </div>
-              </div>
+        {/* 1. Compact Profile Header */}
+        <section className="profile-header" aria-label="Profile identity header">
+          <div className="header-primary">
+            <div className="avatar" aria-hidden="true">
+              {getInitials(user.name, user.email)}
             </div>
 
-            <div className="hero-actions">
-              {!isEditing ? (
-                <button
-                  type="button"
-                  id="btn-edit-profile-hero"
-                  className="btn-hero primary"
-                  onClick={handleStartEdit}
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                  Edit Profile
-                </button>
-              ) : (
-                <button type="button" className="btn-hero secondary" onClick={handleCancelEdit}>
-                  Cancel Edit
-                </button>
-              )}
-              <Link href="/settings/consent" className="btn-hero secondary">
-                <svg
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-                Privacy & Consent
-              </Link>
+            <div className="user-details">
+              <div className="name-line">
+                <h1>{user.name || 'CardMax Member'}</h1>
+                <span className="status-indicator">
+                  <span className="dot" />
+                  {user.accountStatus || 'Active'}
+                </span>
+                <span className="provider-pill">
+                  {user.authenticationProvider === 'google' ? 'Google Account' : 'Verified Email'}
+                </span>
+              </div>
+
+              <div className="meta-list">
+                {user.email && (
+                  <span className="meta-item">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    {user.email}
+                  </span>
+                )}
+                {user.phone && (
+                  <span className="meta-item">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    {user.phone}
+                  </span>
+                )}
+                {user.createdAt && (
+                  <span className="meta-item" suppressHydrationWarning>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    Member since {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </span>
+                )}
+              </div>
             </div>
+          </div>
+
+          <div className="header-actions">
+            {!isEditing ? (
+              <button
+                type="button"
+                id="btn-edit-profile-hero"
+                className="btn-action primary"
+                onClick={handleStartEdit}
+              >
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Edit Profile
+              </button>
+            ) : (
+              <button type="button" className="btn-action secondary" onClick={handleCancelEdit}>
+                Cancel Edit
+              </button>
+            )}
+
+            <Link href="/settings/consent" className="btn-action secondary">
+              <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Privacy & Consent
+            </Link>
           </div>
         </section>
 
-        {/* Quick Stats Grid */}
-        <section className="stats-grid" aria-label="Account statistics">
-          <Link href="/wallet" className="stat-card">
-            <div className="stat-content">
-              <div className="stat-label">Wallet Cards</div>
-              <div className="stat-value">{user.stats?.activeCardsCount ?? 0} Active</div>
-              <div className="stat-link">Manage wallet &rarr;</div>
+        {/* 2. Compact Account Overview Strip */}
+        <section className="overview-strip" aria-label="Account Overview">
+          <Link href="/wallet" className="overview-item">
+            <div className="item-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
             </div>
-            <div className="stat-icon cards" aria-hidden="true">
-              💳
+            <div className="item-info">
+              <span className="item-label">Active Cards</span>
+              <span className="item-value">{user.stats?.activeCardsCount ?? 0} In Wallet</span>
             </div>
+            <span className="item-action">Manage &rarr;</span>
           </Link>
 
-          <Link href="/subscription" className="stat-card">
-            <div className="stat-content">
-              <div className="stat-label">Membership Tier</div>
-              <div className="stat-value">
+          <div className="overview-divider" aria-hidden="true" />
+
+          <Link href="/subscription" className="overview-item">
+            <div className="item-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <div className="item-info">
+              <span className="item-label">Membership</span>
+              <span className="item-value">
                 {user.stats?.subscriptionStatus === 'active' ? 'CardMax Pro' : 'Free Tier'}
-              </div>
-              <div className="stat-link">View benefits &rarr;</div>
+              </span>
             </div>
-            <div className="stat-icon plan" aria-hidden="true">
-              ⭐
-            </div>
+            <span className="item-action">View Plan &rarr;</span>
           </Link>
 
-          <Link href="/settings/consent" className="stat-card">
-            <div className="stat-content">
-              <div className="stat-label">Consent & Security</div>
-              <div className="stat-value">Compliant</div>
-              <div className="stat-link">Review permissions &rarr;</div>
+          <div className="overview-divider" aria-hidden="true" />
+
+          <Link href="/settings/consent" className="overview-item">
+            <div className="item-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
             </div>
-            <div className="stat-icon security" aria-hidden="true">
-              🛡️
+            <div className="item-info">
+              <span className="item-label">Account Security</span>
+              <span className="item-value">Protected & Compliant</span>
             </div>
+            <span className="item-action">Permissions &rarr;</span>
           </Link>
         </section>
 
-        {/* Two-Column Layout */}
+        {/* 3. Main Content: Two-Column SaaS Layout */}
         <div className="profile-layout">
           {/* Main Column */}
-          <div className="main-column">
-            {/* Personal & Financial Details Card */}
-            <article className="profile-card">
-              <div className="card-header">
-                <div className="card-title-group">
-                  <h2>Personal & Financial Information</h2>
-                  <p>Details used to personalize your rewards and credit recommendations.</p>
+          <main className="main-column">
+            <div className="content-panel">
+              <div className="panel-header">
+                <div>
+                  <h2>{isEditing ? 'Edit Profile Details' : 'Account Information'}</h2>
+                  <p>
+                    {isEditing
+                      ? 'Update your personal information and financial profile.'
+                      : 'Personal and financial data used to personalize your rewards and credit advice.'}
+                  </p>
                 </div>
-                <button
-                  type="button"
-                  id="btn-edit-details"
-                  className={`btn-edit-toggle ${isEditing ? 'active' : ''}`}
-                  onClick={() => (isEditing ? handleCancelEdit() : handleStartEdit())}
-                >
-                  {isEditing ? 'Cancel' : 'Edit Info'}
-                </button>
+                {!isEditing && (
+                  <button
+                    type="button"
+                    id="btn-edit-details"
+                    className="btn-text-edit"
+                    onClick={handleStartEdit}
+                  >
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                    Edit
+                  </button>
+                )}
               </div>
 
               {!isEditing ? (
-                /* View Mode */
-                <div className="details-grid">
-                  <div className="detail-item">
-                    <span className="detail-label">Full Name</span>
-                    <span className={`detail-value ${!user.name ? 'empty' : ''}`}>
-                      {user.name || 'Not provided'}
-                    </span>
+                /* View Mode: Clean Field-Based Hierarchy */
+                <div className="profile-fields-wrapper">
+                  {/* Personal Information Group */}
+                  <div className="fields-section">
+                    <div className="section-title">Personal Information</div>
+                    <div className="fields-grid">
+                      <div className="field-block">
+                        <span className="field-label">Full Name</span>
+                        <span className={`field-value ${!user.name ? 'empty' : ''}`}>
+                          {user.name || 'Not specified'}
+                        </span>
+                      </div>
+
+                      <div className="field-block">
+                        <span className="field-label">Email Address</span>
+                        <span className="field-value email-value">
+                          {user.email || 'None'}
+                          <span className="verified-badge" title="Authenticated account identifier">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                              <path d="M7 11V7a5 5 0 0110 0v4" />
+                            </svg>
+                            Primary ID
+                          </span>
+                        </span>
+                      </div>
+
+                      <div className="field-block">
+                        <span className="field-label">Phone Number</span>
+                        <span className={`field-value ${!user.phone ? 'empty' : ''}`}>
+                          {user.phone || 'Not specified'}
+                        </span>
+                      </div>
+
+                      <div className="field-block">
+                        <span className="field-label">Member Since</span>
+                        <span className="field-value" suppressHydrationWarning>
+                          {user.createdAt
+                            ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })
+                            : 'Recent member'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="detail-item">
-                    <span className="detail-label">Email Address</span>
-                    <span className="detail-value">{user.email || 'None'}</span>
-                    <span className="detail-hint">Primary login identifier</span>
-                  </div>
+                  {/* Financial Information Group */}
+                  <div className="fields-section">
+                    <div className="section-title">Financial Information</div>
+                    <div className="fields-grid">
+                      <div className="field-block">
+                        <span className="field-label">Monthly Income</span>
+                        <span className={`field-value ${user.income == null ? 'empty' : ''}`}>
+                          {user.income != null ? `${formatCurrency(user.income)} / month` : 'Not specified'}
+                        </span>
+                        <span className="field-note">Used to customize credit card eligibility and reward limits</span>
+                      </div>
 
-                  <div className="detail-item">
-                    <span className="detail-label">Phone Number</span>
-                    <span className={`detail-value ${!user.phone ? 'empty' : ''}`}>
-                      {user.phone || 'Not provided'}
-                    </span>
-                  </div>
-
-                  <div className="detail-item">
-                    <span className="detail-label">Monthly Income</span>
-                    <span className={`detail-value ${user.income == null ? 'empty' : ''}`}>
-                      {user.income != null
-                        ? `${formatCurrency(user.income)} / month`
-                        : 'Not specified'}
-                    </span>
-                  </div>
-
-                  <div className="detail-item">
-                    <span className="detail-label">Employment Status</span>
-                    <span className={`detail-value ${!employmentLabel ? 'empty' : ''}`}>
-                      {employmentLabel || 'Not specified'}
-                    </span>
-                  </div>
-
-                  <div className="detail-item">
-                    <span className="detail-label">Member Since</span>
-                    <span className="detail-value" suppressHydrationWarning>
-                      {user.createdAt
-                        ? new Date(user.createdAt).toLocaleDateString(undefined, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })
-                        : 'Recent'}
-                    </span>
+                      <div className="field-block">
+                        <span className="field-label">Employment Type</span>
+                        <span className={`field-value ${!employmentLabel ? 'empty' : ''}`}>
+                          {employmentLabel || 'Not specified'}
+                        </span>
+                        <span className="field-note">Helps recommend cards matching your career profile</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ) : (
-                /* Edit Mode */
-                <form className="profile-form" onSubmit={handleSaveProfile}>
-                  <div className="form-grid">
-                    <div className="form-group">
+                /* Edit Mode Form */
+                <form className="edit-form" onSubmit={handleSaveProfile}>
+                  <div className="form-fields-grid">
+                    <div className="form-field">
                       <label htmlFor="name-input">Full Name *</label>
                       <input
                         id="name-input"
@@ -444,12 +462,16 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Your full name"
                         required
+                        className={formErrors.name ? 'has-error' : ''}
                       />
-                      {formErrors.name && <span className="field-error">{formErrors.name}</span>}
+                      {formErrors.name && <span className="field-error-msg">{formErrors.name}</span>}
                     </div>
 
-                    <div className="form-group">
-                      <label htmlFor="email-input">Email Address</label>
+                    <div className="form-field">
+                      <label htmlFor="email-input">
+                        Email Address
+                        <span className="locked-tag">Locked</span>
+                      </label>
                       <input
                         id="email-input"
                         type="email"
@@ -457,12 +479,12 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                         disabled
                         title="Email is locked to your authenticated identity."
                       />
-                      <span className="field-help">
-                        Locked to your authenticated account credentials.
+                      <span className="field-help-text">
+                        Tied to your authenticated CardMax account credentials.
                       </span>
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-field">
                       <label htmlFor="phone-input">Phone Number</label>
                       <input
                         id="phone-input"
@@ -470,14 +492,15 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+91 9876543210"
+                        className={formErrors.phone ? 'has-error' : ''}
                       />
-                      {formErrors.phone && <span className="field-error">{formErrors.phone}</span>}
+                      {formErrors.phone && <span className="field-error-msg">{formErrors.phone}</span>}
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-field">
                       <label htmlFor="income-input">Monthly Income (INR)</label>
-                      <div className="input-affix-wrapper">
-                        <span className="affix">₹</span>
+                      <div className="input-currency-wrapper">
+                        <span className="currency-prefix">₹</span>
                         <input
                           id="income-input"
                           type="number"
@@ -486,17 +509,19 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                           value={formData.income}
                           onChange={(e) => setFormData({ ...formData, income: e.target.value })}
                           placeholder="75000"
+                          className={formErrors.income ? 'has-error' : ''}
                         />
                       </div>
-                      {formErrors.income && (
-                        <span className="field-error">{formErrors.income}</span>
+                      {formErrors.income ? (
+                        <span className="field-error-msg">{formErrors.income}</span>
+                      ) : (
+                        <span className="field-help-text">
+                          Used to optimize rewards, eligibility, and spend goals.
+                        </span>
                       )}
-                      <span className="field-help">
-                        Used to tailor reward thresholds and card recommendations.
-                      </span>
                     </div>
 
-                    <div className="form-group">
+                    <div className="form-field full-width">
                       <label htmlFor="employment-select">Employment Type</label>
                       <select
                         id="employment-select"
@@ -515,10 +540,10 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                     </div>
                   </div>
 
-                  <div className="form-actions">
+                  <div className="form-action-bar">
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn-control secondary"
                       onClick={handleCancelEdit}
                       disabled={saving}
                     >
@@ -527,12 +552,13 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                     <button
                       type="submit"
                       id="btn-save-profile"
-                      className="btn btn-primary"
+                      className="btn-control primary"
                       disabled={saving}
                     >
                       {saving ? (
                         <>
-                          <span className="spinner" /> Saving…
+                          <span className="btn-spinner" aria-hidden="true" />
+                          Saving…
                         </>
                       ) : (
                         'Save Changes'
@@ -541,70 +567,96 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                   </div>
                 </form>
               )}
-            </article>
-          </div>
+            </div>
+          </main>
 
-          {/* Side Column */}
-          <aside className="side-column">
-            {/* Quick Links Card */}
-            <div className="profile-card">
-              <div className="card-header">
-                <div className="card-title-group">
-                  <h2>Connected Services</h2>
-                </div>
+          {/* Sidebar Column */}
+          <aside className="sidebar-column">
+            {/* Connected Services Panel */}
+            <div className="side-panel">
+              <div className="side-panel-header">
+                <h3>Connected Services</h3>
               </div>
 
-              <nav className="quick-links-list" aria-label="Connected Services">
-                <Link href="/wallet" className="quick-link-item">
-                  <div className="link-left">
-                    <span className="link-icon">💳</span>
-                    <span>My Credit Cards</span>
+              <nav className="nav-services-list" aria-label="Connected Services">
+                <Link href="/wallet" className="nav-service-item">
+                  <div className="service-icon">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <rect x="2" y="5" width="20" height="14" rx="2" />
+                      <line x1="2" y1="10" x2="22" y2="10" />
+                    </svg>
                   </div>
-                  <span className="link-arrow">&rarr;</span>
+                  <div className="service-details">
+                    <span className="service-title">My Credit Cards</span>
+                    <span className="service-desc">Manage cards & reward rules</span>
+                  </div>
+                  <svg className="service-chevron" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
 
-                <Link href="/subscription" className="quick-link-item">
-                  <div className="link-left">
-                    <span className="link-icon">⭐</span>
-                    <span>Subscription & Plans</span>
+                <Link href="/subscription" className="nav-service-item">
+                  <div className="service-icon">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
                   </div>
-                  <span className="link-arrow">&rarr;</span>
+                  <div className="service-details">
+                    <span className="service-title">Subscription & Plans</span>
+                    <span className="service-desc">CardMax Pro tier & benefits</span>
+                  </div>
+                  <svg className="service-chevron" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
 
-                <Link href="/settings/consent" className="quick-link-item">
-                  <div className="link-left">
-                    <span className="link-icon">🛡️</span>
-                    <span>Privacy & Consent</span>
+                <Link href="/settings/consent" className="nav-service-item">
+                  <div className="service-icon">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
                   </div>
-                  <span className="link-arrow">&rarr;</span>
+                  <div className="service-details">
+                    <span className="service-title">Privacy & Consent</span>
+                    <span className="service-desc">Data sharing & security permissions</span>
+                  </div>
+                  <svg className="service-chevron" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
 
-                <Link href="/gmail" className="quick-link-item">
-                  <div className="link-left">
-                    <span className="link-icon">✉️</span>
-                    <span>Gmail Statement Sync</span>
+                <Link href="/gmail" className="nav-service-item">
+                  <div className="service-icon">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                   </div>
-                  <span className="link-arrow">&rarr;</span>
+                  <div className="service-details">
+                    <span className="service-title">Gmail Statement Sync</span>
+                    <span className="service-desc">Automated statement digestion</span>
+                  </div>
+                  <svg className="service-chevron" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
                 </Link>
               </nav>
             </div>
 
-            {/* Email Preferences Card */}
-            <div className="profile-card">
-              <div className="card-header">
-                <div className="card-title-group">
-                  <h2>Communications</h2>
-                </div>
+            {/* Communication Preferences Panel */}
+            <div className="side-panel">
+              <div className="side-panel-header">
+                <h3>Communications</h3>
               </div>
 
-              <div className="preference-row">
-                <div className="pref-text">
-                  <h3>Product Updates & Tips</h3>
-                  <p>
-                    Receive occasional updates about new features and rewards optimization advice.
+              <div className="toggle-row">
+                <div className="toggle-info">
+                  <span className="toggle-title">Product Updates & Tips</span>
+                  <p className="toggle-desc">
+                    Receive reward optimization advice and new card feature alerts.
                   </p>
                 </div>
-                <label className="toggle-switch">
+
+                <label className="switch-wrapper">
                   <input
                     type="checkbox"
                     checked={Boolean(user.marketingConsent)}
@@ -612,41 +664,33 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                     disabled={updatingMarketing}
                     aria-label="Toggle product updates"
                   />
-                  <span className="slider" />
+                  <span className="switch-slider" />
                 </label>
               </div>
             </div>
 
-            {/* Sign Out Card */}
-            <div className="profile-card card-danger">
-              <div className="card-header">
-                <div className="card-title-group">
-                  <h2>Account Session</h2>
-                </div>
+            {/* Account Session / Sign Out Panel */}
+            <div className="side-panel session-panel">
+              <div className="session-info">
+                <span className="session-label">Current Session</span>
+                <span className="session-desc">Signed in as {user.email || 'user'}</span>
               </div>
 
               <button
                 type="button"
                 id="btn-logout"
-                className="btn-logout"
+                className="btn-signout"
                 onClick={handleLogout}
                 disabled={loggingOut}
               >
-                <svg
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
+                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                {loggingOut ? 'Signing out…' : 'Sign Out of Account'}
+                {loggingOut ? 'Signing out…' : 'Sign Out'}
               </button>
             </div>
           </aside>
