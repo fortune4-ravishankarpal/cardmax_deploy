@@ -53,21 +53,48 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
               }
           }
           
-          // Handle payment records (payment.captured, payment.failed, subscription.charged)
+          // Handle payment records (payment.captured, payment.failed, payment.authorized, subscription.charged)
           const paymentEntity = payloadObj.payload?.payment?.entity
-          const subIdForPayment =
+          let subIdForPayment =
             paymentEntity?.subscription_id ||
             paymentEntity?.notes?.subscription_id ||
-            payloadObj.payload?.subscription?.entity?.id
+            payloadObj.payload?.subscription?.entity?.id ||
+            payloadObj.payload?.invoice?.entity?.subscription_id
+
+          // Fallback: If subscription ID is not in payment entity, resolve via invoice
+          if (!subIdForPayment && paymentEntity?.invoice_id) {
+            try {
+              const { RazorpayProvider } = await import('../../payments/providers/razorpay')
+              const provider = new RazorpayProvider()
+              const invoice = await provider.getInvoice(paymentEntity.invoice_id)
+              if (invoice?.subscription_id) {
+                subIdForPayment = invoice.subscription_id
+              }
+            } catch (invErr) {
+              req.payload.logger.error({ err: invErr }, 'Error fetching invoice from Razorpay to resolve subscription')
+            }
+          }
 
           if (paymentEntity && subIdForPayment) {
+            const paymentStatusMap: Record<string, 'authorized' | 'captured' | 'failed' | 'refunded'> = {
+              authorized: 'authorized',
+              captured: 'captured',
+              failed: 'failed',
+              refunded: 'refunded',
+            }
+            const paymentStatus =
+              paymentStatusMap[paymentEntity.status] ||
+              (payloadObj.event === 'payment.failed' ? 'failed' : 'captured')
+
             // Ensure subscription state is synced upon payment confirmation
-            if (!syncResult && subIdForPayment) {
-              try {
-                syncResult = await SubscriptionService.syncSubscription(subIdForPayment)
-              } catch (syncErr) {
-                req.payload.logger.error({ err: syncErr }, 'Error syncing subscription from payment event')
-              }
+            try {
+              syncResult = await SubscriptionService.syncSubscription(subIdForPayment, {
+                paymentStatus,
+                paymentEntity,
+                providerEventId: event.providerEventId,
+              })
+            } catch (syncErr) {
+              req.payload.logger.error({ err: syncErr }, 'Error syncing subscription from payment event')
             }
 
             const subs = await req.payload.find({
@@ -79,15 +106,6 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
 
             if (subs.docs.length > 0) {
               const sub = subs.docs[0]
-              const paymentStatusMap: Record<string, 'authorized' | 'captured' | 'failed' | 'refunded'> = {
-                authorized: 'authorized',
-                captured: 'captured',
-                failed: 'failed',
-                refunded: 'refunded',
-              }
-              const paymentStatus =
-                paymentStatusMap[paymentEntity.status] ||
-                (payloadObj.event === 'payment.failed' ? 'failed' : 'captured')
 
               try {
                 const existingPayments = await req.payload.find({
@@ -98,12 +116,18 @@ export const processProviderEventTask: TaskConfig<'processProviderEvent'> = {
                 })
 
                 if (existingPayments.docs.length > 0) {
+                  const currentPayment = existingPayments.docs[0]
+                  const finalStatus =
+                    currentPayment.status === 'captured' && paymentStatus === 'authorized'
+                      ? 'captured'
+                      : paymentStatus
+
                   await req.payload.update({
                     collection: 'subscription-payments',
-                    id: existingPayments.docs[0].id,
+                    id: currentPayment.id,
                     overrideAccess: true,
                     data: {
-                      status: paymentStatus,
+                      status: finalStatus,
                       rawEvent: payloadObj,
                     },
                   })

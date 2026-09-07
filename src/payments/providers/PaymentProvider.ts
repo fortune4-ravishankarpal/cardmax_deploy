@@ -12,8 +12,8 @@ export interface SubscriptionDetails {
   id: string
   planId: string
   status: 'active' | 'created' | 'authenticated' | 'pending' | 'halted' | 'cancelled' | 'completed' | 'expired'
-  currentStart: Date
-  currentEnd: Date
+  currentStart?: Date | null
+  currentEnd?: Date | null
   chargeAt?: Date
   endedAt?: Date
 }
@@ -43,12 +43,24 @@ export interface PaymentProvider {
   /**
    * Creates a new subscription for a customer
    */
-  createSubscription(providerPlanId: string, customerId?: string): Promise<{ id: string; shortUrl: string }>
+  createSubscription(
+    providerPlanId: string,
+    customerId?: string,
+    options?: {
+      startAt?: number
+      notes?: Record<string, string>
+    }
+  ): Promise<{ id: string; shortUrl: string }>
 
   /**
    * Retrieves subscription details from the provider
    */
   getSubscription(providerSubscriptionId: string): Promise<SubscriptionDetails>
+
+  /**
+   * Retrieves invoice details from the provider
+   */
+  getInvoice?(invoiceId: string): Promise<any>
 
   /**
    * Cancels an active subscription

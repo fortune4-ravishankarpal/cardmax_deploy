@@ -52,7 +52,11 @@ export class RazorpayProvider implements PaymentProvider {
 
   async createSubscription(
     providerPlanId: string,
-    customerId?: string
+    customerId?: string,
+    options?: {
+      startAt?: number
+      notes?: Record<string, string>
+    }
   ): Promise<{ id: string; shortUrl: string }> {
     const payload: any = {
       plan_id: providerPlanId,
@@ -66,12 +70,24 @@ export class RazorpayProvider implements PaymentProvider {
         payload.customer_id = customerId;
     }
 
+    if (options?.startAt) {
+      payload.start_at = options.startAt
+    }
+
+    if (options?.notes) {
+      payload.notes = options.notes
+    }
+
     const subscription = await this.client.subscriptions.create(payload)
 
     return {
       id: subscription.id,
       shortUrl: subscription.short_url,
     }
+  }
+
+  async getInvoice(invoiceId: string): Promise<any> {
+    return await this.client.invoices.fetch(invoiceId)
   }
 
   async getSubscription(providerSubscriptionId: string): Promise<SubscriptionDetails> {
@@ -81,8 +97,8 @@ export class RazorpayProvider implements PaymentProvider {
       id: subscription.id,
       planId: subscription.plan_id,
       status: subscription.status as SubscriptionDetails['status'],
-      currentStart: new Date(subscription.current_start * 1000),
-      currentEnd: new Date(subscription.current_end * 1000),
+      currentStart: subscription.current_start ? new Date(subscription.current_start * 1000) : null,
+      currentEnd: subscription.current_end ? new Date(subscription.current_end * 1000) : null,
       chargeAt: subscription.charge_at ? new Date(subscription.charge_at * 1000) : undefined,
       endedAt: subscription.ended_at ? new Date(subscription.ended_at * 1000) : undefined,
     }

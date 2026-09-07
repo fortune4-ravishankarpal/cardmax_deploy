@@ -13,7 +13,6 @@ export default function CheckoutPage() {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        // Use the custom endpoint that overrides access to bypass Payload's strict Drafts permission checks
         const res = await fetch('/api/subscription-plans/active')
         const data = await res.json()
 
@@ -38,16 +37,15 @@ export default function CheckoutPage() {
       return
     }
 
-    // Fire the analytics event
     fetch('/api/track', {
       method: 'POST',
       body: JSON.stringify({
         event: 'checkout_button_clicked',
         category: 'monetization',
         properties: { planId: selectedPlanId },
-        url: window.location.pathname
-      })
-    }).catch(() => {}) // Catch network errors so it doesn't break checkout
+        url: window.location.pathname,
+      }),
+    }).catch(() => {})
 
     setLoading(true)
     setError('')
@@ -64,7 +62,6 @@ export default function CheckoutPage() {
         throw new Error(data.error || 'Checkout failed')
       }
 
-      // Redirect to Razorpay hosted checkout
       if (data.shortUrl) {
         window.location.href = data.shortUrl
       }
@@ -80,56 +77,41 @@ export default function CheckoutPage() {
   return (
     <div className="checkout-page">
       <div className="checkout-container">
-        <h1>Complete Your Subscription</h1>
-        <p className="subtitle">Choose a plan to start your free trial for CardMax Pro.</p>
+        <div className="header">
+          <h1>Complete Your Subscription</h1>
+          <p className="subtitle">Choose a plan to start your free trial for CardMax Pro.</p>
+        </div>
 
         {fetchingPlans ? (
-          <p>Loading plans...</p>
+          <div className="loading-state">Loading plans...</div>
         ) : plans.length > 0 ? (
           <>
             <div className="plan-selection">
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`plan-card ${selectedPlanId === plan.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedPlanId(plan.id)}
-                  style={{
-                    padding: '1rem',
-                    border: selectedPlanId === plan.id ? '2px solid #007bff' : '1px solid #444',
-                    borderRadius: '8px',
-                    marginBottom: '1rem',
-                    cursor: 'pointer',
-                    backgroundColor:
-                      selectedPlanId === plan.id ? 'rgba(0, 123, 255, 0.1)' : 'transparent',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
+              {plans.map((plan) => {
+                const isSelected = selectedPlanId === plan.id
+                return (
                   <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
+                    key={plan.id}
+                    className={`plan-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => setSelectedPlanId(plan.id)}
                   >
-                    <h3 style={{ margin: 0 }}>
-                      {plan.name} ({plan.billingInterval})
-                    </h3>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-                      {plan.currency === 'INR' ? '₹' : '$'}
-                      {plan.price}
-                    </span>
+                    <div className="plan-card-header">
+                      <h3>
+                        {plan.name} <span className="interval">({plan.billingInterval})</span>
+                      </h3>
+                      <span className="price">
+                        {plan.currency === 'INR' ? '₹' : '$'}
+                        {plan.price}
+                      </span>
+                    </div>
+                    {plan.description && <p className="plan-description">{plan.description}</p>}
                   </div>
-                  {plan.description && (
-                    <p style={{ margin: '0.5rem 0 0 0', color: '#aaa', fontSize: '0.9rem' }}>
-                      {plan.description}
-                    </p>
-                  )}
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             {selectedPlan && (
-              <div className="order-summary" style={{ marginTop: '2rem' }}>
+              <div className="order-summary">
                 <div className="summary-row">
                   <span>
                     {selectedPlan.name} ({selectedPlan.billingInterval})
@@ -140,7 +122,7 @@ export default function CheckoutPage() {
                   </span>
                 </div>
                 {selectedPlan.trialDays > 0 && (
-                  <div className="summary-row">
+                  <div className="summary-row trial">
                     <span>Trial Discount ({selectedPlan.trialDays} Days)</span>
                     <span>
                       -{selectedPlan.currency === 'INR' ? '₹' : '$'}
@@ -165,14 +147,11 @@ export default function CheckoutPage() {
               className="btn-checkout"
               onClick={handleCheckout}
               disabled={loading || !selectedPlanId}
-              style={{ marginTop: '1.5rem', width: '100%' }}
             >
               {loading ? 'Processing...' : 'Proceed to Payment Setup'}
             </button>
-            <p
-              className="disclaimer"
-              style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#888', textAlign: 'center' }}
-            >
+
+            <p className="disclaimer">
               A valid payment method is required to start your {selectedPlan?.trialDays || 0}-day
               trial. You will not be charged if you cancel before the trial ends.
             </p>
