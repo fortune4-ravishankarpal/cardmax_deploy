@@ -111,7 +111,7 @@ export class SubscriptionService {
 
     const providerSub = await this.provider.getSubscription(providerSubscriptionId)
 
-    let newStatus = providerSub.status
+    let newStatus: string = providerSub.status
     // If payment was captured, the subscription is active regardless of provider sync lag
     if (context?.paymentStatus === 'captured') {
       newStatus = 'active'
