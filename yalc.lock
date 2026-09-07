@@ -1,9 +1,0 @@
-{
-  "version": "v1",
-  "packages": {
-    "payload-plugin-anonymizer": {
-      "signature": "f6a90682712f9511f16a18e144887bc4",
-      "file": true
-    }
-  }
-}
