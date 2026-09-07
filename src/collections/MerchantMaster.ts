@@ -9,7 +9,6 @@ export const MerchantMaster: CollectionConfig = {
     },
     versions: {
         drafts: true,
-        maxPerDoc: 20,
     },
     trash: true,
     fields: [

@@ -9,7 +9,6 @@ export const CategoryMaster: CollectionConfig = {
     },
     versions: {
         drafts: true,
-        maxPerDoc: 20,
     },
     trash: true,
     fields: [
