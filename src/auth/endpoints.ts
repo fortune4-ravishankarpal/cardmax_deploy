@@ -1,4 +1,4 @@
-import type { PayloadRequest } from 'payload'
+import { ValidationError, type PayloadRequest } from 'payload'
 
 import {
   sendOtpSchema,
@@ -31,8 +31,13 @@ const isValidationError = (e: unknown): boolean =>
   Boolean(e && typeof e === 'object' && 'issues' in (e as any))
 
 const errorResponse = (e: unknown): Response => {
+  console.error('[Auth Error]', e)
   if (e instanceof AuthorizationError) {
     return json({ error: e.message, code: e.code }, e.status)
+  }
+  if (e instanceof ValidationError || (e && typeof e === 'object' && (e as any).name === 'ValidationError')) {
+    const message = (e as any).errors?.[0]?.message || (e as any).message || 'Validation failed.'
+    return json({ error: message, code: 'VALIDATION_ERROR' }, 400)
   }
   if (isValidationError(e)) {
     return json({ error: 'Invalid input.', code: 'VALIDATION_ERROR' }, 400)

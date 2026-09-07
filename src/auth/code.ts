@@ -27,3 +27,7 @@ export const safeEqual = (expectedHash: string, actualHash: string): boolean => 
 export const randomHex = (bytes: number): string => {
   return randomBytes(bytes).toString('hex')
 }
+
+export const generateSecurePassword = (): string => {
+  return `Aa1!${randomBytes(32).toString('hex')}`
+}

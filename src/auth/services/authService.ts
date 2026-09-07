@@ -1,7 +1,7 @@
 import type { Payload } from 'payload'
 
 import { COOKIE_NAME, COOKIE_SECURE, COOKIE_SAME_SITE, SESSION_MAX_AGE_SECONDS } from '@/auth/constants'
-import { randomHex } from '@/auth/code'
+import { generateSecurePassword } from '@/auth/code'
 import { AuthorizationError } from '@/auth/services/otpService'
 import type { User } from '@/payload-types'
 
@@ -11,7 +11,7 @@ export const issueSession = async (payload: Payload, user: User) => {
   }
 
   const email = user.email
-  const oneTimePassword = randomHex(32)
+  const oneTimePassword = generateSecurePassword()
 
   await payload.update({
     collection: 'users',

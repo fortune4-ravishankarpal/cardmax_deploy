@@ -1,7 +1,7 @@
 import type { Payload } from 'payload'
 
 import type { AuthenticationProvider, IdentifierChannel } from '@/auth/types'
-import { randomHex } from '@/auth/code'
+import { generateSecurePassword, randomHex } from '@/auth/code'
 import { syntheticEmailForPhone } from '@/auth/identifiers'
 
 type UserData = {
@@ -45,7 +45,7 @@ export const createUser = async (payload: Payload, data: UserData) => {
       authenticationProviderId: data.providerId || '',
       profileCompleted: data.profileCompleted ?? false,
       accountStatus: 'active',
-      password: randomHex(32),
+      password: generateSecurePassword(),
       acceptedTermsAndConditions: false,
       acceptedPrivacyPolicy: false,
     },
