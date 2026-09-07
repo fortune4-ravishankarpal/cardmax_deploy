@@ -1,5 +1,7 @@
 import { getPayloadClient } from '@/lib/client'
 import bankSeeder from './banks.seed'
+import categorySeeder from './category.seed'
+import merchantSeeder from './merchant.seed'
 import { seedAdmin } from './admin.seed'
 
 
@@ -8,6 +10,8 @@ async function main() {
     try {
         await seedAdmin(payload)
         await bankSeeder(payload)
+        await categorySeeder(payload)
+        await merchantSeeder(payload)
         process.exit(0)
     } catch (error) {
         console.error(error)

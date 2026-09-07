@@ -50,9 +50,6 @@ importers:
       payload-gatekeeper:
         specifier: ^1.1.0
         version: 1.1.0(@payloadcms/ui@3.88.0(@types/react@19.2.14)(monaco-editor@0.56.0)(next@16.3.3(@babel/core@7.29.7(supports-color@7.2.0))(@playwright/test@1.58.2)(@types/node@22.19.9)(babel-plugin-macros@3.1.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(sass@1.77.4))(payload@3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@7.2.0)(typescript@5.7.3))(@types/react@19.2.14)(payload@3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(supports-color@7.2.0)
-      payload-plugin-privacy:
-        specifier: file:.yalc/payload-plugin-privacy
-        version: file:.yalc/payload-plugin-privacy(payload@3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3))
       react:
         specifier: 19.2.6
         version: 19.2.6
@@ -3606,12 +3603,6 @@ packages:
       '@payloadcms/ui': '>=3.0.0 <4.0.0'
       payload: '>=3.0.0 <4.0.0'
       react: '>=19.0.0 <20.0.0'
-
-  payload-plugin-privacy@file:.yalc/payload-plugin-privacy:
-    resolution: {directory: .yalc/payload-plugin-privacy, type: directory}
-    engines: {node: ^18.20.2 || >=20.9.0, pnpm: ^9 || ^10 || ^11}
-    peerDependencies:
-      payload: ^3.84.1
 
   payload@3.88.0:
     resolution: {integrity: sha512-O7zuS80bvEGLte+7xZjwN05+ox5BCsGcQT2M6+CTote07JQOOvHJoiuoyQFw6cUElcFTWGMC5dy03w7J7sTYGg==}
@@ -8135,10 +8126,6 @@ snapshots:
       - '@types/react'
       - react-dom
       - supports-color
-
-  payload-plugin-privacy@file:.yalc/payload-plugin-privacy(payload@3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3)):
-    dependencies:
-      payload: 3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3)
 
   payload@3.88.0(graphql@16.14.2)(supports-color@7.2.0)(typescript@5.7.3):
     dependencies:

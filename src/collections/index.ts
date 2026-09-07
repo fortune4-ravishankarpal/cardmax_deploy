@@ -8,6 +8,8 @@ import { Banks } from './BankMaster'
 import { CreditCards } from './creditCard'
 import { Cards } from './Card'
 import { CardAuditLogs } from './CardAuditLog'
+import { MerchantMaster } from './MerchantMaster'
+import { CategoryMaster } from './CategoryMaster'
 
 export const collectionsConfigs = [
   Users,
@@ -20,4 +22,6 @@ export const collectionsConfigs = [
   CreditCards,
   Cards,
   CardAuditLogs,
+  MerchantMaster,
+  CategoryMaster,
 ]

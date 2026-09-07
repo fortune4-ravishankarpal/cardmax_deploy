@@ -1,0 +1,62 @@
+[
+    {
+        "name": "Dining"
+    },
+    {
+        "name": "Groceries"
+    },
+    {
+        "name": "Supermarkets"
+    },
+    {
+        "name": "Fuel"
+    },
+    {
+        "name": "Flights"
+    },
+    {
+        "name": "Hotels"
+    },
+    {
+        "name": "Travel"
+    },
+    {
+        "name": "Shopping"
+    },
+    {
+        "name": "Fashion"
+    },
+    {
+        "name": "Electronics"
+    },
+    {
+        "name": "Entertainment"
+    },
+    {
+        "name": "Food Delivery"
+    },
+    {
+        "name": "Streaming"
+    },
+    {
+        "name": "Utilities"
+    },
+    {
+        "name": "Telecom"
+    },
+    {
+        "name": "Insurance"
+    },
+    {
+        "name": "Education"
+    },
+    {
+        "name": "Rent"
+    },
+    {
+        "name": "Transport"
+    },
+    {
+        "name": "Pharmacy"
+    }
+]
