@@ -139,8 +139,27 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
           ))}
         </select>
 
-        <label className="auth-label" htmlFor="pan">
-          Permanent Account Number (PAN)
+        <label
+          className="auth-label"
+          htmlFor="pan"
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        >
+          <span>Permanent Account Number (PAN)</span>
+          <span
+            style={{
+              fontSize: '0.65rem',
+              fontWeight: 600,
+              color: '#065f46',
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              borderRadius: '9999px',
+              padding: '0.08rem 0.45rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.02em',
+            }}
+          >
+            AES-256 Encrypted
+          </span>
         </label>
         <input
           id="pan"
@@ -148,7 +167,12 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
           type="text"
           maxLength={10}
           placeholder="ABCDE1234F"
-          style={{ textTransform: 'uppercase' }}
+          style={{
+            textTransform: 'uppercase',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+            letterSpacing: '0.06em',
+            fontWeight: 600,
+          }}
           {...register('pan', {
             validate: (val) => {
               if (!val || !val.trim()) return true
@@ -159,6 +183,9 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
             },
           })}
         />
+        <p style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: '#64748b' }}>
+          10-character Indian tax ID. Automatically encrypted at rest before storing.
+        </p>
         {errors.pan && <span className="auth-field-error">{errors.pan.message}</span>}
 
         {/* ── Optional: Communications ───────────────────────────────────── */}

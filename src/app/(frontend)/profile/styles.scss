@@ -523,13 +523,78 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
               letter-spacing: 0.02em;
             }
           }
+
+          &.pan-value {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+
+            .pan-display {
+              display: inline-flex;
+              align-items: center;
+              font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+              font-size: 0.9rem;
+              font-weight: 600;
+              letter-spacing: 0.06em;
+              background-color: #f1f5f9;
+              padding: 0.22rem 0.6rem;
+              border-radius: $radius-sm;
+              border: 1px solid $color-border;
+              color: $color-text-primary;
+              line-height: 1.25;
+
+              .pan-masked-part {
+                color: $color-text-muted;
+                letter-spacing: 0.08em;
+              }
+
+              .pan-visible-part {
+                color: $color-accent;
+                font-weight: 700;
+                margin-left: 2px;
+              }
+            }
+
+            .security-badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 0.3rem;
+              padding: 0.18rem 0.55rem;
+              border-radius: $radius-full;
+              font-size: 0.675rem;
+              font-weight: 600;
+              letter-spacing: 0.02em;
+              text-transform: uppercase;
+              line-height: 1.2;
+
+              &.encrypted {
+                background-color: $color-success-bg;
+                color: $color-success-text;
+                border: 1px solid $color-success-border;
+
+                svg {
+                  color: $color-success-dot;
+                  flex-shrink: 0;
+                }
+              }
+            }
+          }
         }
 
         .field-note {
-          font-size: 0.7rem;
+          font-size: 0.725rem;
           color: $color-text-muted;
-          margin-top: 0.2rem;
-          line-height: 1.25;
+          margin-top: 0.25rem;
+          line-height: 1.35;
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+
+          svg {
+            flex-shrink: 0;
+            color: $color-text-muted;
+          }
         }
       }
     }
@@ -579,6 +644,18 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
           color: $color-text-muted;
           text-transform: uppercase;
           letter-spacing: 0.04em;
+        }
+
+        .field-badge-secure {
+          font-size: 0.65rem;
+          font-weight: 600;
+          color: $color-success-text;
+          background-color: $color-success-bg;
+          border: 1px solid $color-success-border;
+          border-radius: $radius-full;
+          padding: 0.08rem 0.45rem;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
         }
       }
 

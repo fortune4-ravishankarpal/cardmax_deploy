@@ -461,19 +461,58 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
 
                       <div className="field-block">
                         <span className="field-label">Permanent Account Number (PAN)</span>
-                        <span className={`field-value ${!user.pan ? 'empty' : ''}`}>
-                          {user.pan || 'Not provided'}
-                          {user.pan && (
-                            <span className="verified-badge" title="Encrypted at rest using AES-256-GCM">
-                              <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                <path d="M7 11V7a5 5 0 0110 0v4" />
-                              </svg>
-                              Encrypted
-                            </span>
+                        <div className={`field-value pan-value ${!user.pan ? 'empty' : ''}`}>
+                          {user.pan ? (
+                            <>
+                              <span className="pan-display">
+                                <span className="pan-masked-part">XXXXXX</span>
+                                <span className="pan-visible-part">
+                                  {user.pan.length >= 5 ? user.pan.slice(user.pan.startsWith('XXXXXX') ? 6 : 5) : user.pan}
+                                </span>
+                              </span>
+                              <span
+                                className="security-badge encrypted"
+                                title="Encrypted at rest using AES-256-GCM"
+                              >
+                                <svg
+                                  width="11"
+                                  height="11"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2.2"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M7 11V7a5 5 0 0110 0v4"
+                                  />
+                                </svg>
+                                Encrypted
+                              </span>
+                            </>
+                          ) : (
+                            'Not provided'
                           )}
+                        </div>
+                        <span className="field-note">
+                          <svg
+                            width="11"
+                            height="11"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                            />
+                          </svg>
+                          Protected with AES-256-GCM encryption
                         </span>
-                        <span className="field-note">Protected with AES-256-GCM encryption</span>
                       </div>
                     </div>
                   </div>
@@ -569,7 +608,10 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                     </div>
 
                     <div className="form-field full-width">
-                      <label htmlFor="pan-input">Permanent Account Number (PAN)</label>
+                      <label htmlFor="pan-input">
+                        Permanent Account Number (PAN)
+                        <span className="field-badge-secure">AES-256-GCM Encrypted</span>
+                      </label>
                       <input
                         id="pan-input"
                         type="text"
@@ -579,14 +621,19 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                           setFormData({ ...formData, pan: e.target.value.toUpperCase() })
                         }
                         placeholder="ABCDE1234F"
-                        style={{ textTransform: 'uppercase' }}
+                        style={{
+                          textTransform: 'uppercase',
+                          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                          letterSpacing: '0.06em',
+                          fontWeight: 600,
+                        }}
                         className={formErrors.pan ? 'has-error' : ''}
                       />
                       {formErrors.pan ? (
                         <span className="field-error-msg">{formErrors.pan}</span>
                       ) : (
                         <span className="field-help-text">
-                          Encrypted at rest using AES-256-GCM. 10-character alphanumeric tax ID.
+                          10-character alphanumeric Indian tax ID. Automatically encrypted at rest before saving.
                         </span>
                       )}
                     </div>
