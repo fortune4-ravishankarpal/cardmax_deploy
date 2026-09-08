@@ -391,12 +391,13 @@ export const Users: CollectionConfig = {
       },
     },
     // ── Secure Indian PAN (Permanent Account Number) ───────────────────────────
-    // Encrypted envelope stored as a single logical field/group.
+    // Encrypted string stored in a single database column (`pan`).
+    // Format: `v<keyVersion>:<iv>:<authTag>:<ciphertext>` (AES-256-GCM).
     // Plaintext PAN is NEVER stored in the database.
-    // Internal encryption properties are blocked from REST, GraphQL, and Admin UI.
+    // Internal encrypted string is blocked from REST, GraphQL, and Admin UI.
     {
       name: 'pan',
-      type: 'group',
+      type: 'text',
       admin: {
         hidden: true,
       },
@@ -405,45 +406,6 @@ export const Users: CollectionConfig = {
         create: () => false,
         update: () => false,
       },
-      fields: [
-        {
-          name: 'ciphertext',
-          type: 'textarea',
-          admin: { hidden: true },
-          access: { read: () => false, create: () => false, update: () => false },
-        },
-        {
-          name: 'iv',
-          type: 'text',
-          admin: { hidden: true },
-          access: { read: () => false, create: () => false, update: () => false },
-        },
-        {
-          name: 'authTag',
-          type: 'text',
-          admin: { hidden: true },
-          access: { read: () => false, create: () => false, update: () => false },
-        },
-        {
-          name: 'keyVersion',
-          type: 'text',
-          admin: { hidden: true },
-          access: { read: () => false, create: () => false, update: () => false },
-        },
-        {
-          name: 'algorithm',
-          type: 'text',
-          admin: { hidden: true },
-          access: { read: () => false, create: () => false, update: () => false },
-        },
-        {
-          name: 'lookup',
-          type: 'text',
-          index: true,
-          admin: { hidden: true },
-          access: { read: () => false, create: () => false, update: () => false },
-        },
-      ],
     },
   ],
   endpoints: [

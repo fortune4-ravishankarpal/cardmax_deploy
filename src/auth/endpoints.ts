@@ -221,7 +221,7 @@ export const getProfileHandler = async (req: PayloadRequest): Promise<Response> 
 
     let panMasked: string | null = null
     let hasPan = false
-    if (user.pan && typeof user.pan === 'object' && (user.pan as any).ciphertext) {
+    if (user.pan) {
       try {
         const dec = decryptPan(user.pan as any)
         panMasked = maskPan(dec)
@@ -323,7 +323,7 @@ export const updateProfileHandler = async (req: PayloadRequest): Promise<Respons
 
     let updatedPanMasked: string | null = null
     let updatedHasPan = false
-    if (updated.pan && typeof updated.pan === 'object' && (updated.pan as any).ciphertext) {
+    if (updated.pan) {
       try {
         const dec = decryptPan(updated.pan as any)
         updatedPanMasked = maskPan(dec)

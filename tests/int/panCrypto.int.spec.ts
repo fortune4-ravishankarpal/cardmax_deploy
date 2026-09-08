@@ -9,6 +9,7 @@ import {
   normalizePan,
   PanCryptoError,
   assertValidPanEnvelope,
+  parsePanEnvelope,
   type PanEncryptedEnvelope,
 } from '@/auth/services/panCrypto'
 
@@ -36,19 +37,32 @@ describe('PAN format validation & normalization', () => {
 describe('PAN encryption & decryption (AES-256-GCM vault)', () => {
   const samplePan = 'ABCDE1234F'
 
-  it('encrypts successfully into an authenticated envelope', () => {
-    const envelope = encryptPan(samplePan)
-    expect(envelope).toBeDefined()
+  it('encrypts successfully into an authenticated single-string envelope', () => {
+    const packed = encryptPan(samplePan)
+    expect(packed).toBeDefined()
+    expect(typeof packed).toBe('string')
+    expect(packed.startsWith('v1:')).toBe(true)
+
+    const parts = packed.split(':')
+    expect(parts.length).toBe(4) // v<keyVersion>, iv, authTag, ciphertext
+
+    const envelope = parsePanEnvelope(packed)
     expect(envelope.ciphertext).toBeTypeOf('string')
     expect(envelope.iv).toBeTypeOf('string')
     expect(envelope.authTag).toBeTypeOf('string')
     expect(envelope.algorithm).toBe('AES-256-GCM')
-    expect(envelope.keyVersion).toBeDefined()
-    expect(envelope.lookup).toBeDefined()
+    expect(envelope.keyVersion).toBe('1')
   })
 
-  it('decrypts back to the original normalized PAN', () => {
-    const envelope = encryptPan('abcde1234f')
+  it('decrypts back to the original normalized PAN from packed string', () => {
+    const packed = encryptPan('abcde1234f')
+    const decrypted = decryptPan(packed)
+    expect(decrypted).toBe(samplePan)
+  })
+
+  it('decrypts back to the original normalized PAN from envelope object', () => {
+    const packed = encryptPan('abcde1234f')
+    const envelope = parsePanEnvelope(packed)
     const decrypted = decryptPan(envelope)
     expect(decrypted).toBe(samplePan)
   })
@@ -56,25 +70,30 @@ describe('PAN encryption & decryption (AES-256-GCM vault)', () => {
   it('produces different ciphertexts and IVs for the same PAN (random IV per encryption)', () => {
     const a = encryptPan(samplePan)
     const b = encryptPan(samplePan)
-    expect(a.iv).not.toBe(b.iv)
-    expect(a.ciphertext).not.toBe(b.ciphertext)
+    expect(a).not.toBe(b)
+    const envA = parsePanEnvelope(a)
+    const envB = parsePanEnvelope(b)
+    expect(envA.iv).not.toBe(envB.iv)
+    expect(envA.ciphertext).not.toBe(envB.ciphertext)
   })
 
   it('fails decryption when authentication tag is tampered with', () => {
-    const envelope = encryptPan(samplePan)
+    const packed = encryptPan(samplePan)
+    const env = parsePanEnvelope(packed)
     const tampered: PanEncryptedEnvelope = {
-      ...envelope,
-      authTag: envelope.authTag.slice(0, -2) + '00',
+      ...env,
+      authTag: env.authTag.slice(0, -2) + '00',
     }
     expect(() => decryptPan(tampered)).toThrowError(PanCryptoError)
   })
 
   it('fails decryption when ciphertext is tampered with', () => {
-    const envelope = encryptPan(samplePan)
-    const buf = Buffer.from(envelope.ciphertext, 'base64')
+    const packed = encryptPan(samplePan)
+    const env = parsePanEnvelope(packed)
+    const buf = Buffer.from(env.ciphertext, 'base64')
     buf[0] = buf[0] ^ 0xff // flip bits
     const tampered: PanEncryptedEnvelope = {
-      ...envelope,
+      ...env,
       ciphertext: buf.toString('base64'),
     }
     expect(() => decryptPan(tampered)).toThrowError(PanCryptoError)
@@ -82,6 +101,7 @@ describe('PAN encryption & decryption (AES-256-GCM vault)', () => {
 
   it('fails decryption when envelope structure is invalid', () => {
     expect(() => decryptPan({} as any)).toThrowError(PanCryptoError)
+    expect(() => decryptPan('invalid:envelope')).toThrowError(PanCryptoError)
     expect(() => decryptPan({ ciphertext: 'abc' } as any)).toThrowError(PanCryptoError)
   })
 
@@ -219,12 +239,9 @@ describe('Profile service encrypted PAN storage', () => {
     expect(updatedData).toBeDefined()
     // Plaintext PAN must NEVER be passed to payload.update
     expect(updatedData.pan).not.toBe('ABCDE1234F')
-    expect(typeof updatedData.pan).toBe('object')
-    expect(updatedData.pan.ciphertext).toBeTypeOf('string')
-    expect(updatedData.pan.iv).toBeTypeOf('string')
-    expect(updatedData.pan.authTag).toBeTypeOf('string')
-    expect(updatedData.pan.keyVersion).toBeDefined()
-    expect(updatedData.pan.lookup).toBeDefined()
+    // Stored as single packed encrypted string in database (one column)
+    expect(typeof updatedData.pan).toBe('string')
+    expect(updatedData.pan.startsWith('v1:')).toBe(true)
 
     // Can decrypt back with decryptPan
     const decrypted = decryptPan(updatedData.pan)

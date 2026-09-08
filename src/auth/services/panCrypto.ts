@@ -166,14 +166,32 @@ export const maskPan = (pan: string): string => {
  * actively rejecting any plaintext PAN strings or corrupted envelopes.
  */
 export const assertValidPanEnvelope = (data: Record<string, unknown> | undefined | null): void => {
-  if (!data || data.pan === undefined || data.pan === null) return
+  if (!data || data.pan === undefined || data.pan === null || data.pan === '') return
 
   if (typeof data.pan === 'string') {
-    throw new PanCryptoError(
-      'PAN_PLAINTEXT_PROHIBITED',
-      'Plaintext PAN cannot be persisted directly. Use the profile service or panCrypto to encrypt before storage.',
-      400,
-    )
+    // If it's a raw plaintext PAN format or lacks the packed envelope colon structure, reject as plaintext
+    if (isValidPan(data.pan) || !data.pan.includes(':')) {
+      throw new PanCryptoError(
+        'PAN_PLAINTEXT_PROHIBITED',
+        'Plaintext PAN cannot be persisted directly. Use the profile service or panCrypto to encrypt before storage.',
+        400,
+      )
+    }
+
+    try {
+      const parsed = parsePanEnvelope(data.pan)
+      if (!parsed.ciphertext || !parsed.iv || !parsed.authTag || !parsed.keyVersion) {
+        throw new Error('Incomplete envelope')
+      }
+    } catch (e) {
+      if (e instanceof PanCryptoError) throw e
+      throw new PanCryptoError(
+        'PAN_ENVELOPE_INVALID',
+        'Invalid PAN encrypted envelope format.',
+        400,
+      )
+    }
+    return
   }
 
   if (typeof data.pan === 'object') {
@@ -186,7 +204,10 @@ export const assertValidPanEnvelope = (data: Record<string, unknown> | undefined
         400,
       )
     }
+    return
   }
+
+  throw new PanCryptoError('PAN_ENVELOPE_INVALID', 'Invalid PAN data format.', 400)
 }
 
 /**
@@ -225,9 +246,59 @@ export const derivePanLookup = (pan: string): string => {
 }
 
 /**
- * Encrypt a plaintext PAN into an authenticated AES-256-GCM envelope.
+ * Serialize an envelope into a single packed string:
+ * format: `v<keyVersion>:<iv>:<authTag>:<ciphertext>`
  */
-export const encryptPan = (pan: string): PanEncryptedEnvelope => {
+export const serializePanEnvelope = (envelope: PanEncryptedEnvelope): string => {
+  return `v${envelope.keyVersion}:${envelope.iv}:${envelope.authTag}:${envelope.ciphertext}`
+}
+
+/**
+ * Parse a packed string or legacy envelope object back into PanEncryptedEnvelope.
+ */
+export const parsePanEnvelope = (val: unknown): PanEncryptedEnvelope => {
+  if (typeof val === 'string') {
+    const parts = val.split(':')
+    if (parts.length >= 4 && parts[0].startsWith('v')) {
+      const keyVersion = parts[0].slice(1)
+      const iv = parts[1]
+      const authTag = parts[2]
+      const ciphertext = parts.slice(3).join(':')
+      return {
+        keyVersion,
+        iv,
+        authTag,
+        ciphertext,
+        algorithm: 'AES-256-GCM',
+      }
+    }
+    // Check if JSON string
+    try {
+      const parsed = JSON.parse(val)
+      if (parsed && typeof parsed === 'object') {
+        return parsed as PanEncryptedEnvelope
+      }
+    } catch {
+      // not JSON
+    }
+  }
+
+  if (val && typeof val === 'object' && !Array.isArray(val)) {
+    const obj = val as Record<string, unknown>
+    if (obj.ciphertext && obj.iv && obj.authTag && obj.keyVersion) {
+      return obj as unknown as PanEncryptedEnvelope
+    }
+  }
+
+  throw new PanCryptoError('PAN_ENVELOPE_INVALID', 'Invalid PAN encrypted data format.', 400)
+}
+
+/**
+ * Encrypt a plaintext PAN into an authenticated AES-256-GCM packed string.
+ * Returns a single self-contained string format: `v<keyVersion>:<iv>:<authTag>:<ciphertext>`
+ * for compact, single-column database storage.
+ */
+export const encryptPan = (pan: string): string => {
   const normalized = normalizePan(pan)
   if (!isValidPan(normalized)) {
     throw new PanCryptoError(
@@ -248,23 +319,29 @@ export const encryptPan = (pan: string): PanEncryptedEnvelope => {
     cipher.final(),
   ])
   const authTag = cipher.getAuthTag()
-  const lookup = derivePanLookup(normalized)
 
-  return {
+  const envelope: PanEncryptedEnvelope = {
     ciphertext: ciphertext.toString('base64'),
     iv: iv.toString('base64'),
     authTag: authTag.toString('hex'),
     keyVersion,
     algorithm: 'AES-256-GCM',
-    lookup,
   }
+
+  return serializePanEnvelope(envelope)
 }
 
 /**
- * Decrypt an AES-256-GCM PAN envelope.
- * Throws PanCryptoError on tag failure, tampering, or invalid envelope.
+ * Decrypt an AES-256-GCM PAN encrypted value (accepts single packed string or envelope).
+ * Throws PanCryptoError on tag failure, tampering, or invalid structure.
  */
-export const decryptPan = (envelope: PanEncryptedEnvelope): string => {
+export const decryptPan = (val: string | PanEncryptedEnvelope): string => {
+  if (!val) {
+    throw new PanCryptoError('PAN_ENVELOPE_INVALID', 'No PAN encrypted data provided.', 400)
+  }
+
+  const envelope = typeof val === 'string' ? parsePanEnvelope(val) : val
+
   if (
     !envelope ||
     typeof envelope.ciphertext !== 'string' ||
