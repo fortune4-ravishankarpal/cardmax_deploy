@@ -58,7 +58,7 @@ export default async function ProfilePage() {
 
   let panMasked: string | null = null
   let hasPan = false
-  if (fullUser.pan && typeof fullUser.pan === 'object' && (fullUser.pan as any).ciphertext) {
+  if (fullUser.pan) {
     try {
       const dec = decryptPan(fullUser.pan as any)
       panMasked = maskPan(dec)
