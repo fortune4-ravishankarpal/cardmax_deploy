@@ -11,22 +11,10 @@ import {
 import { fieldAffectsData, flattenTopLevelFields } from 'payload/shared'
 
 
-import { fileURLToPath } from 'node:url'
-
 /**
  * Dynamically resolves the component specifier string for Payload 3.x importMap
  */
 const getClientComponent = (componentName: string): string => {
-  // Get current file directory via import.meta.url
-  const currentFile = fileURLToPath(import.meta.url)
-  const isNodeModule = currentFile.includes('node_modules')
-
-  if (isNodeModule) {
-    // Standard NPM package resolution
-    return `@payload-pln/soft-delete/client#${componentName}`
-  }
-
-  // Local development fallback (computes relative path from project root)
   return `@/plugins/soft-delete/exports/client#${componentName}`
 }
 
@@ -37,6 +25,13 @@ export type SoftDeleteConfig = {
 
 export const SOFT_DELETE_ACTION_FIELD = 'deleteAction'
 
+type SoftDeleteUpdateOptions = {
+  collection: string
+  id: number | string
+  req: PayloadRequest
+  overrideAccess: boolean
+  data: Record<string, unknown>
+}
 
 const hasFieldName = (fields: CollectionConfig['fields'], name: string): boolean =>
   fields.some((field) => 'name' in field && field.name === name)
@@ -76,7 +71,6 @@ export const softDelete = (pluginOptions: SoftDeleteConfig): Plugin => {
       collections: (config.collections ?? []).map((collection) => {
         const isEnabled = pluginOptions.collections?.[collection.slug as CollectionSlug]
         if (!isEnabled) return collection
-
         const existingEndpoints = Array.isArray(collection.endpoints) ? collection.endpoints : []
         const existingHooks = collection.hooks ?? {}
         const existingReadAccess: Access = collection.access?.read ?? (() => true)

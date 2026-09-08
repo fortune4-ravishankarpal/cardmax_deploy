@@ -1,40 +1,86 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { createRequire } from 'node:module'
 
-// CONFIGURATION: Adjust these paths for any plugin or project
-const CONFIG = {
-  // Source: Local plugin repository source directory
-  pluginSrcDir: 'C:\\Users\\Developer\\Desktop\\project\\payload-plugin\\create-custom-plugin\\soft-delete\\src',
-  // Target: Payload project destination directory
-  projectTargetDir: 'C:\\Users\\Developer\\Desktop\\project\\card-max\\cardmax-payload\\src\\plugins\\soft-delete',
+const projectRoot = process.cwd()
+const pluginRoot = path.resolve(
+  process.env.SOFT_DELETE_PLUGIN_ROOT ??
+    path.join(projectRoot, '..', '..', 'payload-plugin', 'create-custom-plugin', 'soft-delete'),
+)
+const projectPluginDir = path.join(projectRoot, 'src', 'plugins', 'soft-delete')
+const pluginSourceDir = path.join(pluginRoot, 'src')
+const localWrapper = path.join(projectRoot, 'src', 'plugins', 'softDelete.ts')
+const packageName = '@payload-pln/soft-delete'
+
+const usage = `Usage:
+  node scripts/sync-plugin.js local    Copy plugin source into this app
+  node scripts/sync-plugin.js package  Use the installed npm package
+
+Environment:
+  SOFT_DELETE_PLUGIN_ROOT  Override the plugin repository path
+`
+
+const copyRecursive = (source, destination) => {
+  fs.cpSync(source, destination, { recursive: true, force: true })
 }
 
-function copyRecursiveSync(src, dest) {
-  const exists = fs.existsSync(src)
-  const stats = exists && fs.statSync(src)
-  const isDirectory = stats && stats.isDirectory()
+const replaceInFile = (file, replacements) => {
+  let content = fs.readFileSync(file, 'utf8')
+  for (const [from, to] of replacements) content = content.replace(from, to)
+  fs.writeFileSync(file, content)
+}
 
-  if (isDirectory) {
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true })
-    }
-    fs.readdirSync(src).forEach((childItemName) => {
-      copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName))
-    })
-  } else {
-    fs.copyFileSync(src, dest)
+const setLocalMode = () => {
+  if (!fs.existsSync(pluginSourceDir)) {
+    throw new Error(`Plugin source directory does not exist: ${pluginSourceDir}`)
   }
+
+  copyRecursive(pluginSourceDir, projectPluginDir)
+  replaceInFile(path.join(projectPluginDir, 'index.ts'), [
+    [
+      "return `@payload-pln/soft-delete/client#${componentName}`",
+      "return `@/plugins/soft-delete/exports/client#${componentName}`",
+    ],
+  ])
+  replaceInFile(path.join(projectPluginDir, 'exports', 'client.ts'), [
+    ["'../components/SoftDeleteCell.js'", "'../components/SoftDeleteCell'"],
+    ["'../components/SoftDeleteButton.js'", "'../components/SoftDeleteButton'"],
+  ])
+
+  console.log(`Synced plugin source to ${projectPluginDir}`)
+  console.log('Run: pnpm generate:importmap')
+}
+
+const setPackageMode = () => {
+  replaceInFile(localWrapper, [
+    ["from './soft-delete/index'", `from '${packageName}'`],
+  ])
+
+  const require = createRequire(import.meta.url)
+  try {
+    require.resolve(`${packageName}/client`)
+  } catch {
+    throw new Error(
+      `${packageName} is not installed. Install it first with: pnpm add ${packageName}`,
+    )
+  }
+
+  console.log(`Configured this app to use ${packageName}`)
+  console.log('Run: pnpm generate:importmap')
+}
+
+
+const mode = process.argv[2]
+
+if (!mode || !['local','package'].includes(mode)) {
+  console.error(usage)
+  process.exit(1)
 }
 
 try {
-  console.log(` Syncing plugin code...`)
-  console.log(`  From: ${CONFIG.pluginSrcDir}`)
-  console.log(`  To:   ${CONFIG.projectTargetDir}`)
-
-  copyRecursiveSync(CONFIG.pluginSrcDir, CONFIG.projectTargetDir)
-
-  console.log(' Sync completed successfully!')
+  if (mode === 'local') setLocalMode()
+  if (mode === 'package') setPackageMode()
 } catch (error) {
-  console.error(' Failed to sync plugin files:', error)
+  console.error(error instanceof Error ? error.message : error)
   process.exit(1)
 }

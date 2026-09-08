@@ -1,4 +1,4 @@
-import { softDelete } from './soft-delete/index'
+import { softDelete } from '@payload-pln/soft-delete'
 
 export const softDeleteConfig = softDelete({
     disabled: false,
