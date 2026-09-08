@@ -20,6 +20,16 @@ export const completeProfileSchema = z.object({
   acceptedPrivacyPolicy: z.boolean().optional(),
   /** Whether the user opted in to marketing/promotional emails. Default: false. */
   marketingConsent: z.boolean().optional(),
+  /** Indian Permanent Account Number (PAN) */
+  pan: z
+    .string()
+    .trim()
+    .transform((val) => val.toUpperCase())
+    .refine((val) => !val || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(val), {
+      message: 'Invalid PAN format. Must be 10 alphanumeric characters (e.g. ABCDE1234F).',
+    })
+    .optional()
+    .nullable(),
 })
 
 export const updateProfileSchema = z.object({
@@ -27,6 +37,16 @@ export const updateProfileSchema = z.object({
   phone: z.string().trim().max(20).optional().nullable(),
   income: z.union([z.number().min(0), z.string().trim().max(20)]).optional().nullable(),
   employmentType: z.string().trim().max(60).optional().nullable(),
+  /** Indian Permanent Account Number (PAN) */
+  pan: z
+    .string()
+    .trim()
+    .transform((val) => val.toUpperCase())
+    .refine((val) => !val || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(val), {
+      message: 'Invalid PAN format. Must be 10 alphanumeric characters (e.g. ABCDE1234F).',
+    })
+    .optional()
+    .nullable(),
 })
 
 export type SendOtpInput = z.infer<typeof sendOtpSchema>

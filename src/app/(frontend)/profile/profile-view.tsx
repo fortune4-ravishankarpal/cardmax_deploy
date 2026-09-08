@@ -12,6 +12,8 @@ export interface UserProfileData {
   phone: string
   income: number | null
   employmentType: string | null
+  pan?: string | null
+  hasPan?: boolean
   authenticationProvider: string
   profileCompleted: boolean
   accountStatus: string
@@ -42,11 +44,15 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
     phone: initialUser.phone || '',
     income: initialUser.income != null ? String(initialUser.income) : '',
     employmentType: initialUser.employmentType || '',
+    pan: initialUser.pan || '',
   })
 
-  const [formErrors, setFormErrors] = useState<{ name?: string; phone?: string; income?: string }>(
-    {},
-  )
+  const [formErrors, setFormErrors] = useState<{
+    name?: string
+    phone?: string
+    income?: string
+    pan?: string
+  }>({})
 
   // Format currency
   const formatCurrency = (val: number | null) => {
@@ -79,6 +85,7 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
       phone: user.phone || '',
       income: user.income != null ? String(user.income) : '',
       employmentType: user.employmentType || '',
+      pan: user.pan || '',
     })
     setFormErrors({})
     setIsEditing(true)
@@ -91,12 +98,19 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
   }
 
   const validateForm = () => {
-    const errors: { name?: string; phone?: string; income?: string } = {}
+    const errors: { name?: string; phone?: string; income?: string; pan?: string } = {}
     if (!formData.name.trim()) {
       errors.name = 'Full name is required.'
     }
     if (formData.income && (Number.isNaN(Number(formData.income)) || Number(formData.income) < 0)) {
       errors.income = 'Please enter a valid non-negative income amount.'
+    }
+    if (formData.pan && formData.pan.trim()) {
+      const cleanPan = formData.pan.trim().toUpperCase()
+      // If user didn't modify an existing masked PAN, allow it
+      if (!cleanPan.startsWith('XXXXXX') && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(cleanPan)) {
+        errors.pan = 'Please enter a valid 10-character PAN (e.g. ABCDE1234F).'
+      }
     }
     setFormErrors(errors)
     return Object.keys(errors).length === 0
@@ -110,15 +124,26 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
     setAlert(null)
 
     try {
+      const body: Record<string, unknown> = {
+        name: formData.name.trim(),
+        phone: formData.phone.trim() || null,
+        income: formData.income.trim() ? Number(formData.income) : null,
+        employmentType: formData.employmentType || null,
+      }
+
+      if (formData.pan && formData.pan.trim()) {
+        const cleanPan = formData.pan.trim().toUpperCase()
+        if (!cleanPan.startsWith('XXXXXX')) {
+          body.pan = cleanPan
+        }
+      } else if (user.hasPan && !formData.pan) {
+        body.pan = null
+      }
+
       const res = await fetch('/api/users/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          phone: formData.phone.trim() || null,
-          income: formData.income.trim() ? Number(formData.income) : null,
-          employmentType: formData.employmentType || null,
-        }),
+        body: JSON.stringify(body),
       })
 
       const data = await res.json()
@@ -132,6 +157,8 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
         phone: data.user.phone,
         income: data.user.income,
         employmentType: data.user.employmentType,
+        pan: data.user.pan !== undefined ? data.user.pan : prev.pan,
+        hasPan: data.user.hasPan !== undefined ? data.user.hasPan : prev.hasPan,
       }))
 
       setIsEditing(false)
@@ -431,6 +458,23 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                         </span>
                         <span className="field-note">Helps recommend cards matching your career profile</span>
                       </div>
+
+                      <div className="field-block">
+                        <span className="field-label">Permanent Account Number (PAN)</span>
+                        <span className={`field-value ${!user.pan ? 'empty' : ''}`}>
+                          {user.pan || 'Not provided'}
+                          {user.pan && (
+                            <span className="verified-badge" title="Encrypted at rest using AES-256-GCM">
+                              <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0110 0v4" />
+                              </svg>
+                              Encrypted
+                            </span>
+                          )}
+                        </span>
+                        <span className="field-note">Protected with AES-256-GCM encryption</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -522,6 +566,29 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    <div className="form-field full-width">
+                      <label htmlFor="pan-input">Permanent Account Number (PAN)</label>
+                      <input
+                        id="pan-input"
+                        type="text"
+                        maxLength={10}
+                        value={formData.pan}
+                        onChange={(e) =>
+                          setFormData({ ...formData, pan: e.target.value.toUpperCase() })
+                        }
+                        placeholder="ABCDE1234F"
+                        style={{ textTransform: 'uppercase' }}
+                        className={formErrors.pan ? 'has-error' : ''}
+                      />
+                      {formErrors.pan ? (
+                        <span className="field-error-msg">{formErrors.pan}</span>
+                      ) : (
+                        <span className="field-help-text">
+                          Encrypted at rest using AES-256-GCM. 10-character alphanumeric tax ID.
+                        </span>
+                      )}
                     </div>
                   </div>
 

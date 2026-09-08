@@ -20,6 +20,14 @@ import {
 } from '@/auth/google/oauth'
 import type { User } from '@/payload-types'
 import { hasRequiredConsent } from '@/auth/guard'
+import {
+  decryptPan,
+  encryptPan,
+  isValidPan,
+  maskPan,
+  normalizePan,
+  PanCryptoError,
+} from '@/auth/services/panCrypto'
 
 const json = (data: unknown, status = 200, cookie?: string): Response => {
   const headers = new Headers({ 'Content-Type': 'application/json' })
@@ -32,7 +40,7 @@ const isValidationError = (e: unknown): boolean =>
 
 const errorResponse = (e: unknown): Response => {
   console.error('[Auth Error]', e)
-  if (e instanceof AuthorizationError) {
+  if (e instanceof AuthorizationError || e instanceof PanCryptoError) {
     return json({ error: e.message, code: e.code }, e.status)
   }
   if (e instanceof ValidationError || (e && typeof e === 'object' && (e as any).name === 'ValidationError')) {
@@ -211,6 +219,19 @@ export const getProfileHandler = async (req: PayloadRequest): Promise<Response> 
 
     const activeSubscription = subscriptionsResult.docs[0] || null
 
+    let panMasked: string | null = null
+    let hasPan = false
+    if (user.pan && typeof user.pan === 'object' && (user.pan as any).ciphertext) {
+      try {
+        const dec = decryptPan(user.pan as any)
+        panMasked = maskPan(dec)
+        hasPan = true
+      } catch {
+        panMasked = 'XXXXXX****'
+        hasPan = true
+      }
+    }
+
     return json({
       id: user.id,
       name: user.name || '',
@@ -218,6 +239,8 @@ export const getProfileHandler = async (req: PayloadRequest): Promise<Response> 
       phone: user.phone || '',
       income: user.income != null ? user.income : null,
       employmentType: user.employmentType || null,
+      pan: panMasked,
+      hasPan,
       authenticationProvider: user.authenticationProvider || 'email',
       profileCompleted: Boolean(user.profileCompleted),
       accountStatus: user.accountStatus || 'active',
@@ -245,7 +268,7 @@ export const updateProfileHandler = async (req: PayloadRequest): Promise<Respons
     return errorResponse({ issues: parsed.error.issues })
   }
 
-  const { name, phone, income, employmentType } = parsed.data
+  const { name, phone, income, employmentType, pan } = parsed.data
 
   const updateData: Record<string, unknown> = {
     name,
@@ -271,6 +294,24 @@ export const updateProfileHandler = async (req: PayloadRequest): Promise<Respons
     updateData.employmentType = employmentType ? employmentType.trim() : null
   }
 
+  if (pan !== undefined) {
+    if (typeof pan === 'string' && pan.trim()) {
+      const normalized = normalizePan(pan)
+      if (!isValidPan(normalized)) {
+        return json(
+          {
+            error: 'Invalid PAN format. Must be 10 alphanumeric characters (e.g. ABCDE1234F).',
+            code: 'INVALID_PAN',
+          },
+          400,
+        )
+      }
+      updateData.pan = encryptPan(normalized)
+    } else if (pan === null || pan === '') {
+      updateData.pan = null
+    }
+  }
+
   try {
     const updated = await req.payload.update({
       collection: 'users',
@@ -279,6 +320,19 @@ export const updateProfileHandler = async (req: PayloadRequest): Promise<Respons
       overrideAccess: true,
       depth: 0,
     })
+
+    let updatedPanMasked: string | null = null
+    let updatedHasPan = false
+    if (updated.pan && typeof updated.pan === 'object' && (updated.pan as any).ciphertext) {
+      try {
+        const dec = decryptPan(updated.pan as any)
+        updatedPanMasked = maskPan(dec)
+        updatedHasPan = true
+      } catch {
+        updatedPanMasked = 'XXXXXX****'
+        updatedHasPan = true
+      }
+    }
 
     return json({
       success: true,
@@ -289,6 +343,8 @@ export const updateProfileHandler = async (req: PayloadRequest): Promise<Respons
         phone: updated.phone,
         income: updated.income,
         employmentType: updated.employmentType,
+        pan: updatedPanMasked,
+        hasPan: updatedHasPan,
         authenticationProvider: updated.authenticationProvider,
         profileCompleted: updated.profileCompleted,
         accountStatus: updated.accountStatus,

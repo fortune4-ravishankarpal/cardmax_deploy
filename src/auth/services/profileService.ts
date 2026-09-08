@@ -4,6 +4,7 @@ import type { User } from '@/payload-types'
 import { findUserByEmail } from '@/auth/services/userService'
 import { AuthorizationError } from '@/auth/services/otpService'
 import { CURRENT_TOS_VERSION, CURRENT_PRIVACY_VERSION } from '@/lib/consentVersions'
+import { encryptPan, isValidPan, normalizePan } from '@/auth/services/panCrypto'
 
 export const isProfileComplete = (user: User | null): boolean => {
   if (!user) return false
@@ -84,6 +85,23 @@ export const completeUserProfile = async (payload: Payload, user: User, data: an
   }
   if (typeof data?.phone === 'string' && data.phone.trim()) {
     payloadUpdateData.phone = data.phone.trim()
+  }
+
+  // ── Indian PAN (Permanent Account Number) ───────────────────────────────
+  if (data?.pan !== undefined) {
+    if (typeof data.pan === 'string' && data.pan.trim()) {
+      const normalized = normalizePan(data.pan)
+      if (!isValidPan(normalized)) {
+        throw new AuthorizationError(
+          'INVALID_PAN_FORMAT',
+          'Invalid PAN format. Must be 10 alphanumeric characters (e.g. ABCDE1234F).',
+          400,
+        )
+      }
+      payloadUpdateData.pan = encryptPan(normalized)
+    } else if (data.pan === null || data.pan === '') {
+      payloadUpdateData.pan = null
+    }
   }
 
   const updated = await payload.update({

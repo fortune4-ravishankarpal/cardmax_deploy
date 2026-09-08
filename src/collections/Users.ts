@@ -27,6 +27,7 @@ import {
   gmailIngestHandler,
 } from '@/auth/gmail/endpoints'
 import { consentEndpoints } from '../consent/endpoints'
+import { assertValidPanEnvelope } from '@/auth/services/panCrypto'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -69,6 +70,15 @@ export const Users: CollectionConfig = {
                   path: 'password',
                 },
               ],
+            })
+          }
+        }
+        if (data) {
+          try {
+            assertValidPanEnvelope(data as Record<string, unknown>)
+          } catch (err: any) {
+            throw new ValidationError({
+              errors: [{ message: err.message, path: 'pan' }],
             })
           }
         }
@@ -379,6 +389,61 @@ export const Users: CollectionConfig = {
         description: 'When the marketing consent preference was last changed.',
         readOnly: true,
       },
+    },
+    // ── Secure Indian PAN (Permanent Account Number) ───────────────────────────
+    // Encrypted envelope stored as a single logical field/group.
+    // Plaintext PAN is NEVER stored in the database.
+    // Internal encryption properties are blocked from REST, GraphQL, and Admin UI.
+    {
+      name: 'pan',
+      type: 'group',
+      admin: {
+        hidden: true,
+      },
+      access: {
+        read: () => false,
+        create: () => false,
+        update: () => false,
+      },
+      fields: [
+        {
+          name: 'ciphertext',
+          type: 'textarea',
+          admin: { hidden: true },
+          access: { read: () => false, create: () => false, update: () => false },
+        },
+        {
+          name: 'iv',
+          type: 'text',
+          admin: { hidden: true },
+          access: { read: () => false, create: () => false, update: () => false },
+        },
+        {
+          name: 'authTag',
+          type: 'text',
+          admin: { hidden: true },
+          access: { read: () => false, create: () => false, update: () => false },
+        },
+        {
+          name: 'keyVersion',
+          type: 'text',
+          admin: { hidden: true },
+          access: { read: () => false, create: () => false, update: () => false },
+        },
+        {
+          name: 'algorithm',
+          type: 'text',
+          admin: { hidden: true },
+          access: { read: () => false, create: () => false, update: () => false },
+        },
+        {
+          name: 'lookup',
+          type: 'text',
+          index: true,
+          admin: { hidden: true },
+          access: { read: () => false, create: () => false, update: () => false },
+        },
+      ],
     },
   ],
   endpoints: [

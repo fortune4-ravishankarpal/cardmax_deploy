@@ -38,6 +38,11 @@ export const env = createEnv({
     CARD_ENCRYPTION_KEY: z.string().min(1).optional(),
     CARD_ENCRYPTION_CURRENT_KEY_VERSION: z.string().min(1).optional(),
 
+    // Indian PAN (Permanent Account Number)
+    PAN_ENCRYPTION_KEYS: z.string().min(1).optional(),
+    PAN_ENCRYPTION_KEY: z.string().min(1).optional(),
+    PAN_ENCRYPTION_CURRENT_KEY_VERSION: z.string().min(1).optional(),
+
     // Sessions & cookies
     SESSION_MAX_AGE_SECONDS: z.coerce.number().int().positive().default(60 * 60 * 24 * 30),
     COOKIE_SECURE: z
@@ -111,6 +116,11 @@ export const env = createEnv({
     CARD_ENCRYPTION_KEYS: process.env.CARD_ENCRYPTION_KEYS,
     CARD_ENCRYPTION_KEY: process.env.CARD_ENCRYPTION_KEY,
     CARD_ENCRYPTION_CURRENT_KEY_VERSION: process.env.CARD_ENCRYPTION_CURRENT_KEY_VERSION,
+
+    // Indian PAN (Permanent Account Number)
+    PAN_ENCRYPTION_KEYS: process.env.PAN_ENCRYPTION_KEYS,
+    PAN_ENCRYPTION_KEY: process.env.PAN_ENCRYPTION_KEY,
+    PAN_ENCRYPTION_CURRENT_KEY_VERSION: process.env.PAN_ENCRYPTION_CURRENT_KEY_VERSION,
 
     // Sessions & cookies
     SESSION_MAX_AGE_SECONDS: process.env.SESSION_MAX_AGE_SECONDS,

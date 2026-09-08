@@ -12,6 +12,7 @@ type FormValues = {
   phone: string
   income: string
   employmentType: string
+  pan: string
   marketingConsent: boolean
 }
 
@@ -38,6 +39,7 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
       phone: user.phone || '',
       income: user.income != null ? String(user.income) : '',
       employmentType: user.employmentType || '',
+      pan: '',
       marketingConsent: false, // OFF by default — explicit opt-in required
     },
   })
@@ -50,6 +52,7 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
     if (values.phone.trim()) payload.phone = values.phone.trim()
     if (values.income.trim()) payload.income = values.income.trim()
     if (values.employmentType) payload.employmentType = values.employmentType
+    if (values.pan && values.pan.trim()) payload.pan = values.pan.trim().toUpperCase()
 
     // Marketing consent: passed as explicit boolean (false if unchecked)
     payload.marketingConsent = values.marketingConsent === true
@@ -135,6 +138,28 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
             </option>
           ))}
         </select>
+
+        <label className="auth-label" htmlFor="pan">
+          Permanent Account Number (PAN)
+        </label>
+        <input
+          id="pan"
+          className="auth-input"
+          type="text"
+          maxLength={10}
+          placeholder="ABCDE1234F"
+          style={{ textTransform: 'uppercase' }}
+          {...register('pan', {
+            validate: (val) => {
+              if (!val || !val.trim()) return true
+              return (
+                /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(val.trim()) ||
+                'PAN must be 10 alphanumeric characters (e.g. ABCDE1234F)'
+              )
+            },
+          })}
+        />
+        {errors.pan && <span className="auth-field-error">{errors.pan.message}</span>}
 
         {/* ── Optional: Communications ───────────────────────────────────── */}
         <div

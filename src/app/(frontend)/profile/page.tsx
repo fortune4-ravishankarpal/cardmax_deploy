@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { ProfileView, UserProfileData } from './profile-view'
+import { decryptPan, maskPan } from '@/auth/services/panCrypto'
 
 export const metadata = {
   title: 'My Profile — CardMax',
@@ -55,6 +56,19 @@ export default async function ProfilePage() {
 
   const activeSubscription = subscriptionsResult.docs[0] || null
 
+  let panMasked: string | null = null
+  let hasPan = false
+  if (fullUser.pan && typeof fullUser.pan === 'object' && (fullUser.pan as any).ciphertext) {
+    try {
+      const dec = decryptPan(fullUser.pan as any)
+      panMasked = maskPan(dec)
+      hasPan = true
+    } catch {
+      panMasked = 'XXXXXX****'
+      hasPan = true
+    }
+  }
+
   const profileData: UserProfileData = {
     id: fullUser.id,
     name: fullUser.name || '',
@@ -62,6 +76,8 @@ export default async function ProfilePage() {
     phone: fullUser.phone || '',
     income: fullUser.income != null ? fullUser.income : null,
     employmentType: fullUser.employmentType || null,
+    pan: panMasked,
+    hasPan,
     authenticationProvider: fullUser.authenticationProvider || 'email',
     profileCompleted: Boolean(fullUser.profileCompleted),
     accountStatus: fullUser.accountStatus || 'active',
