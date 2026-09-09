@@ -2,11 +2,15 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import AddCardModal from './components/AddCardModal'
+import EditCardModal from './components/EditCardModal'
 import './styles.scss'
 
 export default function WalletPage() {
   const [cards, setCards] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [editingCard, setEditingCard] = useState<any | null>(null)
 
   const fetchCards = useCallback(async () => {
     try {
@@ -66,7 +70,12 @@ export default function WalletPage() {
             <h1>My Credit Cards</h1>
             <p>Manage your linked credit cards, statement dates, and reward limits.</p>
           </div>
-          <button type="button" className="btn-add">
+          <button
+            type="button"
+            className="btn-add"
+            onClick={() => setIsAddModalOpen(true)}
+            id="btn-add-card"
+          >
             <svg
               width="15"
               height="15"
@@ -124,7 +133,11 @@ export default function WalletPage() {
             </div>
             <h3>Your wallet is empty</h3>
             <p>Add a credit card to track rewards, statement dates, and personalized card perks.</p>
-            <button type="button" className="btn-add">
+            <button
+              type="button"
+              className="btn-add"
+              onClick={() => setIsAddModalOpen(true)}
+            >
               <svg
                 width="15"
                 height="15"
@@ -142,12 +155,31 @@ export default function WalletPage() {
           <div className="card-grid">
             {cards.map((card) => {
               const isActive = card.status === 'active'
+
+              const cardObj =
+                typeof card.card === 'object' && card.card
+                  ? card.card
+                  : typeof card.creditCard === 'object' && card.creditCard
+                    ? card.creditCard
+                    : null
+
+              const bankName =
+                (typeof cardObj?.bank === 'object' && cardObj.bank?.name) ||
+                (typeof cardObj?.bank === 'string' && cardObj.bank) ||
+                card.bankName ||
+                'Bank'
+
+              const cardName = cardObj?.name || card.cardName || 'Credit Card'
+              const displayName = card.displayName || null
+              const dueDay = card.paymentDueDay ?? card.billingCycleDay ?? null
+
               return (
                 <article key={card.id} className={`wallet-card ${!isActive ? 'inactive' : ''}`}>
                   <div className="card-top">
                     <div className="card-branding">
-                      <span className="bank-name">{card.creditCard?.bank?.name || 'Bank'}</span>
-                      <h2 className="card-name">{card.creditCard?.name || 'Credit Card'}</h2>
+                      <span className="bank-name">{bankName}</span>
+                      <h2 className="card-name">{displayName || cardName}</h2>
+                      {displayName && <span className="card-subtitle-type">{cardName}</span>}
                     </div>
                     <span className={`badge ${isActive ? 'status-active' : 'status-inactive'}`}>
                       {isActive ? 'Active' : 'Inactive'}
@@ -169,10 +201,35 @@ export default function WalletPage() {
                         <span className="detail-value">{card.statementDay}th of month</span>
                       </div>
                     )}
+                    {dueDay != null && (
+                      <div className="detail-item">
+                        <span className="detail-label">Payment Due</span>
+                        <span className="detail-value">{dueDay}th of month</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="card-actions">
-                    <button type="button" className="btn-card-action secondary">
+                    <button
+                      type="button"
+                      className="btn-card-action secondary"
+                      onClick={() => setEditingCard(card)}
+                      id={`btn-edit-card-${card.id}`}
+                    >
+                      <svg
+                        width="13"
+                        height="13"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                        />
+                      </svg>
                       Edit
                     </button>
                     {isActive && (
@@ -180,6 +237,7 @@ export default function WalletPage() {
                         type="button"
                         className="btn-card-action danger"
                         onClick={() => deactivateCard(card.id)}
+                        id={`btn-remove-card-${card.id}`}
                       >
                         <svg
                           width="13"
@@ -205,6 +263,21 @@ export default function WalletPage() {
           </div>
         )}
       </div>
+
+      {/* Interactive Modals */}
+      <AddCardModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onCardAdded={fetchCards}
+      />
+
+      <EditCardModal
+        isOpen={Boolean(editingCard)}
+        card={editingCard}
+        onClose={() => setEditingCard(null)}
+        onCardUpdated={fetchCards}
+      />
     </div>
   )
 }
+

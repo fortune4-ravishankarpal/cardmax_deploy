@@ -104,24 +104,95 @@ export const UserCard: CollectionConfig = {
       max: 31,
       admin: {
         description: 'The day of the month their statement is generated.',
-      }
+      },
+    },
+    {
+      name: 'paymentDueDay',
+      type: 'number',
+      min: 1,
+      max: 31,
+      admin: {
+        description: 'The day of the month payment is due.',
+      },
     },
     {
       name: 'openedAt',
       type: 'date',
       admin: {
         description: 'When the user originally opened this credit card account.',
-      }
+      },
     },
     {
       name: 'closedAt',
       type: 'date',
       admin: {
         description: 'When the user closed this credit card account.',
-      }
-    }
+      },
+    },
   ],
+  hooks: {
+    beforeValidate: [
+      ({ req, data, operation }) => {
+        if (data) {
+          delete (data as any).createdBy
+          delete (data as any).lastModifiedBy
+        }
+        if (operation === 'create' && req?.user && data) {
+          if (req.user.collection !== 'admin' || !data.user) {
+            data.user = req.user.id
+          }
+        }
+        return data
+      },
+    ],
+    beforeChange: [
+      ({ req, data, operation }) => {
+        if (data) {
+          delete (data as any).createdBy
+          delete (data as any).lastModifiedBy
+        }
+        if (operation === 'create' && req?.user && data) {
+          if (req.user.collection !== 'admin' || !data.user) {
+            data.user = req.user.id
+          }
+        }
+        return data
+      },
+    ],
+  },
   endpoints: [
+    {
+      path: '/catalog',
+      method: 'get',
+      handler: async (req) => {
+        try {
+          const cards = await req.payload.find({
+            collection: 'CreditCard',
+            where: {
+              and: [
+                {
+                  deletedAt: {
+                    exists: false,
+                  },
+                },
+                {
+                  name: {
+                    exists: true,
+                  },
+                },
+              ],
+            },
+            depth: 1,
+            limit: 200,
+          })
+
+          return Response.json(cards.docs)
+        } catch (e: unknown) {
+          const message = e instanceof Error ? e.message : 'Internal Server Error'
+          return Response.json({ error: message }, { status: 500 })
+        }
+      },
+    },
     {
       path: '/me',
       method: 'get',
@@ -134,13 +205,14 @@ export const UserCard: CollectionConfig = {
           collection: 'user-cards',
           where: {
             user: {
-              equals: req.user.id
-            }
-          }
+              equals: req.user.id,
+            },
+          },
+          depth: 2,
         })
 
         return Response.json(cards.docs)
-      }
+      },
     },
     {
       path: '/:id/deactivate',
