@@ -26,13 +26,15 @@ export async function extractPdfText(pdfBuffer: Buffer): Promise<PdfTextExtracti
     let totalPages = 1
 
     try {
-      const parser = new PDFParse({ data: pdfBuffer })
+      const copy = new Uint8Array(pdfBuffer.byteLength)
+      copy.set(pdfBuffer)
+      const parser = new PDFParse({ data: copy })
       const result = await parser.getText()
       extractedText = result?.text || ''
       totalPages = result?.total || 1
       await parser.destroy()
-    } catch {
-      // If pdf-parse engine encounters an uncompressed or malformed structure, proceed to regex fallback
+    } catch (parseErr) {
+      console.error('[pdfTextExtractor] PDFParse threw error:', parseErr)
     }
 
     // Fallback for uncompressed PDF text streams

@@ -334,5 +334,38 @@ describe('Credit Card Statement Detection & Classification', () => {
 
     spy.mockRestore()
   })
+
+  // 14. Real sample PDFs from media/
+  it('correctly classifies and parses real statement PDFs from media/', async () => {
+    const fs = await import('fs')
+    const path = await import('path')
+    const { processStatementPdf } = await import('@/auth/gmail/statement/statementProcessor')
+
+    const file1 = path.resolve(process.cwd(), 'media', 'credit_card_statement.pdf')
+    if (fs.existsSync(file1)) {
+      const buf1 = fs.readFileSync(file1)
+      const res1 = await processStatementPdf(buf1, {
+        sender: 'cards@apexfinancial.com',
+        subject: 'Your Apex Financial Statement',
+        attachmentFilename: 'credit_card_statement.pdf',
+      })
+      expect(res1.isStatement).toBe(true)
+      expect(res1.classification.confidence).toBeGreaterThanOrEqual(0.8)
+      expect(res1.parsedData?.cardLast4).toBe('4821')
+    }
+
+    const file2 = path.resolve(process.cwd(), 'media', 'horizon_rewards_statement.pdf')
+    if (fs.existsSync(file2)) {
+      const buf2 = fs.readFileSync(file2)
+      const res2 = await processStatementPdf(buf2, {
+        sender: 'alerts@horizonbank.com',
+        subject: 'Monthly Document',
+        attachmentFilename: 'horizon_rewards_statement.pdf',
+      })
+      expect(res2.isStatement).toBe(true)
+      expect(res2.classification.confidence).toBeGreaterThanOrEqual(0.8)
+      expect(res2.parsedData?.cardLast4).toBe('9104')
+    }
+  })
 })
 

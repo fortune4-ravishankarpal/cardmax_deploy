@@ -51,18 +51,22 @@ export class GenericStatementParser {
   }
 
   private extractCardLast4(text: string): string | undefined {
-    // Patterns for masked card numbers: "XXXX XXXX XXXX 1234", "**** **** **** 1234", "Card ending in 1234"
+    // Patterns for masked card numbers: "•••• •••• •••• 1234", "XXXX XXXX XXXX 1234", "**** **** **** 1234", "Card ending in 1234"
     const patterns = [
-      /(?:card\s*(?:no|number)?|ending\s+in|account\s+no)[\s:]*(?:[xX*]{4}[\s-]?){2,3}(\d{4})/i,
-      /(?:[xX*]{4}[\s-]?){2,3}(\d{4})\b/,
-      /(?:card\s+ending\s+in|ending\s+in)\s*(\d{4})/i,
-      /(?:account\s+number|card\s+number)[\s:]*[*xX]+(\d{4})/i,
+      /(?:account\s+(?:number|no)|card\s*(?:no|number)?|ending\s+in)[\s:]*([•\u2022\u25cf*xX.\s-]{4,16})(\d{4})/i,
+      /(?:[•\u2022\u25cf*xX.]{2,4}[\s-]?){2,4}(\d{4})\b/,
+      /(?:card\s+ending\s+in|ending\s+in|ending)\s*(\d{4})/i,
+      /(?:account\s+(?:number|no)|card\s+(?:number|no))[\s:]*[*xX•\u2022\u25cf.\s]+(\d{4})/i,
     ]
 
     for (const pat of patterns) {
       const match = text.match(pat)
-      if (match && match[1]) {
-        return match[1]
+      if (match) {
+        // If the pattern has 2 capture groups (mask + last4), return group 2, else group 1
+        const last4 = match[2] || match[1]
+        if (last4 && /^\d{4}$/.test(last4.trim())) {
+          return last4.trim()
+        }
       }
     }
     return undefined

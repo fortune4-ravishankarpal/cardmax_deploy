@@ -120,6 +120,29 @@ export const buildGenericStatementQuery = (): string => {
   return 'has:attachment filename:pdf (statement OR "e-statement" OR "e_statement" OR "credit card" OR "card statement" OR "account statement" OR "monthly statement")'
 }
 
+/** Filename patterns that represent boilerplate legal/marketing documents attached to bank emails. */
+export const isIgnoredNonStatementFilename = (filename: string): boolean => {
+  const lower = (filename || '').toLowerCase()
+  return (
+    lower.includes('privacy') ||
+    lower.includes('terms') ||
+    lower.includes('disclaimer') ||
+    lower.includes('disclosure') ||
+    lower.includes('user_guide') ||
+    lower.includes('user guide') ||
+    lower.includes('faq') ||
+    lower.includes('agreement') ||
+    lower.includes('policy') ||
+    lower.includes('guideline') ||
+    lower.includes('notice') ||
+    lower.includes('t&c') ||
+    lower.includes('mitc') ||
+    lower.includes('schedule_of_charges') ||
+    lower.includes('schedule of charges') ||
+    lower.includes('tariff')
+  )
+}
+
 /** Recursively search MIME parts for PDF attachments. */
 const findPdfParts = (part: GmailPart, messageId: string): GmailAttachmentInfo[] => {
   const results: GmailAttachmentInfo[] = []
@@ -130,7 +153,8 @@ const findPdfParts = (part: GmailPart, messageId: string): GmailAttachmentInfo[]
     partMimetype.toLowerCase().includes('pdf') ||
     partFilename.toLowerCase().endsWith('.pdf')
 
-  if (isPdf && partFilename) {
+  // Skip PDFs that are clearly legal disclosures / privacy policies
+  if (isPdf && partFilename && !isIgnoredNonStatementFilename(partFilename)) {
     results.push({
       messageId,
       attachmentId: part.body?.attachmentId || 'inline',
@@ -203,14 +227,22 @@ export const downloadAttachment = async (
   attachment: GmailAttachmentInfo,
 ): Promise<Buffer> => {
   if (attachment.inlineData) {
-    return Buffer.from(base64UrlToBase64(attachment.inlineData), 'base64')
+    try {
+      return Buffer.from(attachment.inlineData, 'base64url')
+    } catch {
+      return Buffer.from(base64UrlToBase64(attachment.inlineData), 'base64')
+    }
   }
 
   const data = (await gmailFetch(
     accessToken,
     `me/messages/${attachment.messageId}/attachments/${attachment.attachmentId}`,
   )) as { data: string }
-  return Buffer.from(base64UrlToBase64(data.data), 'base64')
+  try {
+    return Buffer.from(data.data, 'base64url')
+  } catch {
+    return Buffer.from(base64UrlToBase64(data.data), 'base64')
+  }
 }
 
 /**
