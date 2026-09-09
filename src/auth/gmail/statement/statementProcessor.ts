@@ -11,6 +11,7 @@ export interface ProcessedStatementResult {
   issuerDetection: IssuerDetectionResult
   parsedData: GenericCreditCardStatement | null
   rawText: string
+  extractionError?: string
 }
 
 /**
@@ -38,6 +39,7 @@ export async function processStatementPdf(
       issuerDetection: { issuer: null, confidence: 0, matchedSignals: [] },
       parsedData: null,
       rawText: pdfText,
+      extractionError: extraction.error,
     }
   }
 

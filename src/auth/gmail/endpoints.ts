@@ -367,12 +367,17 @@ export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response>
 
         // Ignore attachments that are not credit card statements (e.g. invoices, receipts)
         if (!statementResult.isStatement) {
+          const detail = statementResult.extractionError
+            ? `Text extraction failed (${statementResult.extractionError})`
+            : undefined
+          console.warn(`[StatementProcessor] Ignored non-statement: ${att.filename} (confidence: ${statementResult.classification.confidence})`)
           results.push({
             issuer: 'non_statement',
             filename: att.filename,
             size: pdf.length,
             status: 'ignored_not_statement',
             confidence: statementResult.classification.confidence,
+            error: detail,
           })
           continue
         }
