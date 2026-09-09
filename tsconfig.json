@@ -32,7 +32,11 @@
       ],
       "@/*": [
         "./src/*"
-      ]
+      ],
+      "@payload-pln/*": [
+        "./src/plugins/*",
+        "./src/plugins/*/index"
+      ],
     }
   },
   "include": [

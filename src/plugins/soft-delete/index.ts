@@ -156,7 +156,7 @@ export const softDelete = (pluginOptions: SoftDeleteConfig): Plugin => {
                 ...collection.admin?.components?.edit,
                 editMenuItems: [
                   ...existingActions,
-                  // '@payload-pln/soft-delete/client#SoftDeleteButton',
+                  // '@/plugins/soft-delete/exports/client#SoftDeleteButton',
                   getClientComponent("SoftDeleteButton")
                   // `${clientPath}/client#SoftDeleteButton`,
                 ],
