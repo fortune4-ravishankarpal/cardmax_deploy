@@ -20,10 +20,12 @@ import {
   getMessage,
   downloadAttachment,
   identifyIssuerFromMessage,
+  extractMessageHeaders,
 } from '@/auth/gmail/client'
 import type { GmailMessageFull } from '@/auth/gmail/client'
 import { getStatementParser } from '@/auth/gmail/parser'
 import { GMAIL_INGEST_MAX_PDFS } from '@/auth/gmail/constants'
+import { processStatementPdf } from './statement/statementProcessor'
 
 const json = (data: unknown, status = 200): Response => {
   return new Response(JSON.stringify(data), {
@@ -259,7 +261,8 @@ interface IngestResultEntry {
   issuer: string
   filename: string
   size: number
-  status: 'parsed' | 'error' | 'scanned_not_stored'
+  status: 'parsed' | 'needs_review' | 'ignored_not_statement' | 'scanned_not_stored' | 'error'
+  confidence?: number
   error?: string
 }
 
@@ -272,13 +275,12 @@ interface IngestResultEntry {
  * 1. Verify consent for analyse_inbox.
  * 2. Load + decrypt the stored refresh token.
  * 3. Refresh the access token if it has expired.
- * 4. Search Gmail for statement emails using issuer patterns.
+ * 4. Search Gmail for statement emails using broad & issuer patterns.
  * 5. Download each PDF attachment.
- * 6. Identify the issuer from email headers.
- * 7. If persist_derived consent is active, pass PDF to statement parser pipeline.
- *
- * Accepts an optional `maxPdfs` body field to limit the number of
- * PDFs processed (default: GMAIL_INGEST_MAX_PDFS, max: GMAIL_INGEST_MAX_PDFS).
+ * 6. Classify if PDF is a credit card statement dynamically.
+ * 7. Detect issuer from PDF text, sender, and subject.
+ * 8. Parse via bank parser or generic fallback parser.
+ * 9. If persist_derived consent is active, store in media & statements collection.
  */
 export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response> => {
   const body = await jsonBody(req)
@@ -321,7 +323,7 @@ export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response>
       throw e
     }
 
-    // Search Gmail for statement PDFs across all issuer patterns
+    // Search Gmail for statement PDFs across broad statement patterns and issuers
     const attachments = await searchGmailStatements(accessToken, maxPdfs)
 
     if (attachments.length === 0) {
@@ -333,8 +335,6 @@ export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response>
       })
     }
 
-    // Process each PDF through the statement parser pipeline
-    const parser = getStatementParser(req.payload)
     const results: IngestResultEntry[] = []
 
     let processed = 0
@@ -345,31 +345,101 @@ export const gmailIngestHandler = async (req: PayloadRequest): Promise<Response>
       try {
         const pdf = await downloadAttachment(accessToken, att)
 
-        // Identify the issuer from the email headers
-        let issuer = 'unknown'
+        // Retrieve headers for context
+        let sender = ''
+        let subject = ''
         try {
           const message: GmailMessageFull = await getMessage(accessToken, att.messageId)
-          const match = identifyIssuerFromMessage(message)
-          if (match) issuer = match.name
+          const headers = extractMessageHeaders(message.payload?.headers || [])
+          sender = headers['from'] || ''
+          subject = headers['subject'] || ''
         } catch {
-          // Non-fatal — continue with 'unknown' issuer
+          // Continue with available information
         }
 
-        // Pass the PDF to the statement parser pipeline only if persist_derived consent is active
-        if (canPersist) {
-          await parser.parse(user.id, pdf, {
-            issuer,
-            source: 'gmail',
-            gmailMessageId: att.messageId,
-            attachmentFilename: att.filename,
+        // Process PDF through dynamic classification and issuer detection
+        const statementResult = await processStatementPdf(pdf, {
+          sender,
+          subject,
+          attachmentFilename: att.filename,
+          messageId: att.messageId,
+        })
+
+        // Ignore attachments that are not credit card statements (e.g. invoices, receipts)
+        if (!statementResult.isStatement) {
+          results.push({
+            issuer: 'non_statement',
+            filename: att.filename,
+            size: pdf.length,
+            status: 'ignored_not_statement',
+            confidence: statementResult.classification.confidence,
           })
+          continue
+        }
+
+        const detectedIssuer = statementResult.issuerDetection.issuer
+        const isUnrecognized = !detectedIssuer
+        const issuerName = detectedIssuer || 'Unrecognized Issuer'
+
+        // Persist statement to Payload CMS if persist_derived consent is active
+        if (canPersist) {
+          let mediaId: string | number | undefined
+          try {
+            const media = await req.payload.create({
+              collection: 'media',
+              data: {
+                alt: `${issuerName} ${att.filename || 'statement'}.pdf`,
+              },
+              file: {
+                data: pdf,
+                name: att.filename || 'statement.pdf',
+                mimetype: 'application/pdf',
+                size: pdf.length,
+              },
+              overrideAccess: true,
+            } as any)
+            mediaId = media?.id
+          } catch {
+            // Non-fatal if media upload fails
+          }
+
+          const parsed = statementResult.parsedData
+          await req.payload.create({
+            collection: 'statements',
+            data: {
+              user: user.id,
+              source: 'gmail',
+              issuer: issuerName,
+              isUnrecognizedIssuer: isUnrecognized,
+              classificationConfidence: statementResult.classification.confidence,
+              classificationSignals: {
+                classificationSignals: statementResult.classification.signals,
+                issuerSignals: statementResult.issuerDetection.matchedSignals,
+              },
+              gmailMessageId: att.messageId,
+              attachmentFilename: att.filename,
+              status: isUnrecognized ? 'needs_review' : (parsed ? 'parsed' : 'pending'),
+              accountLast4: parsed?.cardLast4,
+              paymentDueDate: parsed?.paymentDueDate,
+              totalAmount: parsed?.totalAmountDue,
+              minimumAmountDue: parsed?.minimumAmountDue,
+              transactionCount: parsed?.transactions?.length || 0,
+              pdf: mediaId,
+              pdfSize: pdf.length,
+              parsedAt: new Date().toISOString(),
+            },
+            overrideAccess: true,
+          } as any)
         }
 
         results.push({
-          issuer,
+          issuer: issuerName,
           filename: att.filename,
           size: pdf.length,
-          status: canPersist ? 'parsed' : 'scanned_not_stored',
+          status: canPersist
+            ? (isUnrecognized ? 'needs_review' : 'parsed')
+            : 'scanned_not_stored',
+          confidence: statementResult.classification.confidence,
         })
       } catch (e) {
         const err = e as Error

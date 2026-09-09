@@ -112,6 +112,14 @@ export const buildGmailQuery = (senders: string[], subjectPatterns: string[]): s
   return `(${senderQuery}) (${subjectQuery}) has:attachment filename:pdf`
 }
 
+/**
+ * Build a generic Gmail search query that finds credit-card statement PDFs
+ * regardless of issuer or sender.
+ */
+export const buildGenericStatementQuery = (): string => {
+  return 'has:attachment filename:pdf (statement OR "e-statement" OR "e_statement" OR "credit card" OR "card statement" OR "account statement" OR "monthly statement")'
+}
+
 /** Recursively search MIME parts for PDF attachments. */
 const findPdfParts = (part: GmailPart, messageId: string): GmailAttachmentInfo[] => {
   const results: GmailAttachmentInfo[] = []
@@ -220,27 +228,43 @@ export const searchGmailStatements = async (
   accessToken: string,
   maxResults: number = GMAIL_SEARCH_MAX_RESULTS,
 ): Promise<GmailAttachmentInfo[]> => {
-  const patterns = getIssuerPatterns()
   const attachments: GmailAttachmentInfo[] = []
+  const seenMessageIds = new Set<string>()
 
+  // 1. Broad generic statement search (finds statements regardless of issuer/sender)
+  const genericQuery = buildGenericStatementQuery()
+  const queries: string[] = [genericQuery]
+
+  // 2. Also append configured issuer queries to catch any bank with non-standard subject lines
+  const patterns = getIssuerPatterns()
   for (const issuer of patterns) {
+    queries.push(buildGmailQuery(issuer.senders, issuer.subjectPatterns))
+  }
+
+  for (const query of queries) {
     if (attachments.length >= maxResults) break
 
-    const query = buildGmailQuery(issuer.senders, issuer.subjectPatterns)
     let pageToken: string | undefined
 
     do {
       const params = new URLSearchParams({
         q: query,
-        maxResults: String(Math.min(maxResults, 100)),
+        maxResults: String(Math.min(maxResults - attachments.length, 100)),
       })
       if (pageToken) params.set('pageToken', pageToken)
 
-      const list: GmailListResponse = await gmailFetch(accessToken, 'me/messages', params)
+      let list: GmailListResponse
+      try {
+        list = await gmailFetch(accessToken, 'me/messages', params)
+      } catch {
+        break
+      }
       const messages = list.messages || []
 
       for (const msg of messages) {
         if (attachments.length >= maxResults) break
+        if (seenMessageIds.has(msg.id)) continue
+        seenMessageIds.add(msg.id)
 
         try {
           const message = await getMessage(accessToken, msg.id)

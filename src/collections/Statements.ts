@@ -90,11 +90,38 @@ export const Statements: CollectionConfig = {
         { label: 'Pending', value: 'pending' },
         { label: 'Processing', value: 'processing' },
         { label: 'Parsed', value: 'parsed' },
+        { label: 'Needs Review', value: 'needs_review' },
         { label: 'Error', value: 'error' },
       ],
       defaultValue: 'pending',
       index: true,
       required: true,
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: 'isUnrecognizedIssuer',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { position: 'sidebar', description: 'True if statement was processed via generic fallback' },
+    },
+    {
+      name: 'classificationConfidence',
+      type: 'number',
+      admin: { position: 'sidebar', description: 'Statement detection confidence score (0-1)' },
+    },
+    {
+      name: 'classificationSignals',
+      type: 'json',
+      admin: { position: 'sidebar', description: 'Matched signals during classification and issuer detection' },
+    },
+    {
+      name: 'paymentDueDate',
+      type: 'text',
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: 'minimumAmountDue',
+      type: 'number',
       admin: { position: 'sidebar' },
     },
     {
