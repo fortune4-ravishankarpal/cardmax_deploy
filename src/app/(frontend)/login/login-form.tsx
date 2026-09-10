@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 
 import { sendOtpSchema, verifyOtpSchema } from '@/auth/validation/schemas'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 type Channel = 'email' | 'phone'
 type Step = 'choose' | 'identifier' | 'otp'
@@ -15,7 +16,7 @@ type OtpForm = { code: string }
 const postJson = (
   url: string,
   body: unknown,
-): Promise<{ data: Record<string, any>; status: number }> =>
+): Promise<{ data: Record<string, unknown>; status: number }> =>
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -30,11 +31,14 @@ export const LoginForm = () => {
   const [secondsLeft, setSecondsLeft] = useState(0)
   const [verifying, setVerifying] = useState(false)
   const [sending, setSending] = useState(false)
-  const [error, setError] = useState('')
+  const [identifier, setIdentifier] = useState('')
+  const [error, setError] = useState(() => {
+    if (typeof window === 'undefined') return ''
+    return new URLSearchParams(window.location.search).get('error') || ''
+  })
 
   const router = useRouter()
 
-  const identifierRef = useRef('')
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   const { register: registerIdentifier, handleSubmit: submitIdentifier } = useForm<IdentifierForm>()
@@ -70,11 +74,6 @@ export const LoginForm = () => {
 
   useEffect(() => stopTimer, [stopTimer])
 
-  useEffect(() => {
-    const queryError = new URLSearchParams(window.location.search).get('error')
-    if (queryError) setError(queryError)
-  }, [])
-
   const requestOtp = async (rawIdentifier: string, silent = false) => {
     if (!silent) setError('')
     setSending(true)
@@ -92,15 +91,15 @@ export const LoginForm = () => {
     setSending(false)
 
     if (status !== 200) {
-      setError(data.error || 'Failed to send a code. Please try again.')
+      setError((data.error as string) || 'Failed to send a code. Please try again.')
       return
     }
 
-    identifierRef.current = parsed.data.identifier
-    setChannel(data.channel)
-    setMasked(data.maskedIdentifier)
-    setExpiresIn(data.expiresInSeconds || 0)
-    beginCountdown(data.resendInSeconds || 30)
+    setIdentifier(parsed.data.identifier)
+    setChannel(data.channel as Channel)
+    setMasked((data.maskedIdentifier as string) || '')
+    setExpiresIn((data.expiresInSeconds as number) || 0)
+    beginCountdown((data.resendInSeconds as number) || 30)
     setStep('otp')
     setOtpValue('code', '')
   }
@@ -113,7 +112,7 @@ export const LoginForm = () => {
 
   const verifyCode = async ({ code }: OtpForm) => {
     setError('')
-    const parsed = verifyOtpSchema.safeParse({ identifier: identifierRef.current, code })
+    const parsed = verifyOtpSchema.safeParse({ identifier, code })
     if (!parsed.success) {
       setError('Enter the code you received.')
       return
@@ -127,7 +126,7 @@ export const LoginForm = () => {
     setVerifying(false)
 
     if (status !== 200) {
-      setError(data.error || 'The code could not be verified. Please try again.')
+      setError((data.error as string) || 'The code could not be verified. Please try again.')
       return
     }
 
@@ -136,6 +135,12 @@ export const LoginForm = () => {
     } else {
       router.push(data.profileComplete ? '/profile' : '/complete-profile')
     }
+  }
+
+  const handleIdentifierSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    void submitIdentifier(({ identifier: id }) => {
+      void requestOtp(id)
+    })(e)
   }
 
   return (
@@ -153,12 +158,12 @@ export const LoginForm = () => {
 
       {step === 'choose' && (
         <>
-          <a className="auth-button auth-button--google" href="/api/users/google/login">
+          <Link className="auth-button auth-button--google" href="/api/users/google/login">
             <span className="auth-google-icon" aria-hidden="true">
               G
             </span>
             Continue with Google
-          </a>
+          </Link>
 
           <div className="auth-divider">
             <span>or</span>
@@ -176,7 +181,7 @@ export const LoginForm = () => {
       {step === 'identifier' && channel && (
         <form
           className="auth-form"
-          onSubmit={submitIdentifier(({ identifier }) => requestOtp(identifier))}
+          onSubmit={handleIdentifierSubmit}
         >
           <label className="auth-label" htmlFor="identifier">
             {channel === 'email' ? 'Email address' : 'Phone number'}
@@ -231,7 +236,7 @@ export const LoginForm = () => {
                 type="button"
                 className="auth-button--link"
                 disabled={sending}
-                onClick={() => requestOtp(identifierRef.current, true)}
+                onClick={() => requestOtp(identifier, true)}
               >
                 {sending ? 'Sending…' : 'Resend code'}
               </button>

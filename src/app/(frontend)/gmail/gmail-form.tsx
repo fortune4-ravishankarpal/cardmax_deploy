@@ -32,11 +32,14 @@ export const GmailForm = () => {
   const [loading, setLoading] = useState(true)
   const [ingesting, setIngesting] = useState(false)
   const [disconnecting, setDisconnecting] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState(() => {
+    if (typeof window === 'undefined') return ''
+    const queryError = new URLSearchParams(window.location.search).get('error')
+    return queryError ? decodeURIComponent(queryError) : ''
+  })
   const [ingestResult, setIngestResult] = useState<IngestResult | null>(null)
 
-  const loadStatus = useCallback(async (silent = false) => {
-    if (!silent) setLoading(true)
+  const loadStatus = useCallback(async () => {
     try {
       const res = await fetch('/api/users/gmail/status')
       const data = await res.json()
@@ -44,15 +47,28 @@ export const GmailForm = () => {
     } catch {
       setError('Could not load your Gmail connection status.')
     } finally {
-      if (!silent) setLoading(false)
+      setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    const queryError = new URLSearchParams(window.location.search).get('error')
-    if (queryError) setError(decodeURIComponent(queryError))
-    loadStatus()
-  }, [loadStatus])
+    let active = true
+    fetch('/api/users/gmail/status')
+      .then((res) => res.json())
+      .then((data) => {
+        if (active) setStatus(data)
+      })
+      .catch(() => {
+        if (active) setError('Could not load your Gmail connection status.')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const handleDisconnect = async () => {
     if (!window.confirm('Disconnect Gmail? CardMax will no longer be able to read your statements.')) {
@@ -91,7 +107,7 @@ export const GmailForm = () => {
       if (!res.ok) {
         setError(data.error || 'Ingestion failed.')
       }
-      loadStatus(true)
+      void loadStatus()
     } catch {
       setError('Network error. Please try again.')
     } finally {
