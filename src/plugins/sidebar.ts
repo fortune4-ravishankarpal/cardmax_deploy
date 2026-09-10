@@ -1,6 +1,6 @@
 import { payloadEnhancedSidebar } from '@veiag/payload-enhanced-sidebar'
 import { checkIsSuperAdmin } from '@/access/isAdmin'
-let SideBarAccessViewChecker = ({ req, item }: any) => {
+const SideBarAccessViewChecker = ({ req, item }: any) => {
   if (!req.user) return false
 
   const isSuperAdmin = checkIsSuperAdmin(req.user)

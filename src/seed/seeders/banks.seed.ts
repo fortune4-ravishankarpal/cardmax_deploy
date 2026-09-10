@@ -7,7 +7,7 @@ export default async function bankSeeder(payload: Payload) {
     try {
         for (const bank of bankJson) {
             try {
-                let bankInfo = bank as Banks
+                const bankInfo = bank as Banks
                 await payload.create({
                     collection: "banks",
                     data: { ...bankInfo, dataVersion: (bank as any).dataVersion ?? 'v1', },
