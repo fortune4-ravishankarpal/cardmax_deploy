@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
 
 import type { User } from '@/payload-types'
 import { EMPLOYMENT_TYPES } from '@/auth/profileOptions'
@@ -26,6 +27,7 @@ const postJson = (url: string, body: unknown): Promise<{ data: any; status: numb
 export const CompleteProfileForm = ({ user }: { user: User }) => {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const router = useRouter()
 
   const {
     register,
@@ -64,8 +66,7 @@ export const CompleteProfileForm = ({ user }: { user: User }) => {
       setError(data.error || 'Could not save your profile. Please try again.')
       return
     }
-
-    window.location.href = '/profile'
+    router.push('/profile')
   }
 
   return (

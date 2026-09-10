@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export const ConsentOnboardingForm: React.FC = () => {
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [acknowledgePrivacy, setAcknowledgePrivacy] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const router = useRouter()
 
   const canSubmit = acceptTerms && acknowledgePrivacy && !submitting
 
@@ -34,7 +36,7 @@ export const ConsentOnboardingForm: React.FC = () => {
       }
 
       // Navigate to destination (dashboard or complete profile)
-      window.location.href = data.nextUrl || '/profile'
+      router.push(data.nextUrl || '/profile')
     } catch {
       setError('Network error. Please try again.')
       setSubmitting(false)
@@ -47,14 +49,15 @@ export const ConsentOnboardingForm: React.FC = () => {
     } catch {
       // Continue to login regardless
     }
-    window.location.href = '/login'
+    router.push('/login')
   }
 
   return (
     <div className="onboarding-card">
       <h1>Welcome to CardMax</h1>
       <p className="subtitle">
-        Before you begin using the service, please review and accept our required terms and privacy notice.
+        Before you begin using the service, please review and accept our required terms and privacy
+        notice.
       </p>
 
       {error && (
@@ -68,13 +71,16 @@ export const ConsentOnboardingForm: React.FC = () => {
         <h3>Required Service Processing</h3>
         <ul>
           <li>
-            <strong>Account & Authentication:</strong> We store your verified mobile/email to secure your login and send critical billing/security notices.
+            <strong>Account & Authentication:</strong> We store your verified mobile/email to secure
+            your login and send critical billing/security notices.
           </li>
           <li>
-            <strong>Card Tracking & Recommendations:</strong> We process credit card types and spending goals you select in the app to calculate fee-waiver milestones and rewards.
+            <strong>Card Tracking & Recommendations:</strong> We process credit card types and
+            spending goals you select in the app to calculate fee-waiver milestones and rewards.
           </li>
           <li>
-            <strong>Billing Administration:</strong> We maintain subscription status and payment records to provide access to CardMax Pro features.
+            <strong>Billing Administration:</strong> We maintain subscription status and payment
+            records to provide access to CardMax Pro features.
           </li>
         </ul>
       </div>
@@ -83,9 +89,9 @@ export const ConsentOnboardingForm: React.FC = () => {
       <div className="info-box exclusion-box">
         <h4>What is NOT included here:</h4>
         <p>
-          We will <strong>not</strong> access your Gmail inbox unless you explicitly connect it later.
-          We do <strong>not</strong> send marketing emails without your separate opt-in.
-          You can manage optional preferences anytime from Settings.
+          We will <strong>not</strong> access your Gmail inbox unless you explicitly connect it
+          later. We do <strong>not</strong> send marketing emails without your separate opt-in. You
+          can manage optional preferences anytime from Settings.
         </p>
       </div>
 
@@ -125,11 +131,7 @@ export const ConsentOnboardingForm: React.FC = () => {
         </div>
 
         <div className="actions-row">
-          <button
-            type="submit"
-            className="btn-continue"
-            disabled={!canSubmit}
-          >
+          <button type="submit" className="btn-continue" disabled={!canSubmit}>
             {submitting ? 'Saving agreement…' : 'Agree & Continue'}
           </button>
 

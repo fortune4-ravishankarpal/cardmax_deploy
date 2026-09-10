@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { sendOtpSchema, verifyOtpSchema } from '@/auth/validation/schemas'
+import { useRouter } from 'next/navigation'
 
 type Channel = 'email' | 'phone'
 type Step = 'choose' | 'identifier' | 'otp'
@@ -11,7 +12,10 @@ type Step = 'choose' | 'identifier' | 'otp'
 type IdentifierForm = { identifier: string }
 type OtpForm = { code: string }
 
-const postJson = (url: string, body: unknown): Promise<{ data: Record<string, any>; status: number }> =>
+const postJson = (
+  url: string,
+  body: unknown,
+): Promise<{ data: Record<string, any>; status: number }> =>
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -27,6 +31,8 @@ export const LoginForm = () => {
   const [verifying, setVerifying] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+
+  const router = useRouter()
 
   const identifierRef = useRef('')
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -80,7 +86,9 @@ export const LoginForm = () => {
       return
     }
 
-    const { status, data } = await postJson('/api/users/send-otp', { identifier: parsed.data.identifier })
+    const { status, data } = await postJson('/api/users/send-otp', {
+      identifier: parsed.data.identifier,
+    })
     setSending(false)
 
     if (status !== 200) {
@@ -124,9 +132,9 @@ export const LoginForm = () => {
     }
 
     if (data.consentRequired) {
-      window.location.href = '/consent-onboarding'
+      router.push('/consent-onboarding')
     } else {
-      window.location.href = data.profileComplete ? '/profile' : '/complete-profile'
+      router.push(data.profileComplete ? '/profile' : '/complete-profile')
     }
   }
 
@@ -147,7 +155,7 @@ export const LoginForm = () => {
         <>
           <a className="auth-button auth-button--google" href="/api/users/google/login">
             <span className="auth-google-icon" aria-hidden="true">
-              G 
+              G
             </span>
             Continue with Google
           </a>
@@ -166,7 +174,10 @@ export const LoginForm = () => {
       )}
 
       {step === 'identifier' && channel && (
-        <form className="auth-form" onSubmit={submitIdentifier(({ identifier }) => requestOtp(identifier))}>
+        <form
+          className="auth-form"
+          onSubmit={submitIdentifier(({ identifier }) => requestOtp(identifier))}
+        >
           <label className="auth-label" htmlFor="identifier">
             {channel === 'email' ? 'Email address' : 'Phone number'}
           </label>
