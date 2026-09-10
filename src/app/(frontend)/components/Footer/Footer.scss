@@ -1,0 +1,279 @@
+// ==========================================================================
+// CardMax Global Footer Styles
+// Clean, professional fintech footer with responsive grid & security notes
+// ==========================================================================
+
+$footer-bg: #070a13;
+$footer-border: rgba(255, 255, 255, 0.07);
+$footer-text: #94a3b8;
+$footer-text-light: #f1f5f9;
+$footer-accent: #6366f1;
+
+.cm-footer {
+  width: 100%;
+  background: $footer-bg;
+  border-top: 1px solid $footer-border;
+  color: $footer-text;
+  font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  padding: 3.5rem 1.5rem 2rem;
+  margin-top: auto;
+
+  @media (max-width: 768px) {
+    padding: 2.5rem 1rem 1.5rem;
+  }
+}
+
+.cm-footer__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+// Main Grid Layout
+.cm-footer__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+// Brand Column
+.cm-footer__brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cm-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+
+  .cm-footer-brand-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .cm-brand-accent {
+    color: #818cf8;
+    font-weight: 800;
+  }
+}
+
+.cm-footer__statement {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #94a3b8;
+  max-width: 440px;
+  margin: 0;
+}
+
+// Security Disclaimer Card
+.cm-footer__security {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  max-width: 460px;
+  margin-top: 0.5rem;
+
+  .cm-security-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #10b981;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .cm-security-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    strong {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    p {
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: #94a3b8;
+      margin: 0;
+    }
+  }
+}
+
+// Navigation Columns
+.cm-footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  h4 {
+    font-size: 0.825rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 0;
+  }
+}
+
+.cm-footer__links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+
+  li {
+    margin: 0;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.15s ease;
+
+    &:hover {
+      color: #ffffff;
+      transform: translateX(2px);
+    }
+  }
+
+  .cm-footer-pro-tag {
+    font-size: 0.625rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #000000;
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+}
+
+// Bottom Bar
+.cm-footer__bottom {
+  padding-top: 2rem;
+  border-top: 1px solid $footer-border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.cm-footer__copyright {
+  font-size: 0.825rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.cm-footer__meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+// System Status Indicator
+.cm-system-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  .cm-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.4);
+      animation: cmPulse 2s infinite ease-in-out;
+    }
+  }
+
+  @keyframes cmPulse {
+    0% {
+      transform: scale(0.9);
+      opacity: 0.8;
+    }
+    50% {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+  }
+}
