@@ -1,0 +1,88 @@
+// ==========================================================================
+// CardMax SCSS Design System — Typography
+// ==========================================================================
+
+@use './variables' as *;
+@use './mixins' as *;
+
+h1, h2, h3, h4, h5, h6 {
+  color: $color-text-main;
+  font-weight: $font-weight-bold;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+h1 {
+  font-size: $font-size-4xl;
+  line-height: $line-height-tight;
+
+  @include respond-to($breakpoint-desktop) {
+    font-size: 2.25rem;
+  }
+
+  @include respond-to($breakpoint-tablet) {
+    font-size: 1.85rem;
+  }
+
+  @include respond-to($breakpoint-mobile) {
+    font-size: 1.6rem;
+  }
+}
+
+h2 {
+  font-size: $font-size-2xl;
+  line-height: $line-height-snug;
+
+  @include respond-to($breakpoint-tablet) {
+    font-size: 1.35rem;
+  }
+}
+
+h3 {
+  font-size: $font-size-xl;
+  line-height: $line-height-snug;
+}
+
+h4 {
+  font-size: $font-size-lg;
+  line-height: $line-height-normal;
+}
+
+h5 {
+  font-size: $font-size-base;
+  line-height: $line-height-normal;
+}
+
+h6 {
+  font-size: $font-size-sm;
+  line-height: $line-height-normal;
+}
+
+p {
+  margin: 0;
+  line-height: $line-height-normal;
+  color: $color-text-muted;
+}
+
+a {
+  color: currentColor;
+  text-decoration: none;
+  transition: opacity 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+small {
+  font-size: $font-size-xs;
+  color: $color-text-subtle;
+}
+
+code, pre {
+  font-family: $font-mono;
+}

@@ -8,7 +8,7 @@ import { EntitlementsService } from '@/subscriptions/entitlements'
 import { PolicyBanner } from './components/PolicyBanner'
 import { Navbar, type NavbarUser } from './components/Navbar'
 import { Footer } from './components/Footer'
-import './styles.css'
+import './styles.scss'
 
 export const metadata = {
   description: 'CardMax — Smart credit card rewards and optimization platform.',
