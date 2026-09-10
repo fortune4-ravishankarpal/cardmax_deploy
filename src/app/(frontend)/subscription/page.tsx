@@ -52,11 +52,18 @@ export default function SubscriptionPage() {
       <div className="subscription-container">
         {/* Navigation Breadcrumb */}
         <div className="sub-breadcrumb">
-          <Link href="/profile" className="btn-back">
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <Link href="/" className="btn-back">
+            <svg
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Profile
+            Back to Dashboard
           </Link>
         </div>
 
@@ -67,7 +74,14 @@ export default function SubscriptionPage() {
             <p>Manage your CardMax membership tier, billing cycle, and unlocked benefits.</p>
           </div>
           <Link href="/max-pro" className="btn-pro-link">
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
             View Pro Benefits
@@ -76,8 +90,19 @@ export default function SubscriptionPage() {
 
         {error && (
           <div className="sub-alert error" role="alert">
-            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
             <span>{error}</span>
           </div>
@@ -101,19 +126,40 @@ export default function SubscriptionPage() {
 
             <div className="features-preview">
               <div className="feature-item">
-                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg
+                  width="15"
+                  height="15"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 <span>Track multiple credit cards in your wallet</span>
               </div>
               <div className="feature-item">
-                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg
+                  width="15"
+                  height="15"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 <span>Automated statement sync via Gmail</span>
               </div>
               <div className="feature-item">
-                <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg
+                  width="15"
+                  height="15"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  viewBox="0 0 24 24"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
                 <span>Basic reward rate insights</span>
@@ -164,7 +210,9 @@ export default function SubscriptionPage() {
                   {sub.cancelAtPeriodEnd && (
                     <div className="detail-row note-row">
                       <span className="label">Status Notice</span>
-                      <span className="value warning-text">Will cancel at the end of the billing period</span>
+                      <span className="value warning-text">
+                        Will cancel at the end of the billing period
+                      </span>
                     </div>
                   )}
                 </div>

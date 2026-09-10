@@ -71,7 +71,9 @@ export const GmailForm = () => {
   }, [])
 
   const handleDisconnect = async () => {
-    if (!window.confirm('Disconnect Gmail? CardMax will no longer be able to read your statements.')) {
+    if (
+      !window.confirm('Disconnect Gmail? CardMax will no longer be able to read your statements.')
+    ) {
       return
     }
     setDisconnecting(true)
@@ -144,31 +146,61 @@ export const GmailForm = () => {
     <div className="gmail-container">
       {/* Breadcrumb */}
       <div className="gmail-breadcrumb">
-        <Link href="/profile" className="btn-back">
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <Link href="/" className="btn-back">
+          <svg
+            width="14"
+            height="14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to Profile
+          Back to Dashboard
         </Link>
       </div>
 
       <div className="gmail-card">
         <div className="card-top-header">
           <div className="header-icon-box">
-            <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            <svg
+              width="22"
+              height="22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
             </svg>
           </div>
           <h1>Gmail Statement Sync</h1>
           <p>
-            Connect your Gmail so CardMax can securely discover your monthly credit card statements and optimize your rewards.
+            Connect your Gmail so CardMax can securely discover your monthly credit card statements
+            and optimize your rewards.
           </p>
         </div>
 
         {error && (
           <div className="gmail-alert error" role="alert">
-            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
             <span>{error}</span>
           </div>
@@ -190,7 +222,12 @@ export const GmailForm = () => {
                 <h2>{status.gmailAddress || 'Your Gmail Account'}</h2>
                 {status.connectedAt && (
                   <span className="meta-text">
-                    Active since {new Date(status.connectedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    Active since{' '}
+                    {new Date(status.connectedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </span>
                 )}
               </div>
@@ -210,15 +247,27 @@ export const GmailForm = () => {
                   </>
                 ) : (
                   <>
-                    <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <svg
+                      width="15"
+                      height="15"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
                     </svg>
                     Import Statements Now
                   </>
                 )}
               </button>
               <span className="helper-text">
-                CardMax performs a read-only scan for statement PDFs from supported Indian credit card issuers.
+                CardMax performs a read-only scan for statement PDFs from supported Indian credit
+                card issuers.
               </span>
             </div>
 
@@ -229,7 +278,8 @@ export const GmailForm = () => {
                 ) : (
                   <>
                     <div className="results-summary">
-                      {ingestResult.message || `Processed ${ingestResult.processed || 0} statement(s).`}
+                      {ingestResult.message ||
+                        `Processed ${ingestResult.processed || 0} statement(s).`}
                     </div>
                     {ingestResult.results && ingestResult.results.length > 0 && (
                       <ul className="results-list">
@@ -272,7 +322,9 @@ export const GmailForm = () => {
                 <span className="badge badge-required">Required</span>
               </div>
               <p>
-                We search your mailbox strictly for emails with attached PDF credit card statements (HDFC, ICICI, Axis, SBI, Amex, etc.). We <strong>never</strong> read personal emails, and <strong>never</strong> send, modify, or delete anything in your mailbox.
+                We search your mailbox strictly for emails with attached PDF credit card statements
+                (HDFC, ICICI, Axis, SBI, Amex, etc.). We <strong>never</strong> read personal
+                emails, and <strong>never</strong> send, modify, or delete anything in your mailbox.
               </p>
             </div>
 
@@ -283,7 +335,8 @@ export const GmailForm = () => {
                 <span className="badge badge-optional">Optional</span>
               </div>
               <p>
-                Save extracted statement metadata (billing cycle dates, statement amounts due) to track spending trends over time.
+                Save extracted statement metadata (billing cycle dates, statement amounts due) to
+                track spending trends over time.
               </p>
               <div className="checkbox-row">
                 <input
@@ -299,7 +352,8 @@ export const GmailForm = () => {
             </div>
 
             <p className="privacy-assurance">
-              You can disconnect your Gmail account and revoke access at any time from your Privacy & Consent Settings.
+              You can disconnect your Gmail account and revoke access at any time from your Privacy
+              & Consent Settings.
             </p>
 
             <button

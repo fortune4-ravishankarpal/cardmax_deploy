@@ -48,7 +48,10 @@ export default function ConsentPage() {
     loadSummary()
   }, [loadSummary])
 
-  const handleConsentToggle = async (purpose: 'persist_derived', currentStatus: 'granted' | 'revoked' | 'not_set') => {
+  const handleConsentToggle = async (
+    purpose: 'persist_derived',
+    currentStatus: 'granted' | 'revoked' | 'not_set',
+  ) => {
     const nextAction = currentStatus === 'granted' ? 'revoke' : 'grant'
     setUpdating(purpose)
     setMessage(null)
@@ -79,7 +82,8 @@ export default function ConsentPage() {
       })
 
       setMessage({
-        text: nextAction === 'grant' ? 'Preference updated: enabled.' : 'Preference updated: disabled.',
+        text:
+          nextAction === 'grant' ? 'Preference updated: enabled.' : 'Preference updated: disabled.',
         type: 'success',
       })
     } catch (err: any) {
@@ -107,7 +111,9 @@ export default function ConsentPage() {
 
       setSummary((prev) => (prev ? { ...prev, marketing: nextMarketing } : prev))
       setMessage({
-        text: nextMarketing ? 'Subscribed to product updates.' : 'Unsubscribed from product updates.',
+        text: nextMarketing
+          ? 'Subscribed to product updates.'
+          : 'Unsubscribed from product updates.',
         type: 'success',
       })
     } catch (err: any) {
@@ -118,7 +124,11 @@ export default function ConsentPage() {
   }
 
   const handleDisconnectGmail = async () => {
-    if (!window.confirm('Disconnect Gmail? CardMax will stop searching your inbox and remove active statement permissions.')) {
+    if (
+      !window.confirm(
+        'Disconnect Gmail? CardMax will stop searching your inbox and remove active statement permissions.',
+      )
+    ) {
       return
     }
 
@@ -157,11 +167,18 @@ export default function ConsentPage() {
       <div className="consent-container">
         {/* Breadcrumb */}
         <div className="consent-breadcrumb">
-          <Link href="/profile" className="btn-back">
-            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <Link href="/" className="btn-back">
+            <svg
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Profile
+            Back to Dashboard
           </Link>
         </div>
 
@@ -179,19 +196,49 @@ export default function ConsentPage() {
             <div className="alert-content">
               <span className="alert-icon">
                 {message.type === 'success' ? (
-                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <svg
+                    width="15"
+                    height="15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
-                  <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  <svg
+                    width="15"
+                    height="15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
                   </svg>
                 )}
               </span>
               <span>{message.text}</span>
             </div>
-            <button type="button" className="alert-close" onClick={() => setMessage(null)} aria-label="Dismiss">
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <button
+              type="button"
+              className="alert-close"
+              onClick={() => setMessage(null)}
+              aria-label="Dismiss"
+            >
+              <svg
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -220,7 +267,8 @@ export default function ConsentPage() {
                       <span className="badge badge-required">Required</span>
                     </div>
                     <p>
-                      Your name, verified email, and phone number are used to identify your account, secure your logins, and send security alerts.
+                      Your name, verified email, and phone number are used to identify your account,
+                      secure your logins, and send security alerts.
                     </p>
                   </div>
                 </div>
@@ -232,7 +280,8 @@ export default function ConsentPage() {
                       <span className="badge badge-required">Required</span>
                     </div>
                     <p>
-                      Records of active tiers, invoices, and payment events necessary to administer your CardMax plan.
+                      Records of active tiers, invoices, and payment events necessary to administer
+                      your CardMax plan.
                     </p>
                   </div>
                 </div>
@@ -256,11 +305,13 @@ export default function ConsentPage() {
                           <span className="badge badge-active">Connected</span>
                         </div>
                         <p>
-                          Connected as <strong>{summary.gmailAddress}</strong>. CardMax holds read-only access strictly for statement discovery.
+                          Connected as <strong>{summary.gmailAddress}</strong>. CardMax holds
+                          read-only access strictly for statement discovery.
                         </p>
                         {summary.gmailConnectedAt && (
                           <span className="meta-text">
-                            Connected since {new Date(summary.gmailConnectedAt).toLocaleDateString()}
+                            Connected since{' '}
+                            {new Date(summary.gmailConnectedAt).toLocaleDateString()}
                           </span>
                         )}
                       </div>
@@ -280,12 +331,15 @@ export default function ConsentPage() {
                       <div className="row-info">
                         <div className="row-title">
                           <h3>Store Derived Financial Summaries</h3>
-                          <span className={`badge ${summary.consents.persist_derived === 'granted' ? 'badge-active' : 'badge-inactive'}`}>
+                          <span
+                            className={`badge ${summary.consents.persist_derived === 'granted' ? 'badge-active' : 'badge-inactive'}`}
+                          >
                             {summary.consents.persist_derived === 'granted' ? 'Active' : 'Disabled'}
                           </span>
                         </div>
                         <p>
-                          Allow CardMax to securely save derived summary metadata (billing cycle dates, statement amounts due) to track spending trends over time.
+                          Allow CardMax to securely save derived summary metadata (billing cycle
+                          dates, statement amounts due) to track spending trends over time.
                         </p>
                       </div>
                       <div className="row-action">
@@ -293,7 +347,12 @@ export default function ConsentPage() {
                           <input
                             type="checkbox"
                             checked={summary.consents.persist_derived === 'granted'}
-                            onChange={() => handleConsentToggle('persist_derived', summary.consents.persist_derived)}
+                            onChange={() =>
+                              handleConsentToggle(
+                                'persist_derived',
+                                summary.consents.persist_derived,
+                              )
+                            }
                             disabled={updating === 'persist_derived'}
                             aria-label="Toggle store financial summaries"
                           />
@@ -310,7 +369,8 @@ export default function ConsentPage() {
                         <span className="badge badge-inactive">Not Connected</span>
                       </div>
                       <p>
-                        Connect your Gmail with read-only access to automatically discover statements and unlock optimal reward recommendations.
+                        Connect your Gmail with read-only access to automatically discover
+                        statements and unlock optimal reward recommendations.
                       </p>
                     </div>
                     <div className="row-action">
@@ -335,15 +395,19 @@ export default function ConsentPage() {
                   <div className="row-info">
                     <div className="row-title">
                       <h3>Product Updates & Credit Card Tips</h3>
-                      <span className={`badge ${summary?.marketing ? 'badge-active' : 'badge-inactive'}`}>
+                      <span
+                        className={`badge ${summary?.marketing ? 'badge-active' : 'badge-inactive'}`}
+                      >
                         {summary?.marketing ? 'Subscribed' : 'Off'}
                       </span>
                     </div>
                     <p>
-                      Receive occasional advice on maximizing credit card bonuses, reward alerts, and new features. Unsubscribe anytime.
+                      Receive occasional advice on maximizing credit card bonuses, reward alerts,
+                      and new features. Unsubscribe anytime.
                     </p>
                     <span className="meta-text">
-                      Critical security and authentication alerts are always sent regardless of this preference.
+                      Critical security and authentication alerts are always sent regardless of this
+                      preference.
                     </span>
                   </div>
                   <div className="row-action">
@@ -378,7 +442,12 @@ export default function ConsentPage() {
                         ? `v${summary.legalVersions.tosVersion}`
                         : 'Accepted'}
                     </span>
-                    <Link href="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="legal-link">
+                    <Link
+                      href="/terms-and-conditions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="legal-link"
+                    >
                       View Terms &rarr;
                     </Link>
                   </div>
@@ -392,7 +461,12 @@ export default function ConsentPage() {
                         ? `v${summary.legalVersions.privacyNoticeVersion}`
                         : 'Accepted'}
                     </span>
-                    <Link href="/privacy-and-policy" target="_blank" rel="noopener noreferrer" className="legal-link">
+                    <Link
+                      href="/privacy-and-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="legal-link"
+                    >
                       View Privacy Notice &rarr;
                     </Link>
                   </div>

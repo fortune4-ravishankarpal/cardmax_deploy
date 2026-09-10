@@ -50,7 +50,7 @@ export default function WalletPage() {
       <div className="wallet-container">
         {/* Navigation / Header */}
         <div className="wallet-breadcrumb">
-          <Link href="/profile" className="btn-back">
+          <Link href="/" className="btn-back">
             <svg
               width="14"
               height="14"
@@ -61,7 +61,7 @@ export default function WalletPage() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back to Profile
+            Back to Dashboard
           </Link>
         </div>
 
@@ -133,11 +133,7 @@ export default function WalletPage() {
             </div>
             <h3>Your wallet is empty</h3>
             <p>Add a credit card to track rewards, statement dates, and personalized card perks.</p>
-            <button
-              type="button"
-              className="btn-add"
-              onClick={() => setIsAddModalOpen(true)}
-            >
+            <button type="button" className="btn-add" onClick={() => setIsAddModalOpen(true)}>
               <svg
                 width="15"
                 height="15"
@@ -280,4 +276,3 @@ export default function WalletPage() {
     </div>
   )
 }
-

@@ -131,9 +131,9 @@ export const LoginForm = () => {
     }
 
     if (data.consentRequired) {
-      router.push('/consent-onboarding')
+      window.location.assign('/consent-onboarding')
     } else {
-      router.push(data.profileComplete ? '/profile' : '/complete-profile')
+      window.location.assign(data.profileComplete ? '/' : '/complete-profile')
     }
   }
 
@@ -179,10 +179,7 @@ export const LoginForm = () => {
       )}
 
       {step === 'identifier' && channel && (
-        <form
-          className="auth-form"
-          onSubmit={handleIdentifierSubmit}
-        >
+        <form className="auth-form" onSubmit={handleIdentifierSubmit}>
           <label className="auth-label" htmlFor="identifier">
             {channel === 'email' ? 'Email address' : 'Phone number'}
           </label>
