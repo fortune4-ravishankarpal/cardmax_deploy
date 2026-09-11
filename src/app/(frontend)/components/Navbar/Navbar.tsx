@@ -91,7 +91,6 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
   const navLinks = [
     { label: 'Dashboard', href: '/' },
     { label: 'Wallet', href: '/wallet' },
-    { label: 'Max Pro', href: '/max-pro', isProHighlight: true },
     { label: 'Profile', href: '/profile' },
   ]
 
@@ -149,14 +148,11 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
                 aria-haspopup="true"
                 aria-label="User Profile Menu"
               >
-                <div className={`cm-avatar ${user.isPro ? 'cm-avatar--pro' : ''}`}>
+                <div className="cm-avatar">
                   {userInitial}
                 </div>
                 <div className="cm-profile-trigger__info">
                   <span className="cm-user-name">{displayName}</span>
-                  <span className={`cm-badge-mini ${user.isPro ? 'is-pro' : 'is-free'}`}>
-                    {user.isPro ? 'Max Pro' : 'Free Tier'}
-                  </span>
                 </div>
                 <svg
                   className={`cm-chevron ${dropdownOpen ? 'is-open' : ''}`}
@@ -178,20 +174,6 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
                   <div className="cm-dropdown-header">
                     <span className="cm-dropdown-header__name">{displayName}</span>
                     <span className="cm-dropdown-header__email">{user.email}</span>
-                    <div className="cm-dropdown-header__badge-row">
-                      {user.isPro ? (
-                        <span className="cm-sub-badge cm-sub-badge--pro">
-                          <svg viewBox="0 0 24 24" fill="currentColor">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                          </svg>
-                          Max Pro Subscriber
-                        </span>
-                      ) : (
-                        <span className="cm-sub-badge cm-sub-badge--free">
-                          Free Member
-                        </span>
-                      )}
-                    </div>
                   </div>
 
                   <Link href="/" className="cm-dropdown-item" role="menuitem">
@@ -220,12 +202,6 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
                     Account Profile
                   </Link>
 
-                  <Link href="/max-pro" className="cm-dropdown-item" role="menuitem">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                    {user.isPro ? 'Max Pro Perks' : 'Upgrade to Max Pro'}
-                  </Link>
 
                   <Link href="/settings/consent" className="cm-dropdown-item" role="menuitem">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -292,24 +268,12 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
         <div className="cm-mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
           {user && (
             <div className="cm-mobile-user-card">
-              <div className={`cm-avatar ${user.isPro ? 'cm-avatar--pro' : ''}`}>
+              <div className="cm-avatar">
                 {userInitial}
               </div>
               <div className="cm-mobile-user-info">
                 <div className="cm-mobile-user-name">{displayName}</div>
                 <div className="cm-mobile-user-email">{user.email}</div>
-                {user.isPro ? (
-                  <span className="cm-sub-badge cm-sub-badge--pro">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                    Max Pro
-                  </span>
-                ) : (
-                  <span className="cm-sub-badge cm-sub-badge--free">
-                    Free Member
-                  </span>
-                )}
               </div>
             </div>
           )}
@@ -345,19 +309,6 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
               </span>
             </Link>
 
-            <Link
-              href="/max-pro"
-              className={`cm-mobile-nav-link ${pathname === '/max-pro' ? 'is-active' : ''}`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="cm-mobile-nav-link__title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-                Max Pro
-              </span>
-              <span className="cm-sub-badge cm-sub-badge--pro">PRO</span>
-            </Link>
 
             <Link
               href="/profile"

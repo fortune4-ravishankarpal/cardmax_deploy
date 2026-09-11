@@ -79,8 +79,8 @@ export const ConsentOnboardingForm: React.FC = () => {
             spending goals you select in the app to calculate fee-waiver milestones and rewards.
           </li>
           <li>
-            <strong>Billing Administration:</strong> We maintain subscription status and payment
-            records to provide access to CardMax Pro features.
+            <strong>Billing Administration:</strong> We maintain payment and transaction
+            records for your account services.
           </li>
         </ul>
       </div>
