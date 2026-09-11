@@ -22,6 +22,8 @@ import { MaxProEvent } from './MaxProEvent'
 import { UserGoal } from './UserGoal'
 import { Cards } from './Card'
 import { CardAuditLogs } from './CardAuditLog'
+import { CategoryMaster } from './CategoryMaster'
+import { MerchantMaster } from './MerchantMaster'
 
 export const collectionsConfigs = [
   Users,
@@ -47,5 +49,7 @@ export const collectionsConfigs = [
   MaxProEvent,
   UserGoal,
   Cards,
-  CardAuditLogs
+  CardAuditLogs,
+  CategoryMaster,
+  MerchantMaster,
 ]

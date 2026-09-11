@@ -120,13 +120,6 @@ export const Cards: CollectionConfig = {
       }
     },
     {
-      name: 'cardType',
-      type: 'text',
-      admin: {
-        description: 'The type of card (Credit, Debit, etc.)',
-      }
-    },
-    {
       // Plaintext last-4 digits — allowed for display and lookup; never the full PAN..
       name: 'panLast4',
       type: 'text',
