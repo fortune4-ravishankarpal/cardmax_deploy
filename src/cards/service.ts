@@ -36,19 +36,21 @@ export interface StoredCardDoc {
   id: string
   user?: { id: string } | string | null
   nickname?: string | null
+  bank?: (string | { id: string }) | null
+  cardType?: string | null
   brand?: string | null
   panLast4?: string | null
   panLookup?: string | null
   expiryMonth?: number | null
   expiryYear?: number | null
   encryptedCardData?: string | null
-	cardDataIv?: string | null
-	cardDataTag?: string | null
-	cardDataKeyVersion?: string | null
-	cardDataAlgorithm?: string | null
-	panMasked?: string | null
-	createdAt?: string | null
-	updatedAt?: string | null
+  cardDataIv?: string | null
+  cardDataTag?: string | null
+  cardDataKeyVersion?: string | null
+  cardDataAlgorithm?: string | null
+  panMasked?: string | null
+  createdAt?: string | null
+  updatedAt?: string | null
 }
 
 /** Public, sanitized card view — explicit whitelist, NEVER ciphertext/lookup. */
@@ -56,13 +58,15 @@ export interface CardPublicView {
   id: string
   user?: string | null
   nickname?: string | null
+  bank?: (string | { id: string; name?: string | null }) | null
+  cardType?: string | null
   brand?: string | null
   panMasked?: string | null
   panLast4?: string | null
   expiryMonth?: number | null
-	expiryYear?: number | null
-	createdAt?: string | null
-	updatedAt?: string | null
+  expiryYear?: number | null
+  createdAt?: string | null
+  updatedAt?: string | null
 }
 
 /** Whitelist projection — strips every internal/sensitive field. */
@@ -70,14 +74,78 @@ export const toCardPublicView = (doc: StoredCardDoc): CardPublicView => ({
   id: doc.id,
   user: typeof doc.user === 'object' && doc.user ? String((doc.user as { id: string }).id) : (doc.user ?? null),
   nickname: doc.nickname ?? null,
+  bank: bankFromDoc(doc),
+  cardType: doc.cardType ?? null,
   brand: doc.brand ?? null,
   panMasked: doc.panMasked ?? maskPanFromLast4(doc.panLast4 ?? null),
   panLast4: doc.panLast4 ?? null,
   expiryMonth: doc.expiryMonth ?? null,
-	expiryYear: doc.expiryYear ?? null,
-	createdAt: doc.createdAt ?? null,
-	updatedAt: doc.updatedAt ?? null,
+  expiryYear: doc.expiryYear ?? null,
+  createdAt: doc.createdAt ?? null,
+  updatedAt: doc.updatedAt ?? null,
 })
+
+/**
+ * Normalize the stored `bank` relationship for the public view — whitelisted
+ * shape only (id + name). Never leaks other bank master-data fields..
+ */
+const bankFromDoc = (doc: StoredCardDoc): CardPublicView['bank'] => {
+  if (!doc.bank) return null
+  if (typeof doc.bank === 'object') {
+    const bank = doc.bank as { id: string; name?: string | null }
+    return { id: bank.id, name: bank.name ?? null }
+  }
+  return doc.bank
+}
+
+/**
+ * Verify that a bank ID references a real, published, non-soft-deleted bank in
+ * the `banks` master collection. Draft-only or trashed banks are rejected..
+ */
+const assertBankExists = async (payload: Payload, bankId: string): Promise<void> => {
+  const result = await payload.find({
+    collection: 'banks',
+    where: { id: { equals: bankId }, deletedAt: { exists: false } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const bank = (result.docs as Array<{ id?: string }>)[0]
+  if (!bank?.id) {
+    throw new CardError('CARD_BANK_INVALID', 'The selected bank does not exist in the bank master list.', 400)
+  }
+}
+
+/** Minimal bank option for the add-card dropdown — no statement config or other master internals.. */
+export interface BankOption {
+  id: string
+  name: string
+  shortName?: string | null
+}
+
+/**
+ * Bank master options for authenticated callers (dropdown on the add-card form)..
+ * Returns ONLY id/name/shortName. The banks collection itself remains
+ * gatekeeper-protected (writes stay admin-only) — this is a safe read
+ * projection served through the already-secured card endpoints..
+ */
+export const listBankOptions = async (
+  payload: Payload,
+  caller: CardCaller,
+): Promise<BankOption[]> => {
+  if (!caller.id) throw new CardError('UNAUTHENTICATED', 'Authentication required.', 401)
+  const result = await payload.find({
+    collection: 'banks',
+    where: { deletedAt: { exists: false } },
+    limit: 500,
+    sort: 'name',
+    depth: 0,
+    overrideAccess: true,
+  })
+  return (result.docs as Array<{ id: string; name?: string; shortName?: string | null }>)
+    .filter((bank) => bank.id && bank.name)
+    .map((bank) => ({ id: bank.id, name: String(bank.name), shortName: bank.shortName ?? null }))
+}
 
 const findCardDoc = async (payload: Payload, id: string): Promise<StoredCardDoc> => {
   const doc = (await payload.findByID({
@@ -102,7 +170,7 @@ const cipherFromDoc = (doc: StoredCardDoc): CardEnvelopeCipher => ({
 /** Scoped authorization helper used by service operations. */
 const authorizeForCard = (
   caller: CardCaller,
-	doc: StoredCardDoc,
+  doc: StoredCardDoc,
   opts: { adminPermission: 'manage' | 'reveal' } = { adminPermission: 'manage' },
 ): void => {
   const ownerId = typeof doc.user === 'object' && doc.user
@@ -120,7 +188,7 @@ const authorizeForCard = (
       ? canRevealCardPan(caller.admin)
       : canManageCards(caller.admin)
 
-		if (!allowed) {
+    if (!allowed) {
       throw new CardError(
         'CARD_FORBIDDEN',
         opts.adminPermission === 'reveal'
@@ -143,7 +211,7 @@ const authorizeForCard = (
  */
 export const createCard = async (
   payload: Payload,
-	caller: CardCaller,
+  caller: CardCaller,
   input: Record<string, unknown>,
 ): Promise<CardPublicView> => {
   if (caller.type !== 'users' || !caller.id) {
@@ -151,16 +219,21 @@ export const createCard = async (
   }
   assertNoProhibitedCardData(input)
   const normalized = validateAndNormalizeCardInput(input, { requirePan: true })
+  if (normalized.bank) {
+    await assertBankExists(payload, normalized.bank)
+  }
   const cipher = encryptCardEnvelope({
     pan: normalized.pan as string,
     cardholderName: normalized.cardholderName as string,
   })
 
-	 const doc = (await payload.create({
+  const doc = (await payload.create({
     collection: 'cards',
     data: {
       user: caller.id,
       nickname: normalized.nickname,
+      bank: normalized.bank,
+      cardType: normalized.cardType,
       brand: normalized.brand,
       expiryMonth: normalized.expiryMonth!,
       expiryYear: normalized.expiryYear!,
@@ -175,7 +248,7 @@ export const createCard = async (
     overrideAccess: true,
   })) as StoredCardDoc
 
-	 await writeCardAuditLog(payload, {
+  await writeCardAuditLog(payload, {
     action: 'card_create',
     cardId: String(doc.id),
     cardMasked: maskPanFromLast4(normalized.last4 as string),
@@ -191,7 +264,7 @@ export const createCard = async (
 /** Load a card after checking the caller may access/manage it. */
 export const findCardForCaller = async (
   payload: Payload,
-	caller: CardCaller,
+  caller: CardCaller,
   id: string,
 ): Promise<StoredCardDoc> => {
   const doc = await findCardDoc(payload, id)
@@ -202,12 +275,12 @@ export const findCardForCaller = async (
 /** Delete a stored card (owner or authorized admin). */
 export const deleteCard = async (
   payload: Payload,
-	caller: CardCaller,
+  caller: CardCaller,
   id: string,
 ): Promise<{ id: string }> => {
   const doc = await findCardForCaller(payload, caller, id)
   await payload.delete({ collection: 'cards', id, overrideAccess: true })
-	 await writeCardAuditLog(payload, {
+  await writeCardAuditLog(payload, {
     action: 'card_delete',
     cardId: String(id),
     cardMasked: maskPanFromLast4(doc.panLast4 ?? null),
@@ -225,12 +298,12 @@ export const deleteCard = async (
  *
  * When the PAN or cardholder name is changed, the existing envelope is decrypted
  * (server-side), merged with the incoming values,and re-encrypted with the current
- * key version before the update is persisted. Metadata-only updates (nickname,
+ * key version before the update is persisted. Metadata-only updates (nickname, bank/type,
  * expiry) never touch the envelope..
  */
 export const updateCard = async (
   payload: Payload,
-	caller: CardCaller,
+  caller: CardCaller,
   id: string,
   input: Record<string, unknown>,
 ): Promise<CardPublicView> => {
@@ -239,13 +312,16 @@ export const updateCard = async (
   const normalized = validateAndNormalizeCardInput(input, {
     existingBrand: (doc.brand as CardBrand | null) ?? null,
   })
+  if (normalized.bank) {
+    await assertBankExists(payload, normalized.bank)
+  }
 
-	 let envelopeWrite: CardEnvelopeCipher | undefined
+  let envelopeWrite: CardEnvelopeCipher | undefined
   let lookup: string | undefined
   let brand = normalized.brand ?? (doc.brand ?? 'unknown')
   const touchesEnvelope = normalized.pan !== undefined || normalized.cardholderName !== undefined
 
-	 if (touchesEnvelope) {
+  if (touchesEnvelope) {
     let currentPan: string | undefined
     let currentName: string | undefined
     try {
@@ -271,7 +347,7 @@ export const updateCard = async (
     }
   }
 
-	 const data: Record<string, unknown> = {}
+  const data: Record<string, unknown> = {}
   if (envelopeWrite) {
     Object.assign(data, {
       encryptedCardData: envelopeWrite.encrypted,
@@ -286,20 +362,22 @@ export const updateCard = async (
     data.panLookup = lookup
     data.brand = brand
   }
-	 if (normalized.expiryMonth !== undefined) data.expiryMonth = normalized.expiryMonth
- 
- if (normalized.expiryYear !== undefined) data.expiryYear = normalized.expiryYear
- 
- if (normalized.nickname !== undefined) data.nickname = normalized.nickname
- 
- const updated = (await payload.update({
+  if (normalized.expiryMonth !== undefined) data.expiryMonth = normalized.expiryMonth
+
+  if (normalized.expiryYear !== undefined) data.expiryYear = normalized.expiryYear
+
+  if (normalized.nickname !== undefined) data.nickname = normalized.nickname
+  if (normalized.bank !== undefined) data.bank = normalized.bank
+  if (normalized.cardType !== undefined) data.cardType = normalized.cardType
+
+  const updated = (await payload.update({
     collection: 'cards',
     id,
     data,
     overrideAccess: true,
   })) as StoredCardDoc
 
-	 await writeCardAuditLog(payload, {
+  await writeCardAuditLog(payload, {
     action: 'card_update',
     cardId: String(updated.id),
     cardMasked: maskPanFromLast4(updated.panLast4 ?? null),
@@ -321,7 +399,7 @@ export const updateCard = async (
  */
 export const revealCardPan = async (
   payload: Payload,
-	caller: CardCaller,
+  caller: CardCaller,
   id: string,
 ): Promise<{
   id: string
@@ -333,8 +411,8 @@ export const revealCardPan = async (
 }> => {
   const doc = await findCardDoc(payload, id)
   authorizeForCard(caller, doc, { adminPermission: 'reveal' })
-	 const plain = decryptCardEnvelope(cipherFromDoc(doc))
-	 await writeCardAuditLog(payload, {
+  const plain = decryptCardEnvelope(cipherFromDoc(doc))
+  await writeCardAuditLog(payload, {
     action: 'pan_reveal',
     cardId: String(doc.id),
     cardMasked: maskPanFromLast4(doc.panLast4 ?? null),
@@ -362,18 +440,18 @@ export const revealCardPan = async (
  */
 export const lookupCardByPan = async (
   payload: Payload,
-	caller: CardCaller,
+  caller: CardCaller,
   pan: string,
 ): Promise<CardPublicView[]> => {
   if (caller.type !== 'admin' || !canManageCards(caller.admin ?? null)) {
     throw new CardError('CARD_FORBIDDEN', 'Only authorized admins can perform exact card lookups.', 403)
   }
-	 const digits = pan.replace(/\D/g, '')
+  const digits = pan.replace(/\D/g, '')
   if (!digits || digits.length < 12 || digits.length > 19) {
     throw new CardError('CARD_PAN_INVALID', 'A valid card number is required for exact lookup.', 400)
   }
-	 const lookup = derivePanLookup(digits)
-	 const result = await payload.find({
+  const lookup = derivePanLookup(digits)
+  const result = await payload.find({
     collection: 'cards',
     where: { panLookup: { equals: lookup } },
     limit: 50,
@@ -401,15 +479,15 @@ export const lookupCardByPan = async (
  */
 export const rotateCardKeys = async (
   payload: Payload,
-	caller: CardCaller,
+  caller: CardCaller,
 ): Promise<{ rotated: number; keyVersion: string }> => {
   if (caller.type !== 'admin' || !checkIsSuperAdmin(caller.admin ?? null)) {
     throw new CardError('CARD_FORBIDDEN', 'Only super admins can rotate card encryption keys.', 403)
   }
-	 const keyVersion = getCurrentCardKeyVersion()
+  const keyVersion = getCurrentCardKeyVersion()
   let rotated = 0
   let page = 1
-	 while (true) {
+  while (true) {
     const res = await payload.find({
       collection: 'cards',
       page,
@@ -437,7 +515,7 @@ export const rotateCardKeys = async (
     if (page >= (res.totalPages ?? 1)) break
     page++
   }
-	 await writeCardAuditLog(payload, {
+  await writeCardAuditLog(payload, {
     action: 'card_key_rotation',
     actorType: 'admin',
     actorId: caller.id,

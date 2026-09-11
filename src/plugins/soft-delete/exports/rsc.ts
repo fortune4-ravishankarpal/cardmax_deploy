@@ -1,0 +1,1 @@
+export { softDelete } from '../index.js'

@@ -32,3 +32,4 @@ export const gatekeeperPluginConfig = gatekeeperPlugin({
     'card-audit-logs',
   ],
 })
+

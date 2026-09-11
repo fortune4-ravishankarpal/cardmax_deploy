@@ -1,0 +1,205 @@
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.title {
+  font-size: 32px;
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: rgba(240, 240, 240, 0.7);
+  margin: 0 0 24px;
+}
+
+.error {
+  background: rgba(255, 80, 80, 0.12);
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  color: #ff9d9d;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.notice {
+  background: rgba(80, 200, 120, 0.12);
+  border: 1px solid rgba(80, 200, 120, 0.5);
+  color: #9dffb8;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.section {
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: rgba(240, 240, 240, 0.85);
+  flex: 1;
+}
+
+.input {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 15px;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.primaryButton {
+  background: #6c9eff;
+  color: #00122e;
+
+  &:hover:not(:disabled) {
+    background: #85aeff;
+  }
+}
+
+.secondaryButton {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.dangerButton {
+  background: transparent;
+  color: #ff9d9d;
+  border: 1px solid rgba(255, 80, 80, 0.5);
+
+  &:hover {
+    background: rgba(255, 80, 80, 0.1);
+  }
+}
+
+.muted {
+  color: rgba(240, 240, 240, 0.6);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardItem {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cardNumber {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+
+.cardNickname {
+  font-weight: 600;
+}
+
+.cardBank {
+  font-size: 14px;
+  color: rgba(240, 240, 240, 0.85);
+}
+
+.cardDetails {
+  font-size: 13px;
+  color: rgba(240, 240, 240, 0.6);
+}
+
+.cardActions {
+  display: flex;
+  gap: 8px;
+}
+
+.revealedBox {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 214, 102, 0.6);
+  border-radius: 8px;
+  background: rgba(255, 214, 102, 0.08);
+}
+
+.revealedPan {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  margin: 0 0 4px;
+}
+
+.revealedName {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.revealedHint {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 224, 140, 0.8);
+}

@@ -36,7 +36,16 @@ export const Cards: CollectionConfig = {
   admin: {
     useAsTitle: 'panLast4',
     group: 'Users',
-    defaultColumns: ['panMasked', 'brand', 'nickname', 'expiryMonth', 'expiryYear', 'updatedAt'],
+    defaultColumns: [
+      'panMasked',
+      'brand',
+      'bank',
+      'cardType',
+      'nickname',
+      'expiryMonth',
+      'expiryYear',
+      'updatedAt',
+    ],
   },
   access: {
     read: cardsReadAccess,
@@ -65,6 +74,29 @@ export const Cards: CollectionConfig = {
       name: 'nickname',
       type: 'text',
       admin: { position: 'sidebar', description: 'Optional label for this card (e.g. "My travel card").' },
+    },
+    {
+      // Issuing bank — relationship to the `banks` master collection. The bank
+      // CANNOT be derived from the stored data — the PAN is encrypted at rest,
+      // and the auto-detected `brand` is the card network (Visa/Mastercard/...),
+      // not the bank. Users pick the bank from the master list via the secure
+      // card API; the ID is verified for existence in src/cards/service.ts..
+      name: 'bank',
+      type: 'relationship',
+      relationTo: 'banks',
+      index: true,
+      admin: { description: 'Issuing bank for this card (from the bank master list).' },
+    },
+    {
+      // Card kind — same vocabulary as the CreditCard catalog collection..
+      name: 'cardType',
+      type: 'select',
+      options: [
+        { label: 'Credit Card', value: 'credit_card' },
+        { label: 'Secured Credit Card', value: 'secured_credit_card' },
+        { label: 'Co-brand Credit Card', value: 'co_brand' },
+      ],
+      admin: { description: 'Kind of card (matches the card catalog vocabulary).' },
     },
     {
       name: 'brand',

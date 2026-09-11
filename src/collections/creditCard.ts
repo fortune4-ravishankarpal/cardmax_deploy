@@ -6,7 +6,7 @@ export const CreditCards: CollectionConfig = {
     slug: 'CreditCard',
     admin: {
         useAsTitle: 'name',
-        defaultColumns: ['name', 'dataVersion', 'bank', 'status', 'cardType'],
+        defaultColumns: ['name', 'dataVersion', 'bank', 'category', 'merchant', 'state', 'cardType'],
         group: "Master"
     },
     trash: true,
@@ -70,13 +70,32 @@ export const CreditCards: CollectionConfig = {
             index: true,
         },
         {
+            name: 'category',
+            type: 'relationship',
+            relationTo: 'category-master',
+            index: true,
+            admin: {
+                position: 'sidebar',
+                description: 'Spending category this card rewards (from the category master list).',
+            },
+        },
+        {
+            name: 'merchant',
+            type: 'relationship',
+            relationTo: 'merchant-master',
+            index: true,
+            admin: {
+                position: 'sidebar',
+                description: 'Co-brand / partnership merchant for this card (from the merchant master list).',
+            },
+        },
+        {
             name: 'cardType',
             type: 'select',
             required: true,
             options: [
                 { label: 'Credit Card', value: 'credit_card' },
                 { label: 'Secured Credit Card', value: 'secured_credit_card' },
-                { label: 'RuPay Credit Card', value: 'rupay' },
                 { label: 'Co-brand Credit Card', value: 'co_brand' },
             ],
         },
@@ -87,6 +106,7 @@ export const CreditCards: CollectionConfig = {
                 { label: 'Visa', value: 'visa' },
                 { label: 'Mastercard', value: 'mastercard' },
                 { label: 'American Express', value: 'amex' },
+                { label: 'Discover', value: 'discover' },
                 { label: 'RuPay', value: 'rupay' },
             ],
         },
