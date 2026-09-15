@@ -32,6 +32,43 @@ const replaceInFile = (file, replacements) => {
   fs.writeFileSync(file, content)
 }
 
+// Recursively fetches all source files (.ts, .tsx, .js, .jsx) in a folder
+const getAllSourceFiles = (dirPath, arrayOfFiles = []) => {
+  if (!fs.existsSync(dirPath)) return arrayOfFiles
+
+  const files = fs.readdirSync(dirPath)
+
+  files.forEach((file) => {
+    const fullPath = path.join(dirPath, file)
+    if (fs.statSync(fullPath).isDirectory()) {
+      arrayOfFiles = getAllSourceFiles(fullPath, arrayOfFiles)
+    } else if (/\.(ts|tsx|js|jsx)$/.test(file)) {
+      arrayOfFiles.push(fullPath)
+    }
+  })
+
+  return arrayOfFiles
+}
+
+// Automatically cleans relative .js imports across all files in the synced plugin folder
+const cleanRelativeJsImports = (targetDir) => {
+  const files = getAllSourceFiles(targetDir)
+
+  files.forEach((file) => {
+    let content = fs.readFileSync(file, 'utf8')
+
+    // Matches relative imports ending with .js (e.g., from './tasks/anonymizeTask.js' -> from './tasks/anonymizeTask')
+    const updatedContent = content.replace(
+      /from\s+(['"])(\.\.?\/[^'"]+)\.js\1/g,
+      'from $1$2$1'
+    )
+
+    if (content !== updatedContent) {
+      fs.writeFileSync(file, updatedContent)
+    }
+  })
+}
+
 const getAvailablePlugins = () => {
   if (!fs.existsSync(pluginSourceRootDir)) {
     throw new Error(`Plugin root directory does not exist: ${pluginSourceRootDir}`)
@@ -54,7 +91,7 @@ const syncPlugin = (pluginName) => {
   // 1. Copy source code locally
   copyRecursive(pluginSourceDir, projectPluginTargetDir)
 
-  // 2. Perform path adjustments dynamically
+  // 2. Adjust package path mapping if index.ts exists
   const indexPath = path.join(projectPluginTargetDir, 'index.ts')
   replaceInFile(indexPath, [
     [
@@ -63,11 +100,8 @@ const syncPlugin = (pluginName) => {
     ],
   ])
 
-  // Strips any relative `.js` import extensions dynamically (e.g., from './components/Foo.js' to './components/Foo')
-  const clientExportPath = path.join(projectPluginTargetDir, 'exports', 'client.ts')
-  replaceInFile(clientExportPath, [
-    [/from\s+['"](\.\.\/[^'"]+)\.js['"]/g, "from '$1'"],
-  ])
+  // 3. Remove all explicit .js extensions from relative imports across ALL .ts/.tsx files
+  cleanRelativeJsImports(projectPluginTargetDir)
 
   console.log(`Successfully synced '${pluginName}' to ${projectPluginTargetDir}`)
   console.log('Run: pnpm generate:importmap')
