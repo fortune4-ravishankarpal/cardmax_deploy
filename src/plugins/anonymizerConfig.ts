@@ -13,8 +13,7 @@ export const anonymizerMaskingConfig = anonymizerMasking({
         userRelationTo: 'users',
     },
     collections: {
-
-        user: {
+        users: {
             userField: "id",
             fields: {
                 name: null
