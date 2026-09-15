@@ -1,16 +1,24 @@
 import { randomBytes } from 'node:crypto'
 
-import type { Access, AccessResult, CollectionConfig, Config } from 'payload'
+import type { Access, AccessResult, CheckboxField, CollectionConfig, Config } from 'payload'
 
-import { anonymizedRead } from './access/anonymizedRead.js'
-import { AnonymizationRequests } from './collections/AnonymizationRequests.js'
-import { AnonymizedIdentities } from './collections/AnonymizedIdentities.js'
-import { AnonymizationLogs } from './collections/AnonymizationLogs.js'
-import { AnonymizationKey } from './collections/AnonymizationKey.js'
-import { AnonymizationMetadata } from './collections/AnonymizationMetadata.js'
-import { isAnonymizedField } from './fields/isAnonymized.js'
-import { createAnonymizeApprovedRequest } from './hooks/anonymizeApprovedRequest.js'
-import { createAnonymizeTask } from './tasks/anonymizeTask.js'
+import { anonymizedRead } from './access/anonymizedRead'
+import { createAnonymizationRequestsCollection } from './collections/AnonymizationRequests'
+import type { AnonymizationRequestsConfig } from './collections/AnonymizationRequests'
+import { AnonymizedIdentities } from './collections/AnonymizedIdentities'
+import { createAnonymizationLogsCollection } from './collections/AnonymizationLogs'
+import { createAnonymizationKeyCollection } from './collections/AnonymizationKey'
+import { AnonymizationMetadata } from './collections/AnonymizationMetadata'
+import { createIsAnonymizedField } from './fields/isAnonymized'
+import { createAnonymizeApprovedRequest } from './hooks/anonymizeApprovedRequest'
+import { createAnonymizeTask } from './tasks/anonymizeTask'
+
+// The default access-control helpers, re-exported so plugin consumers can use
+// them as the building block for their own `access.admin` implementation.
+export type {
+  AnonymizationRequestsAccessConfig,
+  AnonymizationRequestsConfig,
+} from './collections/AnonymizationRequests'
 
 export type AnonymizationValue =
   | boolean
@@ -89,10 +97,38 @@ export type AnonymizerMaskingJobsConfig = {
   autoRun?: AnonymizerMaskingAutoRunConfig | false
 }
 
+export type AnonymizerMaskingAccessConfig = {
+  /**
+   * The `Access` function used anywhere the plugin gates a resource behind an
+   * administrator:
+   *
+   * - `anonymization-requests` — `read`, `update`, `delete` (overridable per
+   *   operation via `requests.access`) and the admin-sidebar gate `admin`
+   * - `anonymization-logs` and `anonymization-key` — every operation
+   * - the injected `isAnonymized` checkbox field (`create` / `update`)
+   *
+   * This is **required** — provide your own `Access` function (e.g. one
+   * exported by a gatekeeper plugin, or your own RBAC check) and every
+   * admin-gated operation the plugin registers will honor it.
+   */
+  admin: Access
+}
+
 export type AnonymizerMaskingConfig = {
   collections: Record<string, AnonymizationCollectionConfig>
   metadata?: AnonymizationMetadataConfig
   jobs?: AnonymizerMaskingJobsConfig
+  /**
+   * Configuration for the plugin-managed `anonymization-requests` collection:
+   * which collection the `user` / `approvedBy` relationship fields point to,
+   * and optional per-operation access-control overrides.
+   */
+  requests?: AnonymizationRequestsConfig
+  /**
+   * Access control used by the plugin for admin-gated resources and fields.
+   * Must include an `admin` Access function.
+   */
+  access: AnonymizerMaskingAccessConfig
   disabled?: boolean
 }
 
@@ -128,7 +164,11 @@ const guardReadAccess = (existing: Access | undefined, guard: Access): Access =>
 }
 
 /** Inject the `isAnonymized` field + read guard into every configured collection. */
-const applyAnonymizationGuards = (config: Config, configuredCollections: Record<string, unknown>) => {
+const applyAnonymizationGuards = (
+  config: Config,
+  configuredCollections: Record<string, unknown>,
+  isAnonymizedField: CheckboxField,
+) => {
   for (const slug of Object.keys(configuredCollections)) {
     const collection = config.collections?.find(
       (c): c is CollectionConfig => typeof c === 'object' && c !== null && c.slug === slug,
@@ -165,25 +205,43 @@ export const anonymizerMasking =
 
       // No validation needed - encryption is optional when metadata is enabled
 
-      AnonymizationRequests.hooks = {
-        ...AnonymizationRequests.hooks,
+      // The admin access function used across every resource the plugin
+      // registers. Consumers must provide their own implementation via
+      // `access.admin`.
+      const adminAccess = pluginOptions.access.admin
+
+      const anonymizationRequests = createAnonymizationRequestsCollection(
+        pluginOptions.requests,
+        adminAccess,
+      )
+
+      anonymizationRequests.hooks = {
+        ...anonymizationRequests.hooks,
         afterChange: [
-          ...(AnonymizationRequests.hooks?.afterChange || []),
+          ...(anonymizationRequests.hooks?.afterChange || []),
           createAnonymizeApprovedRequest(pluginOptions.collections, pluginOptions.metadata),
         ],
       }
 
       if (!config.collections) config.collections = []
 
-      config.collections.push(AnonymizationRequests, AnonymizedIdentities, AnonymizationLogs)
+      config.collections.push(
+        anonymizationRequests,
+        AnonymizedIdentities,
+        createAnonymizationLogsCollection(adminAccess),
+      )
 
       if (pluginOptions.metadata?.enabled === true) {
-        config.collections.push(AnonymizationKey, AnonymizationMetadata)
+        config.collections.push(createAnonymizationKeyCollection(adminAccess), AnonymizationMetadata)
       }
 
       // Inject the `isAnonymized` checkbox + read guard into every configured
       // collection so anonymized documents are never exposed on reads.
-      applyAnonymizationGuards(config, pluginOptions.collections)
+      applyAnonymizationGuards(
+        config,
+        pluginOptions.collections,
+        createIsAnonymizedField(adminAccess),
+      )
 
       // Register the anonymization task in the jobs queue
       if (!config.jobs) {
@@ -200,7 +258,7 @@ export const anonymizerMasking =
       if (typeof pluginOptions.jobs?.enabled === 'boolean') {
         // `enabled` is applied during config sanitization but isn't declared on
         // the raw `JobsConfig`, so cast to keep strict TS happy.
-        ;(config.jobs as { enabled?: boolean }).enabled = pluginOptions.jobs.enabled
+        ; (config.jobs as { enabled?: boolean }).enabled = pluginOptions.jobs.enabled
       }
 
       // The auto-run cron is fully configurable via the plugin options.

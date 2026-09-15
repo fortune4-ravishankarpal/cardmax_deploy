@@ -2,8 +2,8 @@ import { randomUUID } from 'node:crypto'
 
 import type { CollectionSlug, TaskConfig } from 'payload'
 
-import type { AnonymizationCollectionConfig, AnonymizationValue } from '../index.js'
-import { deriveMetadataKey, encryptMetadata } from '../utils/encryptMetadata.js'
+import type { AnonymizationCollectionConfig, AnonymizationValue } from '../index'
+import { deriveMetadataKey, encryptMetadata } from '../utils/encryptMetadata'
 
 const resolveValue = (value: AnonymizationValue, anonymousId: string): unknown =>
     typeof value === 'function' ? value({ anonymousId }) : value

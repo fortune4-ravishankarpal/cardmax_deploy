@@ -1,6 +1,6 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
-import type { AnonymizationCollectionConfig, AnonymizationMetadataConfig } from '../index.js'
+import type { AnonymizationCollectionConfig, AnonymizationMetadataConfig } from '../index'
 
 type AnonymizationRequest = {
   id: string
