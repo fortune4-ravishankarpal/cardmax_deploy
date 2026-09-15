@@ -8,7 +8,12 @@ export const anonymizerMaskingConfig = anonymizerMasking({
     metadata: {
         enabled: true
     },
+    requests: {
+        approvedByRelationTo: "admin",
+        userRelationTo: 'users',
+    },
     collections: {
+
         user: {
             userField: "id",
             fields: {

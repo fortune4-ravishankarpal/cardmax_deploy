@@ -27,11 +27,18 @@ export const createAnonymizeApprovedRequest = (
     // transaction as the outer update. Without it Payload starts a new
     // transaction on another pooled connection, which then blocks forever
     // on the row-lock held by the outer (uncommitted) UPDATE.
+    //
+    // Only `admin`-collection users may approve requests (collection update
+    // access → `isAdmin`), and `approvedBy` references the `admin` collection.
+    // Guard the value so we never write an id from a different collection
+    // (e.g. a `users` doc) into that foreign key.
+    const approvedBy = req.user?.collection === 'admin' ? req.user.id : undefined
+
     await req.payload.update({
       collection: 'anonymization-requests',
       id: doc.id,
       data: {
-        approvedBy: req.user?.id,
+        approvedBy,
         status: 'processing',
       },
       overrideAccess: true,
