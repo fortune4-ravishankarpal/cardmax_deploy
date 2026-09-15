@@ -342,22 +342,6 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
             <span className="item-action">Manage &rarr;</span>
           </Link>
 
-          <div className="overview-divider" aria-hidden="true" />
-
-          <Link href="/subscription" className="overview-item">
-            <div className="item-icon">
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
-            </div>
-            <div className="item-info">
-              <span className="item-label">Membership</span>
-              <span className="item-value">
-                {user.stats?.subscriptionStatus === 'active' ? 'CardMax Pro' : 'Free Tier'}
-              </span>
-            </div>
-            <span className="item-action">View Plan &rarr;</span>
-          </Link>
 
           <div className="overview-divider" aria-hidden="true" />
 
@@ -692,20 +676,6 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
                     </svg>
                   </Link>
 
-                  <Link href="/subscription" className="nav-service-item">
-                    <div className="service-icon">
-                      <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    </div>
-                    <div className="service-details">
-                      <span className="service-title">Subscription & Plans</span>
-                      <span className="service-desc">CardMax Pro tier & benefits</span>
-                    </div>
-                    <svg className="service-chevron" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
 
                   <Link href="/settings/consent" className="nav-service-item">
                     <div className="service-icon">

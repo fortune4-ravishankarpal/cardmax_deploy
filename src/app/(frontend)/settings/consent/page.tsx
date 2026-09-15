@@ -276,12 +276,12 @@ export default function ConsentPage() {
                 <div className="consent-row">
                   <div className="row-info">
                     <div className="row-title">
-                      <h3>Billing & Subscriptions</h3>
+                      <h3>Account Billing</h3>
                       <span className="badge badge-required">Required</span>
                     </div>
                     <p>
-                      Records of active tiers, invoices, and payment events necessary to administer
-                      your CardMax plan.
+                      Records of invoices and payment events necessary to administer
+                      your CardMax account services.
                     </p>
                   </div>
                 </div>

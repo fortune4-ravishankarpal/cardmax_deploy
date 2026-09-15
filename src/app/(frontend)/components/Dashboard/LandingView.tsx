@@ -34,12 +34,6 @@ export const LandingView: React.FC = () => {
               </svg>
             </Link>
 
-            <Link href="/max-pro" className="cm-btn-secondary">
-              <span>Explore Max Pro</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
-            </Link>
           </div>
         </section>
 
@@ -90,12 +84,13 @@ export const LandingView: React.FC = () => {
           <div className="cm-feature-box">
             <div className="cm-feature-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                <circle cx="12" cy="12" r="10" />
+                <path d="m9 12 2 2 4-4" />
               </svg>
             </div>
-            <h3>Max Pro Intelligence</h3>
+            <h3>Smart Insights & Tracking</h3>
             <p>
-              Upgrade to unlock AI statement OCR analysis, annual fee waiver progress trackers, and real-time payment due reminders.
+              Automated statement intelligence, annual fee waiver progress tracking, and timely payment due reminders.
             </p>
           </div>
         </section>

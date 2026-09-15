@@ -76,12 +76,6 @@ export const Footer: React.FC = () => {
                 <Link href="/wallet">My Wallet</Link>
               </li>
               <li>
-                <Link href="/max-pro">
-                  <span>Max Pro</span>
-                  <span className="cm-footer-pro-tag">PRO</span>
-                </Link>
-              </li>
-              <li>
                 <Link href="/profile">My Profile</Link>
               </li>
             </ul>

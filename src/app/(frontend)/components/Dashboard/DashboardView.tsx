@@ -59,21 +59,6 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
             <h1>Welcome back, {user.name}</h1>
             <p>{todayFormatted} &bull; Your CardMax Financial Overview</p>
           </div>
-
-          <div className="cm-header-meta">
-            {user.isPro ? (
-              <span className="cm-tier-tag cm-tier-tag--pro">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-                Max Pro Member
-              </span>
-            ) : (
-              <span className="cm-tier-tag cm-tier-tag--free">
-                Free Tier
-              </span>
-            )}
-          </div>
         </header>
 
         {/* 3-Card Metrics Grid */}
@@ -265,85 +250,6 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
               ))}
             </div>
           </div>
-
-          {/* Max Pro Card */}
-          <aside>
-            {user.isPro ? (
-              <div className="cm-pro-banner-card cm-pro-banner-card--active">
-                <div>
-                  <div className="cm-pro-card__header">
-                    <span className="cm-pro-pill">PRO ACTIVE</span>
-                    <span className="cm-pro-pricing">VIP Access</span>
-                  </div>
-
-                  <h3>Max Pro Perks Unlocked</h3>
-                  <p>Your subscription is active with premium automation, OCR parsing, and concierge optimization.</p>
-
-                  <ul className="cm-pro-perks-list">
-                    <li>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span>Automated Statement PDF Extraction</span>
-                    </li>
-                    <li>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span>WhatsApp Due Date Alerts & Reminders</span>
-                    </li>
-                    <li>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span>Annual Fee Waiver Milestone Tracker</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <Link href="/max-pro" className="cm-btn-upgrade">
-                  Manage Max Pro Plan
-                </Link>
-              </div>
-            ) : (
-              <div className="cm-pro-banner-card">
-                <div>
-                  <div className="cm-pro-card__header">
-                    <span className="cm-pro-pill">UPGRADE</span>
-                    <span className="cm-pro-pricing">₹499 / year</span>
-                  </div>
-
-                  <h3>Supercharge Your Wallet with Max Pro</h3>
-                  <p>Unlock deep credit card intelligence, automated statement audits, and VIP perks.</p>
-
-                  <ul className="cm-pro-perks-list">
-                    <li>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <span>Automated Gmail & PDF Statement OCR</span>
-                    </li>
-                    <li>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <span>Priority WhatsApp Payment Alerts</span>
-                    </li>
-                    <li>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                      <span>Fee Waiver Spend Milestones</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <Link href="/max-pro" className="cm-btn-upgrade">
-                  Upgrade to Max Pro
-                </Link>
-              </div>
-            )}
-          </aside>
         </section>
       </div>
     </div>
