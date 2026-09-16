@@ -1,0 +1,20 @@
+// Payload Admin Custom Styles
+
+// Seamless auth fields: remove the elevated container/card styling so Email, Password,
+// and Confirm Password blend directly with the rest of the form fields.
+.collection-edit__auth.auth-fields {
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin-bottom: var(--base) !important;
+  gap: var(--base) !important;
+
+  // Hide empty controls / containers so flexbox does not add extra gap below Confirm Password
+  .auth-fields__controls:empty,
+  .auth-fields__controls:not(:has(*)),
+  .auth-fields__api-key:empty,
+  .auth-fields__api-key:not(:has(*)) {
+    display: none !important;
+  }
+}

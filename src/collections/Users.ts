@@ -159,7 +159,6 @@ export const Users: CollectionConfig = {
       required: true,
       unique: true,
       index: true,
-      admin: { position: 'sidebar' },
       validate: (value: unknown) => {
         if (!value || typeof value !== 'string') return 'Email address is required.'
         const trimmed = value.trim()
@@ -175,7 +174,6 @@ export const Users: CollectionConfig = {
       type: 'text',
       required: false,
       admin: {
-        position: 'sidebar',
         readOnly: true,
         description: 'Auto-generated from First Name and Last Name',
       },
@@ -206,7 +204,6 @@ export const Users: CollectionConfig = {
       name: 'firstName',
       type: 'text',
       required: false,
-      admin: { position: 'sidebar' },
       validate: (value: unknown) => {
         if (!value) return true
         if (typeof value !== 'string') return 'First name must be text.'
@@ -224,7 +221,6 @@ export const Users: CollectionConfig = {
       name: 'lastName',
       type: 'text',
       required: false,
-      admin: { position: 'sidebar' },
       validate: (value: unknown) => {
         if (!value) return true
         if (typeof value !== 'string') return 'Last name must be text.'
@@ -241,14 +237,12 @@ export const Users: CollectionConfig = {
       name: 'dob',
       type: 'date',
       required: false,
-      admin: { position: 'sidebar' },
     },
     {
       name: 'phone',
       type: 'text',
       index: true,
       admin: {
-        position: 'sidebar',
         placeholder: 'e.g. 9876543210 or +919876543210',
       },
       validate: (value: unknown) => {
