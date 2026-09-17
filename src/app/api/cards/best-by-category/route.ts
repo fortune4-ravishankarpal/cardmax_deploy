@@ -8,14 +8,9 @@ import config from '@/payload.config'
  * Returns the best credit card for each spending category, sourced live
  * from the Payload CreditCard collection. Used by the "Show Me the Maths" modal.
  *
- * Optional query param:
- *   ?category=dining-and-delivery  → returns only that category's card
- *
- * Cards are matched in two ways:
- *  1. Primary:  card has a `category` relationship whose slug matches the query
- *  2. Fallback: if no category-matched cards exist, returns ALL active cards
- *     with `defaultMonthlySpend` or `earningMechanism` filled in (so admin can
- *     populate a card's data and see it in the modal even without a category assigned).
+ * Query params:
+ *   ?category=<slug>  → filters by category (supports aliases/synonyms like fuel/fuel-surcharge)
+ *   ?card=<name>      → filters by card name
  */
 
 export interface BestCardByCategoryItem {
@@ -30,6 +25,40 @@ export interface BestCardByCategoryItem {
   pointValueINR: number
   defaultMonthlySpend: number
   earningMechanism: string
+}
+
+const CATEGORY_SYNONYMS: Record<string, string[]> = {
+  fuel: ['fuel', 'fuel-surcharge', 'surcharge', 'petrol', 'diesel', 'gas', 'bpcl', 'indianoil', 'hpcl'],
+  travel: ['travel', 'travel-and-flights', 'flights', 'flight', 'airline', 'hotel', 'hotels', 'atlas', 'miles'],
+  dining: ['dining', 'dinning', 'dining-and-delivery', 'food', 'delivery', 'restaurant', 'restaurants', 'swiggy', 'zomato'],
+  shopping: ['shopping', 'online-shopping', 'ecommerce', 'retail', 'marketplace', 'amazon', 'flipkart'],
+}
+
+function matchCategory(dbCatSlug: string, dbCatName: string, queryCat: string): boolean {
+  const cleanDbSlug = (dbCatSlug || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const cleanDbName = (dbCatName || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+  const cleanQuery = (queryCat || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+
+  if (!cleanQuery) return true
+  if (cleanDbSlug === cleanQuery || cleanDbName === cleanQuery) return true
+  if (cleanDbSlug.length > 2 && cleanQuery.includes(cleanDbSlug)) return true
+  if (cleanQuery.length > 2 && cleanDbSlug.includes(cleanQuery)) return true
+  if (cleanDbName.length > 2 && cleanQuery.includes(cleanDbName)) return true
+  if (cleanQuery.length > 2 && cleanDbName.includes(cleanQuery)) return true
+
+  for (const list of Object.values(CATEGORY_SYNONYMS)) {
+    const queryInGroup = list.some((term) => {
+      const clean = term.replace(/[^a-z0-9]/g, '')
+      return cleanQuery.includes(clean) || clean.includes(cleanQuery)
+    })
+    const dbInGroup = list.some((term) => {
+      const clean = term.replace(/[^a-z0-9]/g, '')
+      return cleanDbSlug.includes(clean) || cleanDbName.includes(clean)
+    })
+    if (queryInGroup && dbInGroup) return true
+  }
+
+  return false
 }
 
 function computeNetAnnualValue(card: any, monthlySpend: number): number {
@@ -84,11 +113,12 @@ function buildItem(
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl
-    const filterCategory = searchParams.get('category') // optional slug filter
+    const filterCategory = searchParams.get('category')
+    const filterCard = searchParams.get('card') || searchParams.get('cardName')
 
     const payload = await getPayload({ config: await config })
 
-    // Fetch all published, active credit cards with their category populated
+    // Fetch all published, active credit cards with their relations populated
     const result = await payload.find({
       collection: 'CreditCard',
       where: { state: { equals: 'active' } },
@@ -97,7 +127,13 @@ export async function GET(req: NextRequest) {
       overrideAccess: true,
     })
 
-    const cards = result.docs
+    let cards = result.docs
+
+    // Optional card name filter
+    if (filterCard) {
+      const cleanName = filterCard.toLowerCase().trim()
+      cards = cards.filter((c) => (c.name || '').toLowerCase().includes(cleanName))
+    }
 
     // ── Strategy 1: group by category relationship ──────────────────────────
     const categoryMap = new Map<string, { name: string; slug: string; cards: any[] }>()
@@ -110,7 +146,10 @@ export async function GET(req: NextRequest) {
       const catName: string = catDoc.name ?? ''
       if (!catSlug) continue
 
-      if (filterCategory && catSlug !== filterCategory) continue
+      // Check category match if filterCategory is supplied
+      if (filterCategory && !matchCategory(catSlug, catName, filterCategory)) {
+        continue
+      }
 
       if (!categoryMap.has(catSlug)) {
         categoryMap.set(catSlug, { name: catName, slug: catSlug, cards: [] })
@@ -129,45 +168,27 @@ export async function GET(req: NextRequest) {
       if (best) bestCards.push(buildItem(best, group.name, group.slug))
     }
 
-    // ── Strategy 2: Fallback — cards with no category but with reward data ──
-    // If no category-grouped results were found (e.g. admin hasn't assigned
-    // categories yet), return all active cards that have at least one of
-    // defaultMonthlySpend or earningMechanism filled in.
-    // The modal will use the card data directly (no category grouping).
-    if (bestCards.length === 0) {
+    // ── Strategy 2: If NO category filter was provided, but no cards had categories,
+    // fallback to returning active cards with custom reward data.
+    // NOTE: If a category filter WAS requested and nothing matched, return [] rather than
+    // disguising an unrelated card!
+    if (!filterCategory && bestCards.length === 0) {
       const uncategorised = cards.filter(
         (c) =>
           (!c.category || (typeof c.category === 'object' && !c.category?.slug)) &&
           (c.defaultMonthlySpend || c.earningMechanism),
       )
 
-      // If a specific category filter was given but no match was found,
-      // also return fully uncategorised cards sorted by value so the modal
-      // still has something to show.
       const cardsToReturn = uncategorised.length > 0 ? uncategorised : cards
-
-      // Use the filter slug as the synthetic category slug
-      const syntheticSlug = filterCategory ?? 'general'
-      const syntheticLabel = filterCategory
-        ? filterCategory.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-        : 'General'
-
-      const sorted = [...cardsToReturn].sort(
-        (a, b) =>
-          computeNetAnnualValue(b, b.defaultMonthlySpend ?? 5000) -
-          computeNetAnnualValue(a, a.defaultMonthlySpend ?? 5000),
-      )
-
-      if (sorted[0]) {
-        bestCards.push(buildItem(sorted[0], syntheticLabel, syntheticSlug))
+      for (const card of cardsToReturn) {
+        bestCards.push(buildItem(card, 'General', 'general'))
       }
     }
 
     return NextResponse.json(bestCards, {
       status: 200,
       headers: {
-        // Cache for 2 minutes — short enough that admin edits reflect quickly
-        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=30',
+        'Cache-Control': 'no-store, max-age=0',
       },
     })
   } catch (err) {

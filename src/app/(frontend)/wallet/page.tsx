@@ -76,6 +76,8 @@ export default function WalletPage() {
             const meta = CATEGORY_META[item.categorySlug]
             return {
               category: meta?.label ?? item.category,
+              categorySlug: item.categorySlug,
+              cardName: item.cardName,
               icon: meta?.icon ?? '💳',
               bestCard: item.cardName,
               multiplier: getMultiplierLabel(item),

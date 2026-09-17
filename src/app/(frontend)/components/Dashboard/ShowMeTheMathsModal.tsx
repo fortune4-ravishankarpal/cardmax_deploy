@@ -20,6 +20,8 @@ import styles from './ShowMeTheMathsModal.module.scss'
 
 export interface RecommendationMathData {
   category: string
+  categorySlug?: string
+  cardName?: string
   icon: string
   bestCard: string
   multiplier: string
@@ -180,8 +182,11 @@ export default function ShowMeTheMathsModal({ recommendation, onClose }: Props) 
   const [dataSource, setDataSource] = useState<'live' | 'static'>('static')
 
   useEffect(() => {
-    const slug = categoryToSlug(category)
-    fetch(`/api/cards/best-by-category?category=${encodeURIComponent(slug)}`)
+    const slug = recommendation.categorySlug || categoryToSlug(category)
+    const cardParam = recommendation.cardName || bestCard
+      ? `&card=${encodeURIComponent(recommendation.cardName || bestCard)}`
+      : ''
+    fetch(`/api/cards/best-by-category?category=${encodeURIComponent(slug)}${cardParam}`)
       .then((r) => r.json())
       .then((data: BestCardByCategoryItem[]) => {
         if (Array.isArray(data) && data.length > 0) {
@@ -191,7 +196,7 @@ export default function ShowMeTheMathsModal({ recommendation, onClose }: Props) 
       })
       .catch(() => {/* silent — will fall back to static */})
       .finally(() => setLoading(false))
-  }, [category])
+  }, [category, recommendation.categorySlug, recommendation.cardName, bestCard])
 
   // Focus trap + Escape
   useEffect(() => {
