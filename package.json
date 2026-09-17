@@ -30,6 +30,7 @@
     "@payloadcms/next": "3.88.0",
     "@payloadcms/richtext-lexical": "3.88.0",
     "@payloadcms/ui": "3.88.0",
+    "@seshuk/payload-plugin-openapi": "^0.2.0",
     "@t3-oss/env-nextjs": "^0.13.11",
     "@veiag/payload-enhanced-sidebar": "^0.5.1",
     "cross-env": "^7.0.3",

@@ -8,6 +8,7 @@ import { auditFieldsConfig } from './audit'
 
 import { gatekeeperPluginConfig } from './getKeeper'
 import { softDeleteConfig } from './softDelete'
+import { openApiPluginConfigs } from './openapi'
 // import { privacyPluginConfig } from './privacyGdpr'
 export const plugins: Plugin[] = [
   gatekeeperPluginConfig,
@@ -17,5 +18,6 @@ export const plugins: Plugin[] = [
   // contentFreezeConfig,
   // seoPluginConfig,
   // privacyPluginConfig
-  softDeleteConfig
+  softDeleteConfig,
+  ...openApiPluginConfigs
 ]
