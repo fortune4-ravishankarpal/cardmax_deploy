@@ -1,7 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
+import ShowMeTheMathsModal, { type RecommendationMathData } from './ShowMeTheMathsModal'
 
 export interface DashboardData {
   user: {
@@ -34,6 +35,9 @@ export interface DashboardData {
 
 export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
   const { user, metrics, gmailConnected, recommendations } = data
+
+  // Modal state — null means closed, otherwise holds the active recommendation
+  const [activeMathRec, setActiveMathRec] = useState<RecommendationMathData | null>(null)
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -189,7 +193,7 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
               </div>
               <div className="cm-action-text">
                 <span>Consent Settings</span>
-                <span>Privacy & permissions</span>
+                <span>Privacy &amp; permissions</span>
               </div>
             </Link>
           </div>
@@ -246,12 +250,47 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
                       </>
                     )}
                   </div>
+
+                  {/* ── Show Me the Maths Trigger ── */}
+                  <button
+                    className="cm-show-maths-btn"
+                    id={`show-maths-${rec.category.replace(/\s+/g, '-').replace(/&/g, 'and').toLowerCase()}`}
+                    onClick={() =>
+                      setActiveMathRec({
+                        category: rec.category,
+                        icon: rec.icon,
+                        bestCard: rec.bestCard,
+                        multiplier: rec.multiplier,
+                      })
+                    }
+                    aria-label={`Show the maths behind ${rec.category} recommendation`}
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="4" y="2" width="16" height="20" rx="2" />
+                      <line x1="8" y1="6" x2="16" y2="6" />
+                      <line x1="8" y1="10" x2="10" y2="10" />
+                      <line x1="14" y1="10" x2="16" y2="10" />
+                      <line x1="8" y1="14" x2="10" y2="14" />
+                      <line x1="14" y1="14" x2="16" y2="14" />
+                      <line x1="8" y1="18" x2="10" y2="18" />
+                      <line x1="14" y1="18" x2="16" y2="18" />
+                    </svg>
+                    Show Me the Maths →
+                  </button>
                 </div>
               ))}
             </div>
           </div>
         </section>
       </div>
+
+      {/* ── Show Me the Maths Modal ───────────────────────────────────── */}
+      {activeMathRec && (
+        <ShowMeTheMathsModal
+          recommendation={activeMathRec}
+          onClose={() => setActiveMathRec(null)}
+        />
+      )}
     </div>
   )
 }

@@ -426,12 +426,20 @@ $pro-gold-2: #D97706;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  transition: all 0.2s ease;
+  transition: all 0.22s ease;
+  position: relative;
 
   &:hover {
     background: $color-surface-hover;
-    border-color: rgba(108, 76, 241, 0.3);
-    transform: translateY(-1px);
+    border-color: rgba(108, 76, 241, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(108, 76, 241, 0.1);
+
+    .cm-show-maths-btn {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
   }
 
   .cm-cat-top {
@@ -482,6 +490,61 @@ $pro-gold-2: #D97706;
     &--owned {
       color: #15803D;
     }
+  }
+}
+
+// "Show Me the Maths" trigger button — reveals on card hover
+.cm-show-maths-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $color-primary;
+  background: rgba(108, 76, 241, 0.08);
+  border: 1px solid rgba(108, 76, 241, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: all 0.2s ease;
+  // Reveal animation — hidden until parent card is hovered
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+
+  svg {
+    flex-shrink: 0;
+    opacity: 0.75;
+    transition: opacity 0.15s ease;
+  }
+
+  &:hover {
+    background: rgba(108, 76, 241, 0.16);
+    border-color: rgba(108, 76, 241, 0.45);
+    color: #5B3FD9;
+    transform: translateY(0) !important;
+
+    svg {
+      opacity: 1;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  @media (max-width: 768px) {
+    // Always visible on touch devices (no hover state)
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 }
 

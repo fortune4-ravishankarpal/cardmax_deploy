@@ -4,13 +4,23 @@ import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import AddCardModal from './components/AddCardModal'
 import EditCardModal from './components/EditCardModal'
+import ShowMeTheMathsModal, { type RecommendationMathData } from '../components/Dashboard/ShowMeTheMathsModal'
 import './styles.scss'
+
+// Static recommendation list shown in the Wallet page
+const WALLET_RECOMMENDATIONS: RecommendationMathData[] = [
+  { category: 'Dining & Delivery', icon: '🍽️', bestCard: 'HDFC Swiggy Credit Card', multiplier: '10% Cashback' },
+  { category: 'Travel & Flights', icon: '✈️', bestCard: 'Axis Atlas Credit Card', multiplier: '5X Miles' },
+  { category: 'Fuel Surcharge', icon: '⛽', bestCard: 'BPCL SBI Octane', multiplier: '25X Points' },
+  { category: 'Online Shopping', icon: '🛍️', bestCard: 'SBI Cashback Credit Card', multiplier: '5% Cashback' },
+]
 
 export default function WalletPage() {
   const [cards, setCards] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<any | null>(null)
+  const [activeMathRec, setActiveMathRec] = useState<RecommendationMathData | null>(null)
 
   const fetchCards = useCallback(async () => {
     try {
@@ -258,7 +268,53 @@ export default function WalletPage() {
             })}
           </div>
         )}
-      </div>
+
+        {/* ── Reward Recommendations Widget ──────────────────────────── */}
+        <section className="wallet-recommendations-section">
+          <div className="wallet-rec-header">
+            <div>
+              <h2 className="wallet-rec-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                </svg>
+                Best Card by Category
+              </h2>
+              <p className="wallet-rec-subtitle">See the exact maths behind each card recommendation</p>
+            </div>
+          </div>
+          <div className="wallet-rec-grid">
+            {WALLET_RECOMMENDATIONS.map((rec) => (
+              <div key={rec.category} className="wallet-rec-card">
+                <div className="wallet-rec-card__top">
+                  <span className="wallet-rec-card__icon">{rec.icon}</span>
+                  <span className="wallet-rec-card__category">{rec.category}</span>
+                  <span className="wallet-rec-card__multiplier">{rec.multiplier}</span>
+                </div>
+                <div className="wallet-rec-card__name">{rec.bestCard}</div>
+                <button
+                  className="wallet-show-maths-btn"
+                  id={`wallet-show-maths-${rec.category.replace(/\s+/g, '-').replace(/&/g, 'and').toLowerCase()}`}
+                  onClick={() => setActiveMathRec(rec)}
+                  aria-label={`Show the maths behind ${rec.category} recommendation`}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="4" y="2" width="16" height="20" rx="2" />
+                    <line x1="8" y1="6" x2="16" y2="6" />
+                    <line x1="8" y1="10" x2="10" y2="10" />
+                    <line x1="14" y1="10" x2="16" y2="10" />
+                    <line x1="8" y1="14" x2="10" y2="14" />
+                    <line x1="14" y1="14" x2="16" y2="14" />
+                    <line x1="8" y1="18" x2="10" y2="18" />
+                    <line x1="14" y1="18" x2="16" y2="18" />
+                  </svg>
+                  Show Me the Maths →
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>{/* end wallet-container */}
 
       {/* Interactive Modals */}
       <AddCardModal
@@ -273,6 +329,14 @@ export default function WalletPage() {
         onClose={() => setEditingCard(null)}
         onCardUpdated={fetchCards}
       />
+
+      {/* Show Me the Maths Modal */}
+      {activeMathRec && (
+        <ShowMeTheMathsModal
+          recommendation={activeMathRec}
+          onClose={() => setActiveMathRec(null)}
+        />
+      )}
     </div>
   )
 }
