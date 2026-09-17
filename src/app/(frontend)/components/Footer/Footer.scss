@@ -3,11 +3,11 @@
 // Clean, professional fintech footer with responsive grid & security notes
 // ==========================================================================
 
-$footer-bg: #070a13;
-$footer-border: rgba(255, 255, 255, 0.07);
-$footer-text: #94a3b8;
-$footer-text-light: #f1f5f9;
-$footer-accent: #6366f1;
+$footer-bg: #0b1020;
+$footer-border: rgba(108, 76, 241, 0.12);
+$footer-text: #9ca3af;
+$footer-text-light: #ffffff;
+$footer-accent: #6c4cf1;
 
 .cm-footer {
   width: 100%;
@@ -70,7 +70,8 @@ $footer-accent: #6366f1;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    background: linear-gradient(135deg, #6c4cf1 0%, #8b5cf6 50%, #7c5cfc 100%);
+    box-shadow: 0 2px 10px rgba(108, 76, 241, 0.35);
     color: #ffffff;
 
     svg {
@@ -80,7 +81,7 @@ $footer-accent: #6366f1;
   }
 
   .cm-brand-accent {
-    color: #818cf8;
+    color: #8b5cf6;
     font-weight: 800;
   }
 }
@@ -99,8 +100,8 @@ $footer-accent: #6366f1;
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.85rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(21, 29, 53, 0.6);
+  border: 1px solid rgba(108, 76, 241, 0.15);
   border-radius: 10px;
   max-width: 460px;
   margin-top: 0.5rem;
@@ -109,9 +110,9 @@ $footer-accent: #6366f1;
     width: 28px;
     height: 28px;
     border-radius: 6px;
-    background: rgba(16, 185, 129, 0.12);
-    border: 1px solid rgba(16, 185, 129, 0.25);
-    color: #10b981;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    color: #22c55e;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -237,16 +238,16 @@ $footer-accent: #6366f1;
   gap: 0.45rem;
   font-size: 0.78rem;
   color: #94a3b8;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(21, 29, 53, 0.7);
   padding: 0.25rem 0.6rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(108, 76, 241, 0.15);
 
   .cm-status-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #10b981;
+    background: #22c55e;
     position: relative;
 
     &::after {
@@ -257,7 +258,7 @@ $footer-accent: #6366f1;
       right: -2px;
       bottom: -2px;
       border-radius: 50%;
-      background: rgba(16, 185, 129, 0.4);
+      background: rgba(34, 197, 94, 0.4);
       animation: cmPulse 2s infinite ease-in-out;
     }
   }

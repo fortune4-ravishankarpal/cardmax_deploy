@@ -1,46 +1,59 @@
 // ==========================================================================
 // CardMax SaaS Profile Stylesheet
-// Clean, minimal, high-density layout with unified primary accent
+// PointsFly-inspired premium fintech aesthetic & unified color system
 // ==========================================================================
 
-$color-bg: #f8fafc;
+$color-bg: #f7f7fc;
 $color-surface: #ffffff;
-$color-surface-hover: #f1f5f9;
-$color-surface-subtle: #f8fafc;
+$color-surface-hover: #f1f0fa;
+$color-surface-subtle: #f7f7fc;
 
-$color-text-primary: #0f172a;
-$color-text-secondary: #64748b;
-$color-text-muted: #94a3b8;
+$color-text-primary: #111827;
+$color-text-secondary: #6b7280;
+$color-text-muted: #9ca3af;
 
-$color-border: #e2e8f0;
-$color-border-subtle: #f1f5f9;
-$color-border-focus: #4f46e5;
+$color-border: rgba(108, 76, 241, 0.12);
+$color-border-subtle: #f1f0fa;
+$color-border-focus: #6c4cf1;
 
 // Single Unified Accent
-$color-accent: #4f46e5;
-$color-accent-hover: #4338ca;
-$color-accent-subtle: #eef2ff;
-$color-accent-border: #c7d2fe;
+$color-accent: #6c4cf1;
+$color-accent-hover: #7c5cfc;
+$color-accent-subtle: #ede9fe;
+$color-accent-border: rgba(108, 76, 241, 0.25);
 
 // Semantic Feedback
-$color-success-text: #065f46;
-$color-success-bg: #ecfdf5;
-$color-success-border: #a7f3d0;
-$color-success-dot: #10b981;
+$color-success-text: #15803d;
+$color-success-bg: #dcfce7;
+$color-success-border: #86efac;
+$color-success-dot: #22c55e;
 
 $color-danger-text: #b91c1c;
 $color-danger-hover: #991b1b;
-$color-danger-bg: #fef2f2;
+$color-danger-bg: #fee2e2;
 $color-danger-border: #fecaca;
 
-$radius-sm: 6px;
-$radius-md: 8px;
-$radius-lg: 10px;
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
 $radius-full: 9999px;
 
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+$shadow-sm: 0 4px 20px rgba(17, 24, 39, 0.04);
+$shadow-card: 0 8px 30px rgba(17, 24, 39, 0.06);
 
-$font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
+$gradient-primary: linear-gradient(135deg, #6c4cf1 0%, #8b5cf6 50%, #7c5cfc 100%);
+$gradient-primary-hover: linear-gradient(135deg, #7c5cfc 0%, #9d74ff 50%, #8b5cf6 100%);
+
+$font-sans: var(
+  --font-inter,
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  Helvetica,
+  Arial,
+  sans-serif
+);
 
 .profile-page-wrapper {
   min-height: calc(100vh - 60px);
@@ -62,8 +75,9 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   }
 
   :focus-visible {
-    outline: 2px solid $color-accent;
-    outline-offset: 2px;
+    outline: none;
+    border-color: $color-accent;
+    box-shadow: 0 0 0 3px rgba(108, 76, 241, 0.15);
   }
 
   .profile-container {
@@ -277,12 +291,16 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         white-space: nowrap;
 
         &.primary {
-          background-color: $color-accent;
+          background: $gradient-primary;
           color: #ffffff;
-          border: 1px solid transparent;
+          border: none;
+          box-shadow: 0 2px 10px rgba(108, 76, 241, 0.3);
+          border-radius: 10px;
 
           &:hover {
-            background-color: $color-accent-hover;
+            background: $gradient-primary-hover;
+            box-shadow: 0 4px 14px rgba(108, 76, 241, 0.4);
+            transform: translateY(-1px);
           }
         }
 
@@ -662,20 +680,22 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
       input,
       select {
         width: 100%;
-        height: 36px;
-        padding: 0 0.65rem;
-        border: 1px solid $color-border;
-        border-radius: $radius-sm;
+        height: 40px;
+        padding: 0 0.85rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
         font-size: 0.85rem;
         color: $color-text-primary;
         background-color: $color-surface;
         font-family: inherit;
         outline: none;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease;
 
         &:focus {
           border-color: $color-border-focus;
-          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+          box-shadow: 0 0 0 3px rgba(108, 76, 241, 0.12);
         }
 
         &:disabled {
@@ -738,21 +758,24 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
         align-items: center;
         justify-content: center;
         gap: 0.35rem;
-        height: 36px;
-        padding: 0 0.95rem;
-        border-radius: $radius-sm;
-        font-size: 0.8rem;
+        height: 38px;
+        padding: 0 1.15rem;
+        border-radius: 10px;
+        font-size: 0.825rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.15s ease;
+        transition: all 0.2s ease;
 
         &.primary {
-          background-color: $color-accent;
+          background: $gradient-primary;
           color: #ffffff;
-          border: 1px solid transparent;
+          border: none;
+          box-shadow: 0 2px 10px rgba(108, 76, 241, 0.3);
 
           &:hover:not(:disabled) {
-            background-color: $color-accent-hover;
+            background: $gradient-primary-hover;
+            box-shadow: 0 4px 14px rgba(108, 76, 241, 0.4);
+            transform: translateY(-1px);
           }
 
           &:disabled {
@@ -863,8 +886,10 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
           .service-title {
             font-size: 0.8rem;
             font-weight: 600;
-            color: $color-text-primary;
+            color: $color-text-primary !important;
             line-height: 1.2;
+            display: block;
+            transition: color 0.15s ease;
           }
 
           .service-desc {
@@ -874,12 +899,15 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
             overflow: hidden;
             text-overflow: ellipsis;
             margin-top: 0.05rem;
+            display: block;
           }
         }
 
         .service-chevron {
           color: $color-text-muted;
-          transition: transform 0.15s ease, color 0.15s ease;
+          transition:
+            transform 0.15s ease,
+            color 0.15s ease;
           flex-shrink: 0;
         }
       }
