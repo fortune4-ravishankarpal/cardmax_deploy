@@ -24,6 +24,8 @@ export interface DashboardData {
   gmailConnected: boolean
   recommendations: Array<{
     category: string
+    categorySlug?: string
+    cardName?: string
     icon: string
     bestCard: string
     multiplier: string
@@ -35,6 +37,16 @@ export interface DashboardData {
 
 export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
   const { user, metrics, gmailConnected, recommendations } = data
+
+  // Scroll ref for horizontal scrolling
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null)
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const offset = direction === 'left' ? -320 : 320
+      scrollContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' })
+    }
+  }
 
   // Modal state — null means closed, otherwise holds the active recommendation
   const [activeMathRec, setActiveMathRec] = useState<RecommendationMathData | null>(null)
@@ -214,71 +226,101 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
                 </h3>
                 <p>Maximize your reward multipliers and cashback across everyday spending categories</p>
               </div>
-              <span className="cm-month-pill">Active Boosts</span>
-            </div>
-
-            <div className="cm-categories-grid">
-              {recommendations.map((rec) => (
-                <div key={rec.category} className="cm-category-card">
-                  <div className="cm-cat-top">
-                    <span className="cm-cat-title">
-                      <span>{rec.icon}</span>
-                      <span>{rec.category}</span>
-                    </span>
-                    <span className="cm-cat-multiplier">{rec.multiplier}</span>
-                  </div>
-
-                  <div className="cm-cat-card-name">{rec.bestCard}</div>
-                  <div className="cm-cat-perk">{rec.perkSummary}</div>
-
-                  <div className={`cm-cat-status ${rec.isOwned ? 'cm-cat-status--owned' : ''}`}>
-                    {rec.isOwned ? (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <span>In Your Wallet</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="12" x2="12" y1="8" y2="12" />
-                          <line x1="12" x2="12.01" y1="16" y2="16" />
-                        </svg>
-                        <span>Recommended Pick</span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* ── Show Me the Maths Trigger ── */}
+              <div className="cm-widget-controls">
+                <span className="cm-month-pill">Active Boosts</span>
+                <div className="cm-scroll-arrows">
                   <button
-                    className="cm-show-maths-btn"
-                    id={`show-maths-${rec.category.replace(/\s+/g, '-').replace(/&/g, 'and').toLowerCase()}`}
-                    onClick={() =>
-                      setActiveMathRec({
-                        category: rec.category,
-                        icon: rec.icon,
-                        bestCard: rec.bestCard,
-                        multiplier: rec.multiplier,
-                      })
-                    }
-                    aria-label={`Show the maths behind ${rec.category} recommendation`}
+                    type="button"
+                    className="cm-scroll-btn"
+                    onClick={() => handleScroll('left')}
+                    aria-label="Scroll left"
+                    title="Scroll left"
                   >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="4" y="2" width="16" height="20" rx="2" />
-                      <line x1="8" y1="6" x2="16" y2="6" />
-                      <line x1="8" y1="10" x2="10" y2="10" />
-                      <line x1="14" y1="10" x2="16" y2="10" />
-                      <line x1="8" y1="14" x2="10" y2="14" />
-                      <line x1="14" y1="14" x2="16" y2="14" />
-                      <line x1="8" y1="18" x2="10" y2="18" />
-                      <line x1="14" y1="18" x2="16" y2="18" />
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
                     </svg>
-                    Show Me the Maths →
+                  </button>
+                  <button
+                    type="button"
+                    className="cm-scroll-btn"
+                    onClick={() => handleScroll('right')}
+                    aria-label="Scroll right"
+                    title="Scroll right"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
                   </button>
                 </div>
-              ))}
+              </div>
+            </div>
+
+            <div className="cm-categories-scroll-wrapper">
+              <div className="cm-categories-grid" ref={scrollContainerRef}>
+                {recommendations.map((rec) => (
+                  <div key={rec.category} className="cm-category-card">
+                    <div className="cm-cat-top">
+                      <span className="cm-cat-title">
+                        <span>{rec.icon}</span>
+                        <span>{rec.category}</span>
+                      </span>
+                      <span className="cm-cat-multiplier">{rec.multiplier}</span>
+                    </div>
+
+                    <div className="cm-cat-card-name">{rec.bestCard}</div>
+                    <div className="cm-cat-perk">{rec.perkSummary}</div>
+
+                    <div className={`cm-cat-status ${rec.isOwned ? 'cm-cat-status--owned' : ''}`}>
+                      {rec.isOwned ? (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                          <span>In Your Wallet</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" />
+                            <line x1="12" y1="16" x2="12.01" />
+                          </svg>
+                          <span>Recommended Pick</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* ── Show Me the Maths Trigger ── */}
+                    <button
+                      className="cm-show-maths-btn"
+                      id={`show-maths-${rec.category.replace(/\s+/g, '-').replace(/&/g, 'and').toLowerCase()}`}
+                      onClick={() =>
+                        setActiveMathRec({
+                          category: rec.category,
+                          categorySlug: rec.categorySlug,
+                          cardName: rec.cardName || rec.bestCard,
+                          icon: rec.icon,
+                          bestCard: rec.bestCard,
+                          multiplier: rec.multiplier,
+                        })
+                      }
+                      aria-label={`Show the maths behind ${rec.category} recommendation`}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="4" y="2" width="16" height="20" rx="2" />
+                        <line x1="8" y1="6" x2="16" y2="6" />
+                        <line x1="8" y1="10" x2="10" y2="10" />
+                        <line x1="14" y1="10" x2="16" y2="10" />
+                        <line x1="8" y1="14" x2="10" y2="14" />
+                        <line x1="14" y1="14" x2="16" y2="14" />
+                        <line x1="8" y1="18" x2="10" y2="18" />
+                        <line x1="14" y1="18" x2="16" y2="18" />
+                      </svg>
+                      Show Me the Maths →
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

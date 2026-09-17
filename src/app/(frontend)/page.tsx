@@ -141,74 +141,116 @@ export default async function HomePage() {
     ).toLowerCase()
   })
 
-  const hasDiningMatch = userCardNames.some((n) =>
-    ['dining', 'regalia', 'diners', 'swiggy', 'zomato', 'hsbc'].some((k) =>
-      n.includes(k)
-    )
-  )
+  // Fetch all active credit cards from DB to populate recommendations dynamically
+  const liveCardsRes = await payload.find({
+    collection: 'CreditCard',
+    where: { state: { equals: 'active' } },
+    depth: 2,
+    limit: 100,
+    overrideAccess: true,
+  })
 
-  const hasTravelMatch = userCardNames.some((n) =>
-    ['travel', 'atlas', 'vistara', 'miles', 'prime', 'platinum'].some((k) =>
-      n.includes(k)
-    )
-  )
+  const CATEGORY_META: Record<string, { icon: string; label: string }> = {
+    'dining-and-delivery': { icon: '🍽️', label: 'Dining & Delivery' },
+    'dining':              { icon: '🍽️', label: 'Dining & Delivery' },
+    'dinning':             { icon: '🍽️', label: 'Dining & Delivery' },
+    'travel':              { icon: '✈️', label: 'Travel & Flights' },
+    'travel-and-flights':  { icon: '✈️', label: 'Travel & Flights' },
+    'fuel':                { icon: '⛽', label: 'Fuel Surcharge' },
+    'fuel-surcharge':      { icon: '⛽', label: 'Fuel Surcharge' },
+    'shopping':            { icon: '🛍️', label: 'Online Shopping' },
+    'online-shopping':     { icon: '🛍️', label: 'Online Shopping' },
+    'grocery':             { icon: '🥦', label: 'Grocery & Spends' },
+    'groceries':           { icon: '🥦', label: 'Grocery & Spends' },
+    'utilities':           { icon: '⚡', label: 'Utilities & Bills' },
+    'utility-bills':       { icon: '⚡', label: 'Utilities & Bills' },
+    'entertainment':       { icon: '🍿', label: 'Movies & Events' },
+  }
 
-  const hasFuelMatch = userCardNames.some((n) =>
-    ['fuel', 'bpcl', 'indianoil', 'hpcl', 'octane'].some((k) => n.includes(k))
-  )
+  let recommendations: any[] = []
 
-  const hasShoppingMatch = userCardNames.some((n) =>
-    ['cashback', 'amazon', 'flipkart', 'millennia', 'ace'].some((k) =>
-      n.includes(k)
-    )
-  )
+  if (liveCardsRes.docs && liveCardsRes.docs.length > 0) {
+    const categoryMap = new Map<string, { catDoc: any; cards: any[] }>()
 
-  const recommendations = [
-    {
-      category: 'Dining & Delivery',
-      icon: '🍽️',
-      bestCard: hasDiningMatch
-        ? activeCards[0]?.displayName || 'Your Primary Card'
-        : 'HDFC Swiggy / Diners Club',
-      multiplier: '10X Points / 10% Off',
-      perkSummary:
-        'Best for dining out, Swiggy, Zomato, and premium weekend restaurants.',
-      isOwned: hasDiningMatch,
-    },
-    {
-      category: 'Travel & Flights',
-      icon: '✈️',
-      bestCard: hasTravelMatch
-        ? activeCards[0]?.displayName || 'Your Travel Card'
-        : 'Axis Atlas / SBI Elite',
-      multiplier: '5X Miles + Lounge Access',
-      perkSummary:
-        'Complimentary domestic and international airport lounges with tier bonuses.',
-      isOwned: hasTravelMatch,
-    },
-    {
-      category: 'Fuel Surcharge',
-      icon: '⛽',
-      bestCard: hasFuelMatch
-        ? activeCards[0]?.displayName || 'Your Fuel Card'
-        : 'BPCL SBI Octane / IndianOil',
-      multiplier: '1% Waiver + 7.25% Val',
-      perkSummary:
-        'Zero fuel surcharge across all petrol pumps plus accelerated reward points.',
-      isOwned: hasFuelMatch,
-    },
-    {
-      category: 'Online Shopping',
-      icon: '🛍️',
-      bestCard: hasShoppingMatch
-        ? activeCards[0]?.displayName || 'Your Cashback Card'
-        : 'SBI Cashback / Amazon Pay',
-      multiplier: '5% Unlimited Cashback',
-      perkSummary:
-        'Direct monthly statement credit on Amazon, Flipkart, Myntra, and online portals.',
-      isOwned: hasShoppingMatch,
-    },
-  ]
+    for (const card of liveCardsRes.docs) {
+      const cat = typeof card.category === 'object' && card.category ? card.category : null
+      const catKey = cat?.slug || 'general'
+
+      if (!categoryMap.has(catKey)) {
+        categoryMap.set(catKey, { catDoc: cat, cards: [] })
+      }
+      categoryMap.get(catKey)!.cards.push(card)
+    }
+
+    recommendations = Array.from(categoryMap.entries()).map(([slug, { catDoc, cards }]) => {
+      const best = cards[0]
+      const meta = CATEGORY_META[slug] || (catDoc?.name ? CATEGORY_META[catDoc.name.toLowerCase()] : null)
+      const isCashback = best.baseReward?.type === 'cashback'
+      const multiplier = isCashback && best.baseReward?.cashbackPercentage
+        ? `${best.baseReward.cashbackPercentage}% Cashback`
+        : best.baseReward?.pointsPerBlock
+          ? `${best.baseReward.pointsPerBlock}X Points`
+          : 'Top Rewards'
+
+      const isOwned = userCardNames.some((n: string) =>
+        (best.name && n.includes(best.name.toLowerCase())) ||
+        (best.slug && n.includes(best.slug.toLowerCase()))
+      )
+
+      return {
+        category: meta?.label || catDoc?.name || 'Category Recommendation',
+        categorySlug: slug,
+        cardName: best.name,
+        icon: meta?.icon || '💳',
+        bestCard: best.name,
+        multiplier,
+        perkSummary: best.earningMechanism || best.description || 'Top tier rewards and benefits in this category.',
+        isOwned,
+      }
+    })
+  }
+
+  // Fallback if no cards in DB
+  if (recommendations.length === 0) {
+    recommendations = [
+      {
+        category: 'Dining & Delivery',
+        categorySlug: 'dinning',
+        icon: '🍽️',
+        bestCard: 'HDFC Swiggy / Diners Club',
+        multiplier: '10X Points / 10% Off',
+        perkSummary: 'Best for dining out, Swiggy, Zomato, and premium weekend restaurants.',
+        isOwned: false,
+      },
+      {
+        category: 'Travel & Flights',
+        categorySlug: 'travel',
+        icon: '✈️',
+        bestCard: 'Axis Atlas / SBI Elite',
+        multiplier: '5X Miles + Lounge Access',
+        perkSummary: 'Complimentary domestic and international airport lounges with tier bonuses.',
+        isOwned: false,
+      },
+      {
+        category: 'Fuel Surcharge',
+        categorySlug: 'fuel',
+        icon: '⛽',
+        bestCard: 'BPCL SBI Octane / IndianOil',
+        multiplier: '1% Waiver + 7.25% Val',
+        perkSummary: 'Zero fuel surcharge across all petrol pumps plus accelerated reward points.',
+        isOwned: false,
+      },
+      {
+        category: 'Online Shopping',
+        categorySlug: 'online-shopping',
+        icon: '🛍️',
+        bestCard: 'SBI Cashback / Amazon Pay',
+        multiplier: '5% Unlimited Cashback',
+        perkSummary: 'Direct monthly statement credit on Amazon, Flipkart, Myntra, and online portals.',
+        isOwned: false,
+      },
+    ]
+  }
 
   const dashboardData: DashboardData = {
     user: {

@@ -34,6 +34,9 @@ $pro-gold-2: #D97706;
 
 .cm-home-wrapper {
   width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
   min-height: calc(100vh - 68px);
   background-color: $color-bg-light;
   color: $color-text-dark;
@@ -53,6 +56,9 @@ $pro-gold-2: #D97706;
 
 .cm-container {
   max-width: 1280px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   margin: 0 auto;
 }
 
@@ -356,7 +362,10 @@ $pro-gold-2: #D97706;
 // Dashboard Body Grid: Recommendations Widget
 .cm-dashboard-body-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   gap: 1.5rem;
   margin-bottom: 2.5rem;
 }
@@ -368,6 +377,11 @@ $pro-gold-2: #D97706;
   border-radius: 16px;
   padding: 1.75rem;
   box-shadow: 0 8px 30px rgba(17, 24, 39, 0.06);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 
   .cm-widget-header {
     display: flex;
@@ -399,6 +413,12 @@ $pro-gold-2: #D97706;
       }
     }
 
+    .cm-widget-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
     .cm-month-pill {
       font-size: 0.75rem;
       font-weight: 700;
@@ -409,31 +429,156 @@ $pro-gold-2: #D97706;
       border-radius: 9999px;
       letter-spacing: 0.04em;
     }
+
+    .cm-scroll-arrows {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+
+      .cm-scroll-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: #FFFFFF;
+        border: 1px solid rgba(108, 76, 241, 0.2);
+        color: #6C4CF1;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(108, 76, 241, 0.08);
+
+        &:hover {
+          background: #6C4CF1;
+          color: #FFFFFF;
+          border-color: #6C4CF1;
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
   }
 }
 
+// ── Frame Animations ────────────────────────────────────────────────────────
+@keyframes cmFrameGlow {
+  0%, 100% {
+    border-color: rgba(108, 76, 241, 0.22);
+    box-shadow: 0 4px 18px rgba(108, 76, 241, 0.06);
+  }
+  50% {
+    border-color: rgba(144, 101, 255, 0.5);
+    box-shadow: 0 6px 26px rgba(108, 76, 241, 0.16), 0 0 14px rgba(144, 101, 255, 0.2);
+  }
+}
+
+@keyframes cmFrameBorderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.cm-categories-scroll-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .cm-categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 1.15rem;
+  padding: 0.5rem 0.25rem 1.25rem 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(108, 76, 241, 0.45) rgba(108, 76, 241, 0.06);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(108, 76, 241, 0.06);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #6C4CF1, #9065FF);
+    border-radius: 10px;
+  }
 }
 
 .cm-category-card {
-  background: #F8FAFC;
-  border: 1px solid rgba(108, 76, 241, 0.1);
+  flex: 0 0 280px;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+  background: #FFFFFF;
+  border: 1px solid rgba(108, 76, 241, 0.22);
   border-radius: 14px;
   padding: 1.15rem;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  transition: all 0.22s ease;
   position: relative;
+  overflow: hidden;
+  animation: cmFrameGlow 4s ease-in-out infinite;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+
+  // Animated Top Neon Frame Edge
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6C4CF1, #38BDF8, #EC4899, #6C4CF1);
+    background-size: 300% 100%;
+    animation: cmFrameBorderFlow 4s linear infinite;
+    z-index: 2;
+  }
+
+  // Subtle Inner Frame Ambient Glow
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(108, 76, 241, 0.06), transparent 70%);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
 
   &:hover {
-    background: $color-surface-hover;
-    border-color: rgba(108, 76, 241, 0.35);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(108, 76, 241, 0.1);
+    background: #FFFFFF;
+    border-color: rgba(108, 76, 241, 0.6);
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(108, 76, 241, 0.2), 0 0 18px rgba(144, 101, 255, 0.16);
+
+    &::after {
+      opacity: 1;
+    }
 
     .cm-show-maths-btn {
       opacity: 1;

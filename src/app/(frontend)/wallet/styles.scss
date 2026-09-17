@@ -987,9 +987,41 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
 
 .wallet-rec-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   margin-bottom: 1.25rem;
+}
+
+.wallet-rec-scroll-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+
+  .wallet-scroll-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: #FFFFFF;
+    border: 1px solid rgba(108, 76, 241, 0.2);
+    color: #6C4CF1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(108, 76, 241, 0.08);
+
+    &:hover {
+      background: #6C4CF1;
+      color: #FFFFFF;
+      border-color: #6C4CF1;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
 }
 
 .wallet-rec-title {
@@ -1013,31 +1045,120 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   margin: 0;
 }
 
-.wallet-rec-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.85rem;
+// ── Frame Animations ────────────────────────────────────────────────────────
+@keyframes walletFrameGlow {
+  0%, 100% {
+    border-color: rgba(108, 76, 241, 0.22);
+    box-shadow: 0 4px 18px rgba(108, 76, 241, 0.06);
+  }
+  50% {
+    border-color: rgba(144, 101, 255, 0.5);
+    box-shadow: 0 6px 26px rgba(108, 76, 241, 0.16), 0 0 14px rgba(144, 101, 255, 0.2);
+  }
+}
 
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+@keyframes walletFrameBorderFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.wallet-rec-scroll-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.wallet-rec-grid {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 1.15rem;
+  padding: 0.5rem 0.25rem 1.25rem 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(108, 76, 241, 0.45) rgba(108, 76, 241, 0.06);
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(108, 76, 241, 0.06);
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #6C4CF1, #9065FF);
+    border-radius: 10px;
   }
 }
 
 .wallet-rec-card {
+  flex: 0 0 280px;
+  width: 280px;
+  min-width: 280px;
+  max-width: 280px;
+  box-sizing: border-box;
+  scroll-snap-align: start;
   background: $color-surface;
-  border: 1px solid rgba(108, 76, 241, 0.1);
-  border-radius: 12px;
-  padding: 1rem 1.1rem;
+  border: 1px solid rgba(108, 76, 241, 0.22);
+  border-radius: 14px;
+  padding: 1.15rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
+  gap: 0.6rem;
   position: relative;
+  overflow: hidden;
+  animation: walletFrameGlow 4s ease-in-out infinite;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+
+  // Animated Top Neon Frame Edge
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6C4CF1, #38BDF8, #EC4899, #6C4CF1);
+    background-size: 300% 100%;
+    animation: walletFrameBorderFlow 4s linear infinite;
+    z-index: 2;
+  }
+
+  // Subtle Inner Frame Ambient Glow
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(108, 76, 241, 0.06), transparent 70%);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
 
   &:hover {
-    border-color: rgba(108, 76, 241, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(108, 76, 241, 0.1);
+    border-color: rgba(108, 76, 241, 0.6);
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgba(108, 76, 241, 0.2), 0 0 18px rgba(144, 101, 255, 0.16);
+
+    &::after {
+      opacity: 1;
+    }
 
     .wallet-show-maths-btn {
       opacity: 1;
