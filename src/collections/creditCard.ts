@@ -256,6 +256,24 @@ export const CreditCards: CollectionConfig = {
         },
 
         {
+            name: 'defaultMonthlySpend',
+            type: 'number',
+            admin: {
+                description: 'Illustrative monthly spend (₹) for this card\'s primary category. Shown in the "Show Me the Maths" modal as the baseline spend assumption. Example: 5000 for a dining card.',
+                placeholder: 'e.g. 5000',
+            },
+        },
+
+        {
+            name: 'earningMechanism',
+            type: 'text',
+            admin: {
+                description: 'Short human-readable description of how rewards are earned with this card. Shown in the "Show Me the Maths" modal. Example: "10% cashback on Swiggy, Zomato & dining restaurants".',
+                placeholder: 'e.g. 10% cashback on Swiggy & Zomato orders',
+            },
+        },
+
+        {
             name: 'lastVerifiedAt',
             type: 'date',
         },
