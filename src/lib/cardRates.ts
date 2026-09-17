@@ -122,6 +122,52 @@ export const CATEGORY_CARD_RATES: Record<
       isCashback: false,
     },
   },
+  'Grocery & Spends': {
+    defaultMonthlySpend: 6000,
+    recommended: {
+      name: 'HSBC Live+ Credit Card',
+      bank: 'HSBC',
+      rewardPointsPer100: 0,
+      cashbackPercent: 10,
+      pointValueINR: 0,
+      annualFeeINR: 999,
+      earningMechanism: '10% accelerated cashback on dining, food delivery & grocery spends',
+      isCashback: true,
+    },
+    baseline: {
+      name: 'Standard Rewards Card',
+      bank: 'Generic',
+      rewardPointsPer100: 2,
+      cashbackPercent: 0,
+      pointValueINR: 0.25,
+      annualFeeINR: 0,
+      earningMechanism: '2X reward points on all spends',
+      isCashback: false,
+    },
+  },
+  'Utilities & Bills': {
+    defaultMonthlySpend: 3000,
+    recommended: {
+      name: 'Airtel Axis Bank Credit Card',
+      bank: 'Axis',
+      rewardPointsPer100: 0,
+      cashbackPercent: 10,
+      pointValueINR: 0,
+      annualFeeINR: 500,
+      earningMechanism: '10% cashback on utility bill payments via Airtel Thanks App + 25% on recharges',
+      isCashback: true,
+    },
+    baseline: {
+      name: 'Standard Rewards Card',
+      bank: 'Generic',
+      rewardPointsPer100: 2,
+      cashbackPercent: 0,
+      pointValueINR: 0.25,
+      annualFeeINR: 0,
+      earningMechanism: '2X reward points on all spends',
+      isCashback: false,
+    },
+  },
 }
 
 /**

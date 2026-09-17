@@ -32,6 +32,9 @@ const CATEGORY_SYNONYMS: Record<string, string[]> = {
   travel: ['travel', 'travel-and-flights', 'flights', 'flight', 'airline', 'hotel', 'hotels', 'atlas', 'miles'],
   dining: ['dining', 'dinning', 'dining-and-delivery', 'food', 'delivery', 'restaurant', 'restaurants', 'swiggy', 'zomato'],
   shopping: ['shopping', 'online-shopping', 'ecommerce', 'retail', 'marketplace', 'amazon', 'flipkart'],
+  grocery: ['grocery', 'groceries', 'supermarket', 'instamart', 'blinkit', 'zepto', 'bigbasket'],
+  utilities: ['utilities', 'utility', 'utility-bills', 'bills', 'recharge', 'electricity'],
+  entertainment: ['entertainment', 'movies', 'cinema', 'bookmyshow'],
 }
 
 function matchCategory(dbCatSlug: string, dbCatName: string, queryCat: string): boolean {

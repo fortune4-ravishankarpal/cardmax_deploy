@@ -3,6 +3,10 @@ import slugify from 'slugify'
 
 export const MerchantMaster: CollectionConfig = {
     slug: 'merchant-master',
+    labels: {
+        singular: 'Merchant',
+        plural: 'Merchants',
+    },
     admin: {
         useAsTitle: 'name',
         group: "Master"

@@ -57,7 +57,7 @@ export const enhancedSidebarConfig = payloadEnhancedSidebar({
       type: 'tab',
       icon: 'Archive',
       label: { en: 'Master' },
-      collections: ['banks', 'CreditCard', 'subscription-plans'],
+      collections: ['banks', 'CreditCard', 'category-master', 'merchant-master', 'subscription-plans'],
       access: SideBarAccessViewChecker,
     },
     {

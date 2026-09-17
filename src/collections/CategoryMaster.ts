@@ -3,6 +3,10 @@ import slugify from 'slugify'
 
 export const CategoryMaster: CollectionConfig = {
     slug: 'category-master',
+    labels: {
+        singular: 'Category',
+        plural: 'Categories',
+    },
     admin: {
         useAsTitle: 'name',
         group: "Master"

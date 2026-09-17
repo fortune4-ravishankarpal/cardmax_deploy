@@ -12,12 +12,18 @@ import './styles.scss'
 const CATEGORY_META: Record<string, { icon: string; label: string; multiplierFallback: string }> = {
   'dining-and-delivery': { icon: '🍽️', label: 'Dining & Delivery', multiplierFallback: 'Dining Rewards' },
   'dining':              { icon: '🍽️', label: 'Dining & Delivery', multiplierFallback: 'Dining Rewards' },
+  'dinning':             { icon: '🍽️', label: 'Dining & Delivery', multiplierFallback: 'Dining Rewards' },
   'travel':              { icon: '✈️', label: 'Travel & Flights',  multiplierFallback: 'Travel Miles' },
   'travel-and-flights':  { icon: '✈️', label: 'Travel & Flights',  multiplierFallback: 'Travel Miles' },
   'fuel':                { icon: '⛽', label: 'Fuel Surcharge',    multiplierFallback: 'Fuel Waiver' },
   'fuel-surcharge':      { icon: '⛽', label: 'Fuel Surcharge',    multiplierFallback: 'Fuel Waiver' },
   'shopping':            { icon: '🛍️', label: 'Online Shopping',   multiplierFallback: 'Cashback' },
   'online-shopping':     { icon: '🛍️', label: 'Online Shopping',   multiplierFallback: 'Cashback' },
+  'grocery':             { icon: '🥦', label: 'Grocery & Spends',   multiplierFallback: 'Cashback' },
+  'groceries':           { icon: '🥦', label: 'Grocery & Spends',   multiplierFallback: 'Cashback' },
+  'utilities':           { icon: '⚡', label: 'Utilities & Bills', multiplierFallback: 'Cashback' },
+  'utility-bills':       { icon: '⚡', label: 'Utilities & Bills', multiplierFallback: 'Cashback' },
+  'entertainment':       { icon: '🍿', label: 'Movies & Events',   multiplierFallback: 'BOGO Offer' },
 }
 
 function getMultiplierLabel(item: BestCardByCategoryItem): string {
