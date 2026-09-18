@@ -5,6 +5,11 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { MyCards } from '@/components/cards/my-cards'
 
+export const metadata = {
+  title: 'Secure Card Vault — CardMax',
+  description: 'Manage your encrypted credit cards safely with hardware-grade AES-256-GCM encryption.',
+}
+
 export default async function CardsPage() {
   const headers = await getHeaders()
   const payloadConfig = await config
@@ -16,8 +21,8 @@ export default async function CardsPage() {
   }
 
   return (
-    <main className="cards-page">
+    <div className="cards-page-wrapper">
       <MyCards />
-    </main>
+    </div>
   )
 }

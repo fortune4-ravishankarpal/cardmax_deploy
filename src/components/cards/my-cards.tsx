@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 
 import styles from './my-cards.module.scss'
 
@@ -256,171 +257,282 @@ export const MyCards = () => {
     }
   }
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>My Cards</h1>
-      <p className={styles.subtitle}>
-        Your card numbers are encrypted at rest and are never shown in full unless you explicitly reveal them.
-      </p>
-
-      {error && (
-        <div className={styles.error} role="alert">
-          {error}
+    <div className={styles.pageWrapper}>
+      <div className={styles.container}>
+        {/* Breadcrumb Navigation */}
+        <div className={styles.breadcrumb}>
+          <Link href="/" className={styles.backLink}>
+            <svg
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Dashboard
+          </Link>
         </div>
-      )}
-      {notice && (
-        <div className={styles.notice} role="status">
-          {notice}
-        </div>
-      )}
 
-      <section className={styles.section} aria-label="Add a card">
-        <h2 className={styles.sectionTitle}>Add a card</h2>
-        <form
-          className={styles.form}
-          onSubmit={(e) => {
-            e.preventDefault()
-            handleAdd()
-          }}
-        >
-          <label className={styles.field}>
-            <span>Card number</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              autoComplete="cc-number"
-              className={styles.input}
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              placeholder="1234 5678 9012 3456"
-              required
-            />
-          </label>
-          <label className={styles.field}>
-            <span>Cardholder name</span>
-            <input
-              type="text"
-              autoComplete="cc-name"
-              className={styles.input}
-              value={cardholderName}
-              onChange={(e) => setCardholderName(e.target.value)}
-              required
-            />
-          </label>
-          <div className={styles.row}>
-            <label className={styles.field}>
-              <span>Bank</span>
-              <select className={styles.input} value={bankId} onChange={(e) => setBankId(e.target.value)}>
-                <option value="">Not specified</option>
-                {banks.map((bank) => (
-                  <option key={bank.id} value={bank.id}>
-                    {bank.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className={styles.field}>
-              <span>Card type</span>
-              <select className={styles.input} value={cardType} onChange={(e) => setCardType(e.target.value)}>
-                <option value="">Not specified</option>
-                <option value="credit_card">Credit Card</option>
-                <option value="secured_credit_card">Secured Credit Card</option>
-                <option value="co_brand">Co-brand Credit Card</option>
-              </select>
-            </label>
+        {/* Page Header */}
+        <header className={styles.header}>
+          <div className={styles.securityBadge}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span>PCI-DSS Compliant Vault · AES-256-GCM</span>
           </div>
-          <div className={styles.row}>
-            <label className={styles.field}>
-              <span>Expiry month</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                min={1}
-                max={12}
-                className={styles.input}
-                value={expiryMonth}
-                onChange={(e) => setExpiryMonth(e.target.value)}
-                placeholder="MM"
-                required
-              />
-            </label>
-            <label className={styles.field}>
-              <span>Expiry year</span>
-              <input
-                type="number"
-                inputMode="numeric"
-                min={2000}
-                max={2199}
-                className={styles.input}
-                value={expiryYear}
-                onChange={(e) => setExpiryYear(e.target.value)}
-                placeholder="YYYY"
-                required
-              />
-            </label>
-          </div>
-          <button type="submit" className={styles.primaryButton} disabled={saving}>
-            {saving ? 'Saving…' : 'Save card'}
-          </button>
-        </form>
-      </section>
+          <h1 className={styles.title}>My Cards</h1>
+          <p className={styles.subtitle}>
+            Your card numbers are encrypted with hardware-grade AES-256-GCM at rest and are never shown in full unless you explicitly reveal them.
+          </p>
+        </header>
 
-      <section className={styles.section} aria-label="Saved cards">
-        <h2 className={styles.sectionTitle}>Saved cards</h2>
-        {loading ? (
-          <p className={styles.muted}>Loading…</p>
-        ) : cards.length === 0 ? (
-          <p className={styles.muted}>No cards saved yet.</p>
-        ) : (
-          <ul className={styles.list}>
-            {cards.map((card) => (
-              <li key={card.id} className={styles.cardItem}>
-                <div className={styles.cardMeta}>
-                  <span className={styles.cardNumber}>{card.panMasked || '•••• •••• •••• ••••'}</span>
-                  {card.nickname && <span className={styles.cardNickname}>{card.nickname}</span>}
-                  {(bankLabel(card.bank, bankNameById) || cardTypeLabel(card.cardType)) && (
-                    <span className={styles.cardBank}>
-                      {[bankLabel(card.bank, bankNameById), cardTypeLabel(card.cardType)].filter(Boolean).join(' · ')}
-                    </span>
-                  )}
-                  <span className={styles.cardDetails}>
-                    {brandLabel(card.brand)}
-                    {card.expiryMonth && card.expiryYear
-                      ? ` · Expires ${String(card.expiryMonth).padStart(2, '0')}/${card.expiryYear}`
-                      : ''}
-                  </span>
-                  {revealed?.id === card.id && (
-                    <div className={styles.revealedBox}>
-                      <p className={styles.revealedPan}>{revealed.pan}</p>
-                      <p className={styles.revealedName}>
-                        {revealed.cardholderName} · Expires{' '}
-                        {String(revealed.expiryMonth ?? '').padStart(2, '0')}/{revealed.expiryYear ?? ''}
-                      </p>
-                      <p className={styles.revealedHint}>Auto-hidden after 20 seconds. Do not share this number.</p>
-                    </div>
-                  )}
-                </div>
-                <div className={styles.cardActions}>
-                  <button
-                    type="button"
-                    className={styles.secondaryButton}
-                    onClick={() => handleReveal(card.id)}
-                    disabled={revealingId === card.id}
-                  >
-                    {revealed?.id === card.id
-                      ? 'Hide number'
-                      : revealingId === card.id
-                        ? 'Revealing…'
-                        : 'Show full number'}
-                  </button>
-                  <button type="button" className={styles.dangerButton} onClick={() => handleDelete(card.id)}>
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+        {error && (
+          <div className={styles.error} role="alert">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{error}</span>
+          </div>
         )}
-      </section>
+        {notice && (
+          <div className={styles.notice} role="status">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ flexShrink: 0 }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{notice}</span>
+          </div>
+        )}
+
+        {/* Add a Card Section */}
+        <section className={styles.section} aria-label="Add a card">
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="2" y="5" width="20" height="14" rx="2" />
+                <line x1="2" y1="10" x2="22" y2="10" />
+              </svg>
+              <span>Add a card</span>
+            </h2>
+          </div>
+          <form
+            className={styles.form}
+            onSubmit={(e) => {
+              e.preventDefault()
+              handleAdd()
+            }}
+          >
+            <label className={styles.field}>
+              <span>Card number</span>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="cc-number"
+                className={styles.input}
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                placeholder="1234 5678 9012 3456"
+                required
+              />
+            </label>
+            <label className={styles.field}>
+              <span>Cardholder name</span>
+              <input
+                type="text"
+                autoComplete="cc-name"
+                className={styles.input}
+                value={cardholderName}
+                onChange={(e) => setCardholderName(e.target.value)}
+                placeholder="e.g. JOHN DOE"
+                required
+              />
+            </label>
+            <div className={styles.row}>
+              <label className={styles.field}>
+                <span>Bank</span>
+                <select className={styles.input} value={bankId} onChange={(e) => setBankId(e.target.value)}>
+                  <option value="">Not specified</option>
+                  {banks.map((bank) => (
+                    <option key={bank.id} value={bank.id}>
+                      {bank.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className={styles.field}>
+                <span>Card type</span>
+                <select className={styles.input} value={cardType} onChange={(e) => setCardType(e.target.value)}>
+                  <option value="">Not specified</option>
+                  <option value="credit_card">Credit Card</option>
+                  <option value="secured_credit_card">Secured Credit Card</option>
+                  <option value="co_brand">Co-brand Credit Card</option>
+                </select>
+              </label>
+            </div>
+            <div className={styles.row}>
+              <label className={styles.field}>
+                <span>Expiry month</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={12}
+                  className={styles.input}
+                  value={expiryMonth}
+                  onChange={(e) => setExpiryMonth(e.target.value)}
+                  placeholder="MM"
+                  required
+                />
+              </label>
+              <label className={styles.field}>
+                <span>Expiry year</span>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={2000}
+                  max={2199}
+                  className={styles.input}
+                  value={expiryYear}
+                  onChange={(e) => setExpiryYear(e.target.value)}
+                  placeholder="YYYY"
+                  required
+                />
+              </label>
+            </div>
+            <div className={styles.formActions}>
+              <button type="submit" className={styles.primaryButton} disabled={saving}>
+                {saving ? (
+                  <>
+                    <span className={styles.spinner} style={{ width: 15, height: 15, borderWidth: 2 }} />
+                    <span>Saving…</span>
+                  </>
+                ) : (
+                  <>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Save card to vault</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </section>
+
+        {/* Saved Cards Section */}
+        <section className={styles.section} aria-label="Saved cards">
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>
+              <span>Saved cards</span>
+              <span className={styles.sectionBadge}>{cards.length}</span>
+            </h2>
+          </div>
+          {loading ? (
+            <div className={styles.loadingState}>
+              <div className={styles.spinner} />
+              <p className={styles.muted}>Loading secure vault…</p>
+            </div>
+          ) : cards.length === 0 ? (
+            <div className={styles.emptyState}>
+              <div className={styles.emptyIcon}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="2" y="5" width="20" height="14" rx="2" />
+                  <line x1="2" y1="10" x2="22" y2="10" />
+                </svg>
+              </div>
+              <p className={styles.emptyTitle}>No cards saved yet</p>
+              <p className={styles.muted}>Add your first card above to securely store and optimize your rewards.</p>
+            </div>
+          ) : (
+            <ul className={styles.list}>
+              {cards.map((card) => (
+                <li key={card.id} className={styles.cardItem}>
+                  <div className={styles.cardTopRow}>
+                    <span className={styles.cardNumber}>{card.panMasked || '•••• •••• •••• ••••'}</span>
+                    <span className={styles.brandBadge}>{brandLabel(card.brand) || 'Card'}</span>
+                  </div>
+
+                  <div className={styles.cardMeta}>
+                    {card.nickname && <span className={styles.cardNickname}>{card.nickname}</span>}
+                    {(bankLabel(card.bank, bankNameById) || cardTypeLabel(card.cardType)) && (
+                      <span className={styles.cardBank}>
+                        {[bankLabel(card.bank, bankNameById), cardTypeLabel(card.cardType)].filter(Boolean).join(' · ')}
+                      </span>
+                    )}
+                    <span className={styles.cardDetails}>
+                      {card.expiryMonth && card.expiryYear
+                        ? `Expires ${String(card.expiryMonth).padStart(2, '0')}/${card.expiryYear}`
+                        : 'No expiry stored'}
+                    </span>
+                    {revealed?.id === card.id && (
+                      <div className={styles.revealedBox}>
+                        <p className={styles.revealedPan}>{revealed.pan}</p>
+                        <p className={styles.revealedName}>
+                          {revealed.cardholderName} · Expires{' '}
+                          {String(revealed.expiryMonth ?? '').padStart(2, '0')}/{revealed.expiryYear ?? ''}
+                        </p>
+                        <p className={styles.revealedHint}>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          Auto-hidden after 20 seconds. Do not share this number.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className={styles.cardBottomRow}>
+                    <div className={styles.cardActions}>
+                      <button
+                        type="button"
+                        className={styles.secondaryButton}
+                        onClick={() => handleReveal(card.id)}
+                        disabled={revealingId === card.id}
+                      >
+                        {revealed?.id === card.id ? (
+                          <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                            </svg>
+                            <span>Hide number</span>
+                          </>
+                        ) : revealingId === card.id ? (
+                          <span>Revealing…</span>
+                        ) : (
+                          <>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <span>Show full number</span>
+                          </>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.dangerButton}
+                        onClick={() => handleDelete(card.id)}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <polyline points="3 6 5 6 21 6" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                        </svg>
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
     </div>
   )
 }
