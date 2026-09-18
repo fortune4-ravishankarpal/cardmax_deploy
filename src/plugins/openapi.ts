@@ -1,4 +1,4 @@
-import { openapi, scalar, swaggerUi } from '@seshuk/payload-plugin-openapi'
+import { openapi, swaggerUi } from '@seshuk/payload-plugin-openapi'
 import type { Plugin } from 'payload'
 
 export const openApiPluginConfigs: Plugin[] = [
@@ -11,10 +11,7 @@ export const openApiPluginConfigs: Plugin[] = [
         interactiveAuth: true,
         cache: process.env.NODE_ENV === "production",
     }),
-    scalar({
-        path: '/docs'
-    }),
     swaggerUi({
-        path: '/swagger'
+        path: '/swagger',
     })
 ]
