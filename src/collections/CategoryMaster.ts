@@ -1,8 +1,10 @@
 import type { CollectionConfig } from 'payload'
 import slugify from 'slugify'
+import { createApiAccess } from '@/access/apiPermissionEngine'
 
 export const CategoryMaster: CollectionConfig = {
     slug: 'category-master',
+    access: createApiAccess('category-master'),
     labels: {
         singular: 'Category',
         plural: 'Categories',

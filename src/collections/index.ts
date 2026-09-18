@@ -1,6 +1,7 @@
 import { Users } from './Users'
 import { Media } from './Media'
 import { AdminUsers } from './AdminUser'
+import { APIUsers } from './APIUsers'
 import { Otp } from './Otp'
 import { GmailConnection } from './GmailConnection'
 import { Statements } from './Statements'
@@ -29,6 +30,7 @@ export const collectionsConfigs = [
   Users,
   Media,
   AdminUsers,
+  APIUsers,
   Otp,
   GmailConnection,
   Statements,

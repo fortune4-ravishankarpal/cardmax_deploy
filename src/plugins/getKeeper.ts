@@ -30,6 +30,9 @@ export const gatekeeperPluginConfig = gatekeeperPlugin({
     'gmail-connections',
     'media',
     'card-audit-logs',
+    'category-master',
+    'merchant-master',
+    'api-users',
   ],
 })
 

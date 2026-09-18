@@ -3,6 +3,7 @@ import bankSeeder from './banks.seed'
 import categorySeeder from './category.seed'
 import merchantSeeder from './merchant.seed'
 import { seedAdmin } from './admin.seed'
+import { seedApiUsers } from './apiUsers.seed'
 import { seedSubscriptionPlans } from './subscriptionPlans.seed'
 import { seedDummyData } from './subscription_dummy.seed'
 
@@ -11,6 +12,7 @@ async function main() {
     const payload = await getPayloadClient()
     try {
         await seedAdmin(payload)
+        await seedApiUsers(payload)
         await bankSeeder(payload)
         await seedSubscriptionPlans(payload)
         await seedDummyData(payload)

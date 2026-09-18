@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload'
+import { hasApiPermission } from '@/access/apiPermissionEngine'
 
 export const SubscriptionPlan: CollectionConfig = {
   slug: 'subscription-plans',
@@ -8,8 +9,11 @@ export const SubscriptionPlan: CollectionConfig = {
     defaultColumns: ['name', 'dataVersion', 'providerPlanId', 'price', 'billingInterval'],
   },
   access: {
-    read: ({ req: { user } }) => {
-      if (user && user.collection === 'admin') {
+    read: ({ req }) => {
+      if (hasApiPermission(req, 'subscription-plans', 'read')) {
+        return true
+      }
+      if (req.user && req.user.collection === 'admin') {
         return true
       }
       return {
@@ -18,10 +22,10 @@ export const SubscriptionPlan: CollectionConfig = {
         }
       }
     },
-    readVersions: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
-    create: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
-    update: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
-    delete: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
+    readVersions: ({ req }) => hasApiPermission(req, 'subscription-plans', 'read'),
+    create: ({ req }) => hasApiPermission(req, 'subscription-plans', 'create'),
+    update: ({ req }) => hasApiPermission(req, 'subscription-plans', 'update'),
+    delete: ({ req }) => hasApiPermission(req, 'subscription-plans', 'delete'),
   },
   trash: true,
   versions: {

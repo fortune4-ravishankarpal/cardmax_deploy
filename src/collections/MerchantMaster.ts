@@ -1,8 +1,10 @@
 import type { CollectionConfig } from 'payload'
 import slugify from 'slugify'
+import { createApiAccess } from '@/access/apiPermissionEngine'
 
 export const MerchantMaster: CollectionConfig = {
     slug: 'merchant-master',
+    access: createApiAccess('merchant-master'),
     labels: {
         singular: 'Merchant',
         plural: 'Merchants',

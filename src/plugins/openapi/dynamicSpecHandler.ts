@@ -1,0 +1,189 @@
+import type { PayloadRequest } from 'payload'
+import { buildOpenApiDocument } from '@seshuk/payload-plugin-openapi'
+import { hasApiPermission, HTTP_METHOD_TO_OPERATION } from '@/access/apiPermissionEngine'
+
+let cachedBaseDoc: any = null
+
+const deriveServerUrl = (req: PayloadRequest): string => {
+  const host = req.headers.get('host') ?? 'localhost:3000'
+  const protocol = host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https'
+  return `${protocol}://${host}`
+}
+
+/**
+ * Generates or retrieves the cached base OpenAPI document.
+ */
+export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
+  if (cachedBaseDoc && process.env.NODE_ENV === 'production') {
+    return cachedBaseDoc
+  }
+
+  const resolvedOptions: any = {
+    metadata: {
+      title: 'CardMax API',
+      version: '1.0.0',
+      description: 'API documentation for CardMax Payload CMS',
+    },
+    openapiVersion: '3.1',
+    specEndpoint: '/openapi.json',
+    serve: true,
+    filters: {
+      include: [],
+      exclude: ['admin'], // Hide internal admin collection by default from API specs
+      includeHidden: false,
+      includeSystem: false,
+      includeCustom: true,
+      includeAuth: true,
+      includeAdminAuth: false,
+      includeVersions: false,
+      includeJobs: false,
+      excludeOperations: [],
+    },
+    interactiveAuth: { enabled: true, endpoint: '/openapi-auth' },
+    nestedTags: false,
+    cache: true,
+    extensions: [],
+  }
+
+  cachedBaseDoc = await buildOpenApiDocument({
+    payload: req.payload,
+    options: resolvedOptions,
+    language: 'en',
+  })
+
+  return cachedBaseDoc
+}
+
+/**
+ * Dynamic, authenticated OpenAPI Spec Handler.
+ * Returns a customized OpenAPI document based on the authenticated user's permissions.
+ */
+export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response> => {
+  const user = req.user as {
+    collection?: string
+    role?: string
+    status?: string
+    email?: string
+    permissions?: Array<{ collection: string; methods: string[] }>
+  } | null
+
+  // 1. Unauthenticated -> 401 Unauthorized
+  if (!user) {
+    return Response.json(
+      {
+        error: 'Unauthorized',
+        message: 'API authentication required. Please sign in with your API User credentials to view OpenAPI documentation.',
+      },
+      { status: 401 }
+    )
+  }
+
+  // 2. Suspended / Inactive User -> 403 Forbidden
+  if (user.status === 'inactive') {
+    return Response.json(
+      {
+        error: 'Forbidden',
+        message: 'Your API user account is currently inactive.',
+      },
+      { status: 403 }
+    )
+  }
+
+  // Retrieve base document
+  const baseDoc = await getBaseOpenApiDocument(req)
+  const serverUrl = deriveServerUrl(req)
+
+  // 3. Admin: Full Access to all documented endpoints
+  const isSuperAdmin = user.collection === 'admin'
+  const isApiAdminRole = user.collection === 'api-users' && user.role === 'admin'
+
+  if (isSuperAdmin || isApiAdminRole) {
+    const adminDoc = JSON.parse(JSON.stringify(baseDoc))
+    adminDoc.servers = [{ url: serverUrl }]
+    adminDoc.info = {
+      ...adminDoc.info,
+      title: 'CardMax API (Administrator View)',
+      description: `Full access view for ${user.email ?? 'Admin'}. All collections and CRUD operations enabled.`,
+    }
+    return Response.json(adminDoc)
+  }
+
+  // 4. Developer: Filter operations by user.permissions
+  if (user.collection === 'api-users' && user.role === 'developer') {
+    const filteredDoc = JSON.parse(JSON.stringify(baseDoc))
+    filteredDoc.servers = [{ url: serverUrl }]
+    filteredDoc.info = {
+      ...filteredDoc.info,
+      title: `CardMax API (Developer View: ${user.email})`,
+      description: `Custom documentation filtered to your assigned collection and method permissions.`,
+    }
+
+    const collectionSlugs = new Set(
+      req.payload.config.collections.map((c) => c.slug.toLowerCase())
+    )
+
+    const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete']
+    const paths = filteredDoc.paths || {}
+    const activeTags = new Set<string>()
+
+    for (const [pathKey, pathItem] of Object.entries(paths)) {
+      if (!pathItem || typeof pathItem !== 'object') continue
+
+      // Normalize path to find collection slug (e.g., /api/banks -> banks, /api/banks/{id} -> banks)
+      const cleanPath = pathKey.replace(/^\/api\//, '').replace(/^\//, '')
+      const firstSegment = cleanPath.split('/')[0]?.toLowerCase()
+
+      // If this path belongs to a collection:
+      if (firstSegment && collectionSlugs.has(firstSegment)) {
+        for (const method of HTTP_METHODS) {
+          if ((pathItem as any)[method]) {
+            const operation = HTTP_METHOD_TO_OPERATION[method]
+            const allowed = operation ? hasApiPermission(req, firstSegment, operation) : false
+
+            if (!allowed) {
+              delete (pathItem as any)[method]
+            } else {
+              const opTags = (pathItem as any)[method]?.tags
+              if (Array.isArray(opTags)) {
+                opTags.forEach((t: string) => activeTags.add(t))
+              }
+            }
+          }
+        }
+
+        // Check if any HTTP methods remain on this path
+        const remainingMethods = Object.keys(pathItem).filter((k) =>
+          HTTP_METHODS.includes(k)
+        )
+        if (remainingMethods.length === 0) {
+          delete paths[pathKey]
+        }
+      } else {
+        // Paths not matching a collection (e.g. auth login, openapi-auth)
+        // Keep standard auth endpoints so developers can authenticate
+        for (const method of HTTP_METHODS) {
+          const opTags = (pathItem as any)[method]?.tags
+          if (Array.isArray(opTags)) {
+            opTags.forEach((t: string) => activeTags.add(t))
+          }
+        }
+      }
+    }
+
+    // Filter tags to only include tags of active operations
+    if (Array.isArray(filteredDoc.tags)) {
+      filteredDoc.tags = filteredDoc.tags.filter((t: any) => activeTags.has(t.name))
+    }
+
+    return Response.json(filteredDoc)
+  }
+
+  // 5. Customer app users or others -> 403 Forbidden
+  return Response.json(
+    {
+      error: 'Forbidden',
+      message: 'Access restricted to API Users (Administrators and Developers).',
+    },
+    { status: 403 }
+  )
+}

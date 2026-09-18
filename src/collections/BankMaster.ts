@@ -1,6 +1,7 @@
 import { CollectionConfig } from 'payload'
 import { FieldHook } from 'payload'
 import slugify from 'slugify'
+import { createApiAccess } from '@/access/apiPermissionEngine'
 export const generateSlugHook: FieldHook = ({ value, data }) => {
     if (value) return slugify(value.trim()) || ''
     if (data?.name) {
@@ -13,6 +14,7 @@ export const generateSlugHook: FieldHook = ({ value, data }) => {
 }
 export const Banks: CollectionConfig = {
     slug: 'banks',
+    access: createApiAccess('banks'),
     admin: {
         useAsTitle: 'name',
         defaultColumns: ['name', 'dataVersion', 'code', 'status', 'country'],

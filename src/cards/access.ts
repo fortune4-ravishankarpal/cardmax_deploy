@@ -1,6 +1,7 @@
 import type { Access, AccessArgs } from 'payload'
 
 import { checkIsAdmin, checkIsSuperAdmin } from '@/access/isAdmin'
+import { hasApiPermission } from '@/access/apiPermissionEngine'
 import type { Admin } from '@/payload-types'
 
 /**
@@ -52,31 +53,37 @@ const isAdminCollectionUser = (user: unknown): boolean =>
 const isUsersCollectionUser = (user: unknown): boolean =>
   Boolean(user && (user as { collection?: string }).collection === 'users')
 
-/** Collection-level read: owning users see only their cards; admins see all (masked. */
+/** Collection-level read: API users check permissions; owning users see only their cards; admins see all */
 export const cardsReadAccess: Access = ({ req }) => {
   const user = req.user
   if (!user) return false
+  if (hasApiPermission(req, 'cards', 'read')) return true
   if (isAdminCollectionUser(user)) return true
   if (isUsersCollectionUser(user)) return { user: { equals: (user as { id: string }).id } }
   return false
 }
 
-/** Creation is server-side only (via the authenticated `/add` endpoint). */
-export const cardsCreateAccess: Access = () => false
+/** Creation: API users with 'create' permission or server-side internal */
+export const cardsCreateAccess: Access = ({ req }) => {
+  if (hasApiPermission(req, 'cards', 'create')) return true
+  return false
+}
 
-/** Update: owning user or any admin. */
+/** Update: API users with 'update' permission, owning user, or any admin */
 export const cardsUpdateAccess: Access = ({ req }) => {
   const user = req.user
   if (!user) return false
+  if (hasApiPermission(req, 'cards', 'update')) return true
   if (isAdminCollectionUser(user)) return true
   if (isUsersCollectionUser(user)) return { user: { equals: (user as { id: string }).id } }
   return false
 }
 
-/** Delete: owning user or any admin. */
+/** Delete: API users with 'delete' permission, owning user, or any admin */
 export const cardsDeleteAccess: Access = ({ req }) => {
   const user = req.user
   if (!user) return false
+  if (hasApiPermission(req, 'cards', 'delete')) return true
   if (isAdminCollectionUser(user)) return true
   if (isUsersCollectionUser(user)) return { user: { equals: (user as { id: string }).id } }
   return false
