@@ -108,11 +108,11 @@ export const Footer: React.FC = () => {
                   Swagger
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href={docsUrl} target="_blank" rel="noopener noreferrer">
                   Docs
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
