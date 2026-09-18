@@ -250,6 +250,10 @@ export default function WalletPage() {
               const cardName = cardObj?.name || card.cardName || 'Credit Card'
               const displayName = card.displayName || null
               const dueDay = card.paymentDueDay ?? card.billingCycleDay ?? null
+              const physical =
+                typeof card.physicalCard === 'object' && card.physicalCard
+                  ? card.physicalCard
+                  : null
 
               return (
                 <article key={card.id} className={`wallet-card ${!isActive ? 'inactive' : ''}`}>
@@ -263,6 +267,36 @@ export default function WalletPage() {
                       {isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
+
+                  {physical && physical.panMasked && (
+                    <div className="card-vault-badge">
+                      <div className="vault-pan-wrap">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          aria-hidden="true"
+                        >
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <span className="vault-pan">{physical.panMasked}</span>
+                      </div>
+                      <div className="vault-meta">
+                        {physical.expiryMonth && physical.expiryYear && (
+                          <span className="vault-exp">
+                            Exp {String(physical.expiryMonth).padStart(2, '0')}/{String(physical.expiryYear).slice(-2)}
+                          </span>
+                        )}
+                        {physical.brand && (
+                          <span className="vault-brand">{physical.brand.toUpperCase()}</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="card-details-grid">
                     {card.creditLimit != null && (

@@ -60,6 +60,27 @@ export const UserCard: CollectionConfig = {
       }
     },
     {
+      name: 'physicalCard',
+      type: 'relationship',
+      relationTo: 'cards',
+      required: false,
+      hasMany: false,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Optional link to the securely encrypted physical card vault entry (stores masked PAN, expiry, and encrypted cardholder data).',
+      },
+      filterOptions: ({ user }) => {
+        if (!user) return false
+        if (user.collection === 'admin') return true
+        return {
+          user: {
+            equals: user.id,
+          },
+        }
+      },
+    },
+    {
       name: 'displayName',
       type: 'text',
       admin: {

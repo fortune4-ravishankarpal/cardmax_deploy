@@ -28,6 +28,14 @@ export interface WalletCardItem {
   statementDay?: number | null
   paymentDueDay?: number | null
   billingCycleDay?: number | null
+  physicalCard?: {
+    id?: string
+    panMasked?: string | null
+    panLast4?: string | null
+    brand?: string | null
+    expiryMonth?: number | null
+    expiryYear?: number | null
+  } | string | null
 }
 
 interface EditCardModalProps {
@@ -242,6 +250,41 @@ export default function EditCardModal({
               </select>
             </div>
           </div>
+
+          {typeof card?.physicalCard === 'object' && card.physicalCard?.panMasked && (
+            <div className="linked-vault-banner">
+              <div className="vault-banner-left">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <span className="vault-banner-pan">
+                  Vault Card: <strong>{card.physicalCard.panMasked}</strong>
+                </span>
+              </div>
+              <div className="vault-banner-right">
+                {card.physicalCard.expiryMonth && card.physicalCard.expiryYear && (
+                  <span className="vault-banner-exp">
+                    Exp {String(card.physicalCard.expiryMonth).padStart(2, '0')}/
+                    {String(card.physicalCard.expiryYear).slice(-2)}
+                  </span>
+                )}
+                {card.physicalCard.brand && (
+                  <span className="vault-banner-brand">
+                    {card.physicalCard.brand.toUpperCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Section 1: Nickname */}
           <div className="form-group">
