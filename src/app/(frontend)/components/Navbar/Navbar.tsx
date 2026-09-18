@@ -88,7 +88,7 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
     }
   }
 
-  const navLinks = [
+  const navLinks: Array<{ label: string; href: string; isProHighlight?: boolean }> = [
     { label: 'Dashboard', href: '/' },
     { label: 'Wallet', href: '/wallet' },
     { label: 'Profile', href: '/profile' },
