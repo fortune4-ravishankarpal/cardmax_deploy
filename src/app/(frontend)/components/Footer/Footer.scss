@@ -31,18 +31,25 @@ $footer-accent: #6c4cf1;
 // Main Grid Layout
 .cm-footer__grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 3rem;
   margin-bottom: 3rem;
 
   @media (max-width: 1024px) {
-    grid-template-columns: 1.5fr 1fr 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 2rem;
+    .cm-footer__brand-col {
+      grid-column: span 2;
+    }
   }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     gap: 2rem;
+
+    .cm-footer__brand-col {
+      grid-column: span 1; // resets the span-2 from tablet breakpoint
+    }
   }
 }
 

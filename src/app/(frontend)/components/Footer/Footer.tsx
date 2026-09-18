@@ -14,6 +14,8 @@ const HIDDEN_ROUTES = [
 
 export const Footer: React.FC = () => {
   const pathname = usePathname()
+  const swaggerUrl = process.env.NEXT_PUBLIC_SWAGGER_URL || '/api/swagger'
+  const docsUrl = process.env.NEXT_PUBLIC_API_DOCS_URL || '/api/docs'
 
   const shouldHide = HIDDEN_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(route + '/')
@@ -96,6 +98,24 @@ export const Footer: React.FC = () => {
               </li>
             </ul>
           </div>
+
+          {/* API Docs */}
+          <div className="cm-footer__col">
+            <h4>API Docs</h4>
+            <ul className="cm-footer__links">
+              <li>
+                <Link href={swaggerUrl} target="_blank" rel="noopener noreferrer">
+                  Swagger
+                </Link>
+              </li>
+              <li>
+                <Link href={docsUrl} target="_blank" rel="noopener noreferrer">
+                  Docs
+                </Link>
+              </li>
+            </ul>
+          </div>
+
         </div>
 
         {/* Bottom Bar */}
