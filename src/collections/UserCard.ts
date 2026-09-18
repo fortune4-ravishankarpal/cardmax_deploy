@@ -243,34 +243,49 @@ export const UserCard: CollectionConfig = {
           return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        const pathSegments = (req.url || '').split('?')[0].split('/')
-        const id = pathSegments[pathSegments.length - 2] // The :id from /:id/deactivate
+        const pathSegments = (req.url || '').split('?')[0].replace(/\/+$/, '').split('/')
+        const id = (req.routeParams?.id as string) || pathSegments[pathSegments.length - 2]
+
+        if (!id) {
+          return Response.json({ error: 'Card ID required' }, { status: 400 })
+        }
 
         try {
           // Check ownership
           const card = await req.payload.findByID({
             collection: 'user-cards',
             id,
+            depth: 0,
+            overrideAccess: true,
           })
 
-          if (!card || (card.user as any) !== req.user.id) { // Depending on depth, card.user could be an object, but checking ID is safer
-             // A proper check would ensure we don't leak existence, just returning 404
-             return Response.json({ error: 'Not found' }, { status: 404 })
+          if (!card) {
+            return Response.json({ error: 'Not found' }, { status: 404 })
+          }
+
+          const cardUserId =
+            typeof card.user === 'object' && card.user !== null
+              ? (card.user as { id: string }).id
+              : String(card.user ?? '')
+
+          if (cardUserId !== req.user.id) {
+            return Response.json({ error: 'Not found' }, { status: 404 })
           }
 
           const updated = await req.payload.update({
             collection: 'user-cards',
             id,
             data: {
-              status: 'deactivated'
-            }
+              status: 'deactivated',
+            },
+            overrideAccess: true,
           })
 
           return Response.json({ success: true, card: updated })
-        } catch(e) {
+        } catch (e) {
           return Response.json({ error: 'Internal Server Error' }, { status: 500 })
         }
-      }
-    }
+      },
+    },
   ]
 }
