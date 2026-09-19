@@ -12,6 +12,7 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "predev": "pnpm generate:importmap && pnpm generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
+    "gen": "pnpm generate:importmap && pnpm generate:types",
     "seed:one": "tsx -r dotenv/config scripts/seed-one.ts",
     "sync:plugin": "node scripts/sync-plugin.js",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",

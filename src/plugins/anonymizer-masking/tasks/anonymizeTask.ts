@@ -125,7 +125,7 @@ export const createAnonymizeTask = (
                     collection: 'anonymization-logs',
                     data: {
                         anonymousId,
-                        request: requestId,
+                        request: requestId as any,
                         startedAt,
                         status: 'started',
                         totalCollections: Object.keys(configuredCollections).length,
@@ -163,8 +163,8 @@ export const createAnonymizeTask = (
                             fields.map((fieldName) => {
                                 const fieldValue = collectionDocument[fieldName as keyof typeof collectionDocument]
                                 // If field is a populated relationship object, extract just the ID
-                                if (fieldValue && typeof fieldValue === 'object' && 'id' in fieldValue) {
-                                    return [fieldName, fieldValue.id]
+                                if (fieldValue && typeof fieldValue === 'object' && 'id' in (fieldValue as Record<string, unknown>)) {
+                                    return [fieldName, (fieldValue as Record<string, unknown>).id]
                                 }
                                 return [fieldName, fieldValue]
                             }),
@@ -209,7 +209,6 @@ export const createAnonymizeTask = (
                             collections: maskedFields,
                             records: processedRecords,
                         },
-                        internal: true,
                     },
                     overrideAccess: true,
                     req: transactionReq,
@@ -307,7 +306,7 @@ export const createAnonymizeTask = (
                         collection: 'anonymization-logs',
                         data: {
                             anonymousId,
-                            request: requestId,
+                            request: requestId as any,
                             startedAt: new Date(startedAtMs).toISOString(),
                             status: 'failed',
                             durationMs,

@@ -234,7 +234,7 @@ export const createCard = async (
       nickname: normalized.nickname,
       bank: normalized.bank,
       cardType: normalized.cardType,
-      brand: normalized.brand,
+      brand: normalized.brand as any,
       expiryMonth: normalized.expiryMonth!,
       expiryYear: normalized.expiryYear!,
       panLast4: normalized.last4,
