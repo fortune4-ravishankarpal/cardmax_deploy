@@ -73,7 +73,28 @@ export const env = createEnv({
     SALES_EMAIL: z.string().min(1),
 
     CMS_SEED_ADMIN_EMAIL: z.email().min(1),
-    CMS_SEED_ADMIN_PASSWORD: z.string().min(4)
+    CMS_SEED_ADMIN_PASSWORD: z.string().min(4),
+
+    // Notifications
+    NOTIFICATION_MODE: z.enum(['simulation', 'live']).default('simulation'),
+    EMAIL_PROVIDER: z.enum(['smtp', 'resend', 'mock']).default('smtp'),
+    RESEND_API_KEY: z.string().min(1).optional(),
+
+    // FCM (Firebase Cloud Messaging) – Android push
+    FCM_PROJECT_ID: z.string().min(1).optional(),
+    FCM_CLIENT_EMAIL: z.string().min(1).optional(),
+    FCM_PRIVATE_KEY: z.string().min(1).optional(),
+
+    // APNs (Apple Push Notification service) – iOS push
+    APNS_KEY_ID: z.string().min(1).optional(),
+    APNS_TEAM_ID: z.string().min(1).optional(),
+    APNS_KEY: z.string().min(1).optional(),
+    APNS_TOPIC: z.string().min(1).optional(),
+
+    // DKIM email signing
+    DKIM_DOMAIN: z.string().min(1).optional(),
+    DKIM_KEY_SELECTOR: z.string().min(1).optional(),
+    DKIM_PRIVATE_KEY: z.string().min(1).optional(),
   },
 
   client: {
@@ -151,6 +172,27 @@ export const env = createEnv({
 
     CMS_SEED_ADMIN_EMAIL: process.env.CMS_SEED_ADMIN_EMAIL,
     CMS_SEED_ADMIN_PASSWORD: process.env.CMS_SEED_ADMIN_PASSWORD,
+
+    // Notifications
+    NOTIFICATION_MODE: process.env.NOTIFICATION_MODE,
+    EMAIL_PROVIDER: process.env.EMAIL_PROVIDER,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+
+    // FCM
+    FCM_PROJECT_ID: process.env.FCM_PROJECT_ID,
+    FCM_CLIENT_EMAIL: process.env.FCM_CLIENT_EMAIL,
+    FCM_PRIVATE_KEY: process.env.FCM_PRIVATE_KEY,
+
+    // APNs
+    APNS_KEY_ID: process.env.APNS_KEY_ID,
+    APNS_TEAM_ID: process.env.APNS_TEAM_ID,
+    APNS_KEY: process.env.APNS_KEY,
+    APNS_TOPIC: process.env.APNS_TOPIC,
+
+    // DKIM
+    DKIM_DOMAIN: process.env.DKIM_DOMAIN,
+    DKIM_KEY_SELECTOR: process.env.DKIM_KEY_SELECTOR,
+    DKIM_PRIVATE_KEY: process.env.DKIM_PRIVATE_KEY,
   },
 
   emptyStringAsUndefined: true,

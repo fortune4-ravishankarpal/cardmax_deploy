@@ -37,6 +37,40 @@ export const UserGoal: CollectionConfig = {
         };
     },
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, req, operation }) => {
+        if (operation === 'create') return
+        if (previousDoc?.status === 'achieved' || doc.status !== 'achieved') return
+        if ((req.context as any)?.skipNotificationHook) return
+
+        try {
+          const userId = typeof doc.user === 'string' ? doc.user : (doc.user as any)?.id
+          if (!userId) return
+
+          const isFeeWaiver = doc.type === 'fee_waiver'
+          const eventType = isFeeWaiver ? 'FEE_WAIVER_ACHIEVED' : 'MILESTONE_ACHIEVED'
+
+          const { NotificationService } = await import('../notifications/service')
+          await NotificationService.publishEvent(
+            {
+              eventId: `${eventType}_${doc.id}_${Date.now()}`,
+              eventType,
+              userId,
+              data: {
+                goalId: doc.id,
+                goalType: doc.type,
+                targetAmount: doc.targetAmount,
+              },
+            },
+            req.payload,
+          )
+        } catch (e) {
+          req.payload.logger.error({ err: e }, 'Failed to publish goal achievement notification')
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: 'user',

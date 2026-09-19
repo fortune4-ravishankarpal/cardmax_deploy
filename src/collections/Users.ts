@@ -128,12 +128,14 @@ export const Users: CollectionConfig = {
             await req.payload.delete({ collection, where: { user: { equals: id } }, req })
           }
 
-          // 3. Main collections
+          // 3. Main collections (includes new notification-related collections)
           const mainCollectionsToCascade = [
             'analytics-events',
+            'card-applications',
             'cards',
             'consents',
             'consent-events',
+            'device-tokens',
             'gmail-connections',
             'max-pro-events',
             'notifications',
@@ -148,6 +150,29 @@ export const Users: CollectionConfig = {
         } catch (error) {
           req.payload.logger.error({ msg: `Failed to cascade delete for user ${id}`, error })
           throw error
+        }
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, req, operation }) => {
+        // Fire ONBOARDING_COMPLETED on genuine profileCompleted transition
+        if (operation === 'create') return
+        if (previousDoc?.profileCompleted === true || doc.profileCompleted !== true) return
+        if ((req.context as any)?.skipNotificationHook) return
+
+        try {
+          const { NotificationService } = await import('../notifications/service')
+          await NotificationService.publishEvent(
+            {
+              eventId: `ONBOARDING_COMPLETED_${doc.id}_${Date.now()}`,
+              eventType: 'ONBOARDING_COMPLETED',
+              userId: String(doc.id),
+              data: { name: doc.name || doc.firstName || doc.email },
+            },
+            req.payload,
+          )
+        } catch (e) {
+          req.payload.logger.error({ err: e }, 'Failed to publish ONBOARDING_COMPLETED')
         }
       },
     ],
@@ -400,6 +425,87 @@ export const Users: CollectionConfig = {
         create: () => false,
         update: () => false,
       },
+    },
+    // ── Notification Preferences ─────────────────────────────────────────
+    {
+      name: 'notificationPreferences',
+      type: 'group',
+      label: 'Notification Preferences',
+      admin: {
+        description: 'Control which notifications this user receives and via which channels.',
+      },
+      fields: [
+        // Master channel switches
+        {
+          name: 'pushEnabled',
+          type: 'checkbox',
+          label: 'Enable Push Notifications',
+          defaultValue: true,
+          admin: { description: 'Master toggle for all push notifications (FCM / APNs).' },
+        },
+        {
+          name: 'emailEnabled',
+          type: 'checkbox',
+          label: 'Enable Email Notifications',
+          defaultValue: true,
+          admin: { description: 'Master toggle for all email notifications.' },
+        },
+        // Per-topic toggles
+        {
+          name: 'analysisResults',
+          type: 'checkbox',
+          label: 'Statement Analysis Results',
+          defaultValue: true,
+        },
+        {
+          name: 'devaluationAlerts',
+          type: 'checkbox',
+          label: 'Card Devaluation Alerts',
+          defaultValue: true,
+        },
+        {
+          name: 'milestoneAlerts',
+          type: 'checkbox',
+          label: 'Milestone & Reward Alerts',
+          defaultValue: true,
+        },
+        {
+          name: 'feeWaiverAlerts',
+          type: 'checkbox',
+          label: 'Fee Waiver Alerts',
+          defaultValue: true,
+        },
+        {
+          name: 'eligibilityAlerts',
+          type: 'checkbox',
+          label: 'Trial Eligibility Alerts',
+          defaultValue: true,
+        },
+        {
+          name: 'applicationUpdates',
+          type: 'checkbox',
+          label: 'Card Application Updates',
+          defaultValue: true,
+        },
+        {
+          name: 'monthlySummaryEmails',
+          type: 'checkbox',
+          label: 'Monthly Summary Emails',
+          defaultValue: true,
+        },
+        {
+          name: 'paymentUpdates',
+          type: 'checkbox',
+          label: 'Payment Updates',
+          defaultValue: true,
+        },
+        {
+          name: 'subscriptionUpdates',
+          type: 'checkbox',
+          label: 'Subscription Updates',
+          defaultValue: true,
+        },
+      ],
     },
   ],
   endpoints: [

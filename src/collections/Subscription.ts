@@ -46,7 +46,56 @@ export const Subscription: CollectionConfig = {
           throw error;
         }
       }
-    ]
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, req, operation }) => {
+        if (operation === 'create') return
+        if ((req.context as any)?.skipNotificationHook) return
+
+        const prevStatus = previousDoc?.status
+        const newStatus = doc.status
+        if (prevStatus === newStatus) return
+
+        try {
+          const userId = typeof doc.user === 'string' ? doc.user : (doc.user as any)?.id
+          if (!userId) return
+
+          const { NotificationService } = await import('../notifications/service')
+          let eventType: string | null = null
+
+          // active: first activation = STARTED, re-activation = RENEWED
+          if (newStatus === 'active') {
+            eventType = (!prevStatus || prevStatus === 'pending' || prevStatus === 'created')
+              ? 'SUBSCRIPTION_STARTED'
+              : 'SUBSCRIPTION_RENEWED'
+          } else if (newStatus === 'past_due') {
+            eventType = 'SUBSCRIPTION_EXPIRING'
+          } else if (newStatus === 'canceled') {
+            // Note: DB value uses single 'l' (Razorpay convention)
+            eventType = 'SUBSCRIPTION_CANCELLED'
+          }
+
+          if (!eventType) return
+
+          await NotificationService.publishEvent(
+            {
+              eventId: `${eventType}_${doc.id}_${Date.now()}`,
+              eventType: eventType as any,
+              userId,
+              data: {
+                subscriptionId: doc.id,
+                previousStatus: prevStatus,
+                newStatus,
+                currentPeriodEnd: doc.currentPeriodEnd,
+              },
+            },
+            req.payload,
+          )
+        } catch (e) {
+          req.payload.logger.error({ err: e }, 'Failed to publish subscription notification')
+        }
+      },
+    ],
   },
   fields: [
     {

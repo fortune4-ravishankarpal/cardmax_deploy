@@ -22,6 +22,34 @@ export const TrialEligibility: CollectionConfig = {
     update: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
     delete: ({ req: { user } }) => Boolean(user && user.collection === 'admin'),
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, req, operation }) => {
+        // Fire when trialUsed transitions false → true (trial granted)
+        if (operation === 'create') return
+        if (previousDoc?.trialUsed === true || doc.trialUsed !== true) return
+        if ((req.context as any)?.skipNotificationHook) return
+
+        try {
+          const userId = typeof doc.user === 'string' ? doc.user : (doc.user as any)?.id
+          if (!userId) return
+
+          const { NotificationService } = await import('../notifications/service')
+          await NotificationService.publishEvent(
+            {
+              eventId: `ELIGIBILITY_GRANTED_${doc.id}_${Date.now()}`,
+              eventType: 'ELIGIBILITY_GRANTED',
+              userId,
+              data: { trialUsedAt: doc.trialUsedAt },
+            },
+            req.payload,
+          )
+        } catch (e) {
+          req.payload.logger.error({ err: e }, 'Failed to publish ELIGIBILITY_GRANTED')
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: 'user',

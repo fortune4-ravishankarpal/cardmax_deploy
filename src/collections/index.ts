@@ -25,6 +25,9 @@ import { Cards } from './Card'
 import { CardAuditLogs } from './CardAuditLog'
 import { CategoryMaster } from './CategoryMaster'
 import { MerchantMaster } from './MerchantMaster'
+import { DeviceTokens } from './DeviceTokens'
+import { NotificationTemplates } from './NotificationTemplates'
+import { CardApplication } from './CardApplication'
 
 export const collectionsConfigs = [
   Users,
@@ -54,4 +57,8 @@ export const collectionsConfigs = [
   CardAuditLogs,
   CategoryMaster,
   MerchantMaster,
+  // Notification system (8.18 & 8.19)
+  DeviceTokens,
+  NotificationTemplates,
+  CardApplication,
 ]

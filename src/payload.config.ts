@@ -15,6 +15,8 @@ import { expireSubscriptionsTask } from './jobs/tasks/expireSubscriptions'
 import { reconcileSubscriptionsTask } from './jobs/tasks/reconcileSubscriptions'
 import { sendNotificationTask } from './jobs/tasks/sendNotification'
 import { fanoutDevaluationTask } from './jobs/tasks/fanoutDevaluation'
+import { applicationFollowupTask } from './jobs/tasks/applicationFollowup'
+import { monthlySummaryTask } from './jobs/tasks/monthlySummary'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -40,7 +42,9 @@ export default buildConfig({
       expireSubscriptionsTask,
       reconcileSubscriptionsTask,
       sendNotificationTask,
-      fanoutDevaluationTask
+      fanoutDevaluationTask,
+      applicationFollowupTask,
+      monthlySummaryTask,
     ]
   },
   db: postgresAdapter({

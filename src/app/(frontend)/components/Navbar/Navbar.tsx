@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import './Navbar.scss'
+import { NotificationBell } from '../NotificationBell/NotificationBell'
 
 export interface NavbarUser {
   id: string
@@ -88,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
     }
   }
 
-  const navLinks = [
+  const navLinks: Array<{ label: string; href: string; isProHighlight?: boolean }> = [
     { label: 'Dashboard', href: '/' },
     { label: 'Wallet', href: '/wallet' },
     { label: 'Profile', href: '/profile' },
@@ -138,6 +139,9 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
 
         {/* Actions (Right) */}
         <div className="cm-navbar__actions">
+          {user && (
+            <NotificationBell userId={user.id} />
+          )}
           {user ? (
             <div className="cm-profile-dropdown" ref={dropdownRef}>
               <button

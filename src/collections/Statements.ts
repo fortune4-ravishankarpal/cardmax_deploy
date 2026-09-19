@@ -46,6 +46,39 @@ export const Statements: CollectionConfig = {
       }
     },
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, req, operation }) => {
+        // Only fire on genuine parsed transition, not on create or re-save
+        if (operation === 'create') return
+        if (previousDoc?.status === 'parsed' || doc.status !== 'parsed') return
+        if ((req.context as any)?.skipNotificationHook) return
+
+        try {
+          const userId = typeof doc.user === 'string' ? doc.user : (doc.user as any)?.id
+          if (!userId) return
+
+          const { NotificationService } = await import('../notifications/service')
+          await NotificationService.publishEvent(
+            {
+              eventId: `ANALYSIS_COMPLETED_${doc.id}_${Date.now()}`,
+              eventType: 'ANALYSIS_COMPLETED',
+              userId,
+              data: {
+                statementId: doc.id,
+                issuer: doc.issuer,
+                periodStart: doc.periodStart,
+                periodEnd: doc.periodEnd,
+              },
+            },
+            req.payload,
+          )
+        } catch (e) {
+          req.payload.logger.error({ err: e }, 'Failed to publish ANALYSIS_COMPLETED')
+        }
+      },
+    ],
+  },
   fields: [
     {
       name: 'user',

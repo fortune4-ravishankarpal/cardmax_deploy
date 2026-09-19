@@ -1,0 +1,421 @@
+// notifications.scss
+// CardMax Notification Centre — premium dark-mode page
+
+@use 'sass:color';
+
+// ─── Variables ────────────────────────────────────────────────────────────────
+$accent: #6c63ff;
+$accent-light: #a29bfe;
+$surface: rgba(15, 15, 25, 0.85);
+$surface-card: rgba(22, 22, 38, 0.9);
+$surface-border: rgba(255, 255, 255, 0.07);
+$text-primary: #f0f0f5;
+$text-secondary: rgba(240, 240, 245, 0.55);
+$unread-bg: rgba(108, 99, 255, 0.07);
+$unread-border: rgba(108, 99, 255, 0.25);
+$danger: #ff4757;
+$success: #2ed573;
+$radius-lg: 20px;
+$radius-md: 12px;
+$radius-sm: 8px;
+
+// ─── Animations ───────────────────────────────────────────────────────────────
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+// ─── Page wrapper ─────────────────────────────────────────────────────────────
+.cm-notifications-page {
+  min-height: calc(100vh - 80px);
+  padding: 32px 16px 64px;
+  background: linear-gradient(160deg, #0a0a18 0%, #0f0f24 50%, #0a0a18 100%);
+  animation: fadeInUp 0.4s ease both;
+}
+
+.cm-notifications-container {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+.cm-notifications-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+
+  &__left {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+.cm-notifications-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $text-secondary;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: $radius-sm;
+  border: 1px solid $surface-border;
+  margin-top: 4px;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: rgba($accent, 0.1);
+    color: $text-primary;
+    border-color: rgba($accent, 0.3);
+  }
+}
+
+.cm-notifications-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: $text-primary;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.02em;
+}
+
+.cm-notifications-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  background: rgba($accent, 0.15);
+  color: $accent-light;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba($accent, 0.25);
+}
+
+.cm-notifications-subtitle {
+  font-size: 14px;
+  color: $text-secondary;
+  margin: 0;
+}
+
+.cm-notifications-mark-all {
+  flex-shrink: 0;
+  padding: 10px 18px;
+  background: rgba($accent, 0.12);
+  border: 1px solid rgba($accent, 0.25);
+  border-radius: $radius-sm;
+  color: $accent-light;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($accent, 0.22);
+    border-color: rgba($accent, 0.45);
+    color: #fff;
+  }
+}
+
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
+.cm-notifications-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid $surface-border;
+  border-radius: $radius-md;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.cm-notifications-tab {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: $text-secondary;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba($accent, 0.08);
+    color: $text-primary;
+  }
+
+  &.is-active {
+    background: rgba($accent, 0.16);
+    color: $accent-light;
+    font-weight: 600;
+  }
+}
+
+// ─── Notification list ────────────────────────────────────────────────────────
+.cm-notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// ─── Loading & Empty states ───────────────────────────────────────────────────
+.cm-notifications-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 16px;
+  color: $text-secondary;
+  font-size: 14px;
+}
+
+.cm-notifications-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba($accent, 0.15);
+  border-top-color: $accent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.cm-notifications-empty {
+  text-align: center;
+  padding: 80px 20px;
+
+  &__icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    filter: grayscale(0.4);
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+// ─── Notification row ─────────────────────────────────────────────────────────
+.cm-notif-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  background: $surface-card;
+  border: 1px solid $surface-border;
+  border-radius: $radius-md;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  animation: rowIn 0.25s ease both;
+
+  &:hover {
+    border-color: rgba($accent, 0.2);
+    background: rgba(22, 22, 40, 0.95);
+    transform: translateX(2px);
+
+    .cm-notif-row__actions {
+      opacity: 1;
+    }
+  }
+
+  &.is-unread {
+    background: $unread-bg;
+    border-color: $unread-border;
+
+    .cm-notif-row__title {
+      font-weight: 700;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: $accent;
+      border-radius: 0 2px 2px 0;
+    }
+  }
+
+  position: relative;
+  overflow: hidden;
+}
+
+.cm-notif-row__icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.cm-notif-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cm-notif-row__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+}
+
+.cm-notif-row__title {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-primary;
+}
+
+.cm-notif-row__badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  background: rgba($accent, 0.1);
+  border: 1px solid rgba($accent, 0.2);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: $accent-light;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cm-notif-row__message {
+  font-size: 13px;
+  color: $text-secondary;
+  margin: 0 0 6px;
+  line-height: 1.55;
+}
+
+.cm-notif-row__time {
+  font-size: 11px;
+  color: rgba($text-secondary, 0.65);
+}
+
+.cm-notif-row__actions {
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.cm-notif-row__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid $surface-border;
+  background: none;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  color: $text-secondary;
+
+  &--read {
+    &:hover {
+      background: rgba($success, 0.1);
+      border-color: rgba($success, 0.3);
+      color: $success;
+    }
+  }
+
+  &--delete {
+    &:hover {
+      background: rgba($danger, 0.1);
+      border-color: rgba($danger, 0.3);
+      color: $danger;
+    }
+  }
+}
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+.cm-notifications-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.cm-notif-page-btn {
+  padding: 10px 20px;
+  border-radius: $radius-sm;
+  border: 1px solid $surface-border;
+  background: rgba(255, 255, 255, 0.04);
+  color: $text-primary;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+
+  &:hover:not(:disabled) {
+    background: rgba($accent, 0.1);
+    border-color: rgba($accent, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+.cm-notif-page-info {
+  font-size: 13px;
+  color: $text-secondary;
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .cm-notifications-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    &__left {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+
+  .cm-notifications-mark-all {
+    width: 100%;
+    text-align: center;
+  }
+
+  .cm-notif-row__actions {
+    opacity: 1;
+  }
+}
