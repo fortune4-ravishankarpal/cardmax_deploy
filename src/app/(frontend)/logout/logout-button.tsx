@@ -17,7 +17,7 @@ export const LogoutButton = () => {
         setLoggingOut(false)
         return
       }
-      window.location.href = '/login'
+      window.location.href = '/'
     } catch {
       setError('Network error. Please try again.')
       setLoggingOut(false)

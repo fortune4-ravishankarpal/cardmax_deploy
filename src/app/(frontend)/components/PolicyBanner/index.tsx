@@ -2,10 +2,14 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import './styles.scss'
 import { CURRENT_TOS_VERSION, CURRENT_PRIVACY_VERSION } from '@/lib/consentVersions'
 
+const HIDDEN_ROUTES = ['/login', '/logout', '/consent-onboarding', '/complete-profile']
+
 export const PolicyBanner: React.FC = () => {
+  const pathname = usePathname()
   const [showBanner, setShowBanner] = useState(false)
   const [acknowledging, setAcknowledging] = useState(false)
 
@@ -56,7 +60,11 @@ export const PolicyBanner: React.FC = () => {
     setShowBanner(false)
   }
 
-  if (!showBanner) return null
+  const shouldHide = HIDDEN_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  )
+
+  if (!showBanner || shouldHide) return null
 
   return (
     <div className="policy-update-banner" role="region" aria-label="Policy Update Notice">

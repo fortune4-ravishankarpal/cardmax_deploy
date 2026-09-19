@@ -39,6 +39,33 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
     }
   }, [initialUser])
 
+  // Synchronize auth state on route changes (ensures clean guest/auth transitions)
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/users/me', { credentials: 'include' })
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.user) {
+            setUser({
+              id: String(data.user.id),
+              email: data.user.email,
+              name: data.user.name || data.user.firstName || null,
+              isPro: data.user.isPro ?? false,
+            })
+          } else {
+            setUser(null)
+          }
+        } else {
+          setUser(null)
+        }
+      } catch {
+        // Non-blocking
+      }
+    }
+    checkAuth()
+  }, [pathname])
+
   // Close menus when route changes
   useEffect(() => {
     setDropdownOpen(false)
@@ -83,9 +110,11 @@ export const Navbar: React.FC<NavbarProps> = ({ initialUser }) => {
     setLoggingOut(true)
     try {
       await fetch('/api/users/logout', { method: 'POST' })
-      window.location.assign('/login')
     } catch {
-      window.location.assign('/login')
+      // Continue to redirect regardless
+    } finally {
+      setUser(null)
+      window.location.href = '/'
     }
   }
 

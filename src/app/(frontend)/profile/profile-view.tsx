@@ -204,10 +204,10 @@ export function ProfileView({ initialUser }: ProfileViewProps) {
     setLoggingOut(true)
     try {
       await fetch('/api/users/logout', { method: 'POST' })
-      window.location.href = '/login'
+      window.location.href = '/'
     } catch (err) {
       console.error(err)
-      window.location.href = '/login'
+      window.location.href = '/'
     }
   }
 

@@ -67,17 +67,13 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     }
   }
 
-  const isAuthOrOnboarding = AUTH_ONBOARDING_PATHS.some(
-    (route) => pathname === route || pathname.startsWith(route + '/')
-  )
-
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className="cm-app-body">
         <PolicyBanner />
-        {!isAuthOrOnboarding && <Navbar initialUser={currentUser} />}
+        <Navbar initialUser={currentUser} />
         <main className="cm-app-main">{children}</main>
-        {!isAuthOrOnboarding && <Footer />}
+        <Footer />
       </body>
     </html>
   )
