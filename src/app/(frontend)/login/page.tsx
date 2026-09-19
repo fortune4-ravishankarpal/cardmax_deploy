@@ -16,7 +16,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="auth-page">
+    <main className="cm-login-page">
       <LoginForm />
     </main>
   )
