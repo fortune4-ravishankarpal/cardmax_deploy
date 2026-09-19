@@ -61,6 +61,7 @@ export const createAnonymizationRequestsCollection = (
         admin: {
             defaultColumns: ['user', 'status', 'createdAt'],
             useAsTitle: 'status',
+            group: 'Privacy & Settings',
         },
         access: {
             admin: async (args) => Boolean(await admin(args)),

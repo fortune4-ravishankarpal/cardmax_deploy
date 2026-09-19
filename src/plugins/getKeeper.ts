@@ -33,6 +33,12 @@ export const gatekeeperPluginConfig = gatekeeperPlugin({
     'category-master',
     'merchant-master',
     'api-users',
+    'card-applications',
+    'device-tokens',
+    'notification-templates',
+    'anonymization-requests',
+    'anonymized-identities',
+    'anonymization-logs',
   ],
 })
 
