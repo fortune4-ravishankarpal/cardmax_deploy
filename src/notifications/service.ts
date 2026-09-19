@@ -224,6 +224,7 @@ export class NotificationService {
           title: tmpl.title ?? '',
           body: tmpl.body ?? '',
           subject: (tmpl.subject as string) || undefined,
+          html: (tmpl.html as string) || undefined,
         }
       }
     } catch (e) {
@@ -335,7 +336,9 @@ export class NotificationService {
     try {
       const { EmailService } = await import('./email/service')
       const subject = interpolate(tmplVars.subject || tmplVars.title, data)
-      const html = tmplVars.html ? interpolate(tmplVars.html, data) : `<p>${interpolate(tmplVars.body, data)}</p>`
+      const html = tmplVars.html
+        ? interpolate(tmplVars.html, data)
+        : `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #1e293b; line-height: 1.6;"><p style="font-size: 16px; margin: 0;">${interpolate(tmplVars.body, data).replace(/\n/g, '<br/>')}</p></div>`
 
       await EmailService.send({
         to: user.email,

@@ -47,6 +47,9 @@ export const NotificationTemplates: CollectionConfig = {
       })),
       required: true,
       index: true,
+      admin: {
+        description: 'Choose the event that triggers this notification. See the live Cheat Sheet below for exact variables and scenario.',
+      },
     },
     {
       name: 'channel',
@@ -67,6 +70,16 @@ export const NotificationTemplates: CollectionConfig = {
       admin: {
         description: 'Only one active template per eventType+channel combination should exist.',
         position: 'sidebar',
+      },
+    },
+    // ── Variables & Scenario Cheat Sheet ─────────────────────────────────
+    {
+      name: 'variablesCheatSheet',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/components/admin/TemplateCheatSheet#TemplateCheatSheet',
+        },
       },
     },
     // ── Content fields ────────────────────────────────────────────────────
@@ -96,10 +109,22 @@ export const NotificationTemplates: CollectionConfig = {
     },
     {
       name: 'html',
-      type: 'richText',
+      type: 'code',
       admin: {
-        description: 'Rich HTML body for email channel. Supports {{variableName}} interpolation.',
+        language: 'html',
+        description: 'Custom HTML Email Template. Write or paste full HTML here (supports inline CSS, buttons, tables, cards) and {{variableName}} interpolation. If left empty, the plain text body will be used.',
         condition: (_, siblingData) => siblingData?.channel === 'email',
+      },
+    },
+    // ── Live HTML Email Preview ───────────────────────────────────────────
+    {
+      name: 'htmlPreview',
+      type: 'ui',
+      admin: {
+        condition: (_, siblingData) => siblingData?.channel === 'email',
+        components: {
+          Field: '@/components/admin/HtmlEmailPreview#HtmlEmailPreview',
+        },
       },
     },
     // ── Variable documentation ────────────────────────────────────────────
