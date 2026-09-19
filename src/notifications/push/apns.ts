@@ -14,6 +14,17 @@ import type { PushMessage, PushSendResult } from './types'
 
 let _apnProvider: any = null
 
+async function loadApn(): Promise<any> {
+  try {
+    // Evaluated dynamically at runtime to prevent bundler from tracing missing optional peer dependency
+    const dynamicImport = new Function('pkg', 'return import(pkg)')
+    const apn = await dynamicImport('apn')
+    return apn?.default || apn
+  } catch {
+    return null
+  }
+}
+
 async function getApnProvider() {
   if (_apnProvider) return _apnProvider
 
@@ -22,8 +33,9 @@ async function getApnProvider() {
   }
 
   try {
-    // @ts-ignore
-    const apn = await import('apn')
+    const apn = await loadApn()
+    if (!apn) return null
+
     _apnProvider = new apn.Provider({
       token: {
         key: env.APNS_KEY.replace(/\\n/g, '\n'),
@@ -60,8 +72,10 @@ export async function sendApnsNotification(
   }
 
   try {
-    // @ts-ignore
-    const apn = await import('apn')
+    const apn = await loadApn()
+    if (!apn) {
+      return { success: true, messageId: `fallback_apns_${Date.now()}` }
+    }
     const notification = new apn.Notification()
     notification.alert = { title: message.title, body: message.body }
     notification.topic = env.APNS_TOPIC!

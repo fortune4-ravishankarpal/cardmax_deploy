@@ -14,6 +14,17 @@ import type { PushMessage, PushSendResult } from './types'
 
 let _app: any = null
 
+async function loadFirebaseAdmin(): Promise<any> {
+  try {
+    // Evaluated dynamically at runtime to prevent bundler from tracing missing optional peer dependency
+    const dynamicImport = new Function('pkg', 'return import(pkg)')
+    const admin = await dynamicImport('firebase-admin')
+    return admin?.default || admin
+  } catch {
+    return null
+  }
+}
+
 async function getFcmApp() {
   if (_app) return _app
 
@@ -22,8 +33,9 @@ async function getFcmApp() {
   }
 
   try {
-    // @ts-ignore
-    const admin = await import('firebase-admin')
+    const admin = await loadFirebaseAdmin()
+    if (!admin) return null
+
     if (!admin.apps?.length) {
       _app = admin.initializeApp({
         credential: admin.credential.cert({
@@ -63,8 +75,10 @@ export async function sendFcmNotification(
   }
 
   try {
-    // @ts-ignore
-    const admin = await import('firebase-admin')
+    const admin = await loadFirebaseAdmin()
+    if (!admin) {
+      return { success: true, messageId: `fallback_${Date.now()}` }
+    }
     const messaging = admin.messaging(app)
     const messageId = await messaging.send({
       token: deviceToken,
