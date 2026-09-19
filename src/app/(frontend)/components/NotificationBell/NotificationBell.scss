@@ -7,14 +7,14 @@
 // ─── Variables ────────────────────────────────────────────────────────────────
 $bell-size: 40px;
 $badge-color: #ff4757;
-$accent: #6c63ff;
-$accent-light: #a29bfe;
+$accent: #5478F0;
+$accent-light: #818CF8;
 $surface: rgba(15, 15, 25, 0.92);
 $surface-border: rgba(255, 255, 255, 0.08);
-$item-hover: rgba(108, 99, 255, 0.08);
+$item-hover: rgba(84, 120, 240, 0.08);
 $text-primary: #f0f0f5;
 $text-secondary: rgba(240, 240, 245, 0.55);
-$unread-indicator: #6c63ff;
+$unread-indicator: #5478F0;
 $radius: 16px;
 $shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
 
@@ -73,7 +73,7 @@ $shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.05);
   outline: none;
 
   &:hover {
-    background: rgba(108, 99, 255, 0.12);
+    background: rgba(84, 120, 240, 0.12);
     border-color: rgba($accent, 0.3);
     transform: translateY(-1px);
   }

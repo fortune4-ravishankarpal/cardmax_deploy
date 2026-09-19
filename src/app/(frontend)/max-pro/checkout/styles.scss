@@ -12,7 +12,7 @@
     padding: 2.5rem;
     border-radius: 16px;
     box-shadow: 0 8px 30px rgba(17, 24, 39, 0.06);
-    border: 1px solid rgba(108, 76, 241, 0.12);
+    border: 1px solid rgba(84, 120, 240, 0.12);
     max-width: 480px;
     width: 100%;
 
@@ -50,23 +50,23 @@
 
       .plan-card {
         padding: 1.125rem 1.25rem;
-        border: 1.5px solid rgba(108, 76, 241, 0.15);
+        border: 1.5px solid rgba(84, 120, 240, 0.15);
         border-radius: 12px;
         cursor: pointer;
         background-color: #ffffff;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
         &:hover {
-          border-color: rgba(108, 76, 241, 0.35);
+          border-color: rgba(84, 120, 240, 0.35);
         }
 
         &.selected {
-          border-color: #6c4cf1;
-          background-color: #ede9fe;
+          border-color: #5478f0;
+          background-color: #eef2fe;
 
           .plan-card-header {
             h3 {
-              color: #6c4cf1;
+              color: #5478f0;
             }
             .price {
               color: #111827;
@@ -74,7 +74,7 @@
           }
 
           .plan-description {
-            color: #6d28d9;
+            color: #2e52d0;
           }
         }
 
@@ -113,7 +113,7 @@
 
     .order-summary {
       background: #f7f7fc;
-      border: 1px solid rgba(108, 76, 241, 0.12);
+      border: 1px solid rgba(84, 120, 240, 0.12);
       border-radius: 12px;
       padding: 1.25rem;
       margin-bottom: 1.5rem;
@@ -134,7 +134,7 @@
         }
 
         &.total {
-          border-top: 1px dashed rgba(108, 76, 241, 0.2);
+          border-top: 1px dashed rgba(84, 120, 240, 0.2);
           padding-top: 0.75rem;
           margin-top: 0.75rem;
           font-weight: 700;
@@ -146,20 +146,20 @@
 
     .btn-checkout {
       width: 100%;
-      background: linear-gradient(135deg, #6c4cf1 0%, #8b5cf6 50%, #7c5cfc 100%);
+      background: linear-gradient(135deg, #5478f0 0%, #6e8ef5 50%, #4064e0 100%);
       color: #ffffff;
       border: none;
       padding: 0.875rem 1rem;
       border-radius: 10px;
       font-size: 1rem;
       font-weight: 600;
-      box-shadow: 0 4px 15px rgba(108, 76, 241, 0.35);
+      box-shadow: 0 4px 15px rgba(84, 120, 240, 0.35);
       cursor: pointer;
       transition: all 0.2s ease;
 
       &:hover:not(:disabled) {
-        background: linear-gradient(135deg, #7c5cfc 0%, #9d74ff 50%, #8b5cf6 100%);
-        box-shadow: 0 6px 20px rgba(108, 76, 241, 0.45);
+        background: linear-gradient(135deg, #6e8ef5 0%, #829ef7 50%, #5478f0 100%);
+        box-shadow: 0 6px 20px rgba(84, 120, 240, 0.45);
         transform: translateY(-1px);
       }
 

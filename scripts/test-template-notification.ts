@@ -8,7 +8,7 @@ async function main() {
   const args = process.argv.slice(2)
   const isLiveFlag = args.includes('--live')
   const emailArg = args.find((a) => a.includes('@'))
-  const recipient = emailArg || 'pratik.y@fortune4.in'
+  const recipient = emailArg || 'test@gmail.com'
   const isSimulation = isLiveFlag ? false : env.NOTIFICATION_MODE === 'simulation'
 
   console.log('================================================================')
@@ -26,7 +26,7 @@ async function main() {
     // STEP 1: Find or Create the User
     // ─────────────────────────────────────────────────────────────
     console.log('🔹 STEP 1: Resolving recipient user...')
-    let userResult = await payload.find({
+    const userResult = await payload.find({
       collection: 'users',
       where: { email: { equals: recipient } },
       limit: 1,
@@ -181,7 +181,7 @@ async function main() {
       userId: String(user.id),
       channels: ['email', 'in_app'] as ('email' | 'in_app')[],
       data: {
-        userName: 'Pratik',
+        userName: 'John Doe',
         cardName: 'HDFC Infinia Metal',
         milestoneName: 'Quarterly ₹3 Lakh Spend',
         bonusPoints: '10,000',

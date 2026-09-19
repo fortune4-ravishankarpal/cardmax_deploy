@@ -5,40 +5,44 @@
 
 // 1. Color Palette
 // --------------------------------------------------------------------------
-// Primary Brand Colors (Vibrant Purple-Violet)
-$color-primary: #6C4CF1;
-$color-primary-hover: #7C5CFC;
-$color-primary-bright: #8B5CF6;
-$color-primary-light: #EDE9FE;
-$color-primary-subtle: rgba(108, 76, 241, 0.12);
-$color-primary-glow: rgba(108, 76, 241, 0.25);
+// Primary Brand Colors (Fintech Blue #5478F0)
+$color-primary: #5478F0;
+$color-primary-hover: #4064E0;
+$color-primary-dark: #2E52D0;
+$color-primary-bright: #6E8EF5;
+$color-primary-light: #EEF2FE;
+$color-primary-subtle: rgba(84, 120, 240, 0.10);
+$color-primary-glow: rgba(84, 120, 240, 0.25);
 
-// Primary Dark / Deep Navy (Surfaces & Hero)
-$color-navy-deep: #0B1020;
-$color-navy-dark: #11182D;
-$color-navy-surface: #151D35;
+// Primary Brand Surfaces (Replacing dark navy throughout app)
+$color-navy-deep: #5478F0;
+$color-navy-dark: #5478F0;
+$color-navy-surface: #4064E0;
 
 // Secondary Accents
 $color-cyan: #38BDF8;
-$color-soft-purple: #A78BFA;
+$color-soft-purple: #818CF8;
 
 // Light Backgrounds & Surfaces (Fintech Dashboard & SaaS)
-$color-bg-light: #F7F7FC;
+$color-bg-main: #F7F9FF;
+$color-bg-light: #F7F9FF;
 $color-surface-white: #FFFFFF;
-$color-surface-secondary: #F1F0FA;
+$color-surface-secondary: #EEF2FE;
 
-// Dark Surfaces & Backgrounds
-$color-bg-base: #0B1020;
-$color-bg-page: #0B1020;
-$color-surface-card: #11182D;
-$color-surface-hover: #151D35;
-$color-surface-subtle: #151D35;
-$color-surface-modal: #11182D;
+// Unified Theme Surfaces (Card = White, Page = Light Blue Tint, Major Brand Surfaces = #5478F0)
+$color-bg-base: #F7F9FF;
+$color-bg-page: #F7F9FF;
+$color-surface-card: #FFFFFF;
+$color-surface-hover: #EEF2FE;
+$color-surface-subtle: #F7F9FF;
+$color-surface-modal: #FFFFFF;
 
 // Text Colors (High Contrast & Legibility)
 $color-text-primary: #111827;
-$color-text-secondary: #6B7280;
-$color-text-muted: #9CA3AF;
+$color-text-secondary: #4B5563;
+$color-text-muted: #6B7280;
+$color-text-on-primary: #FFFFFF;
+$color-text-on-primary-muted: rgba(255, 255, 255, 0.88);
 $color-text-dark-primary: #FFFFFF;
 $color-text-dark-secondary: #CBD5E1;
 $color-text-main: #111827;
@@ -46,11 +50,11 @@ $color-text-subtle: #9CA3AF;
 $color-text-inverse: #111827;
 
 // Border Colors
-$color-border-subtle: rgba(108, 76, 241, 0.08);
-$color-border: rgba(108, 76, 241, 0.12);
-$color-border-card: rgba(108, 76, 241, 0.12);
-$color-border-hover: rgba(108, 76, 241, 0.4);
-$color-border-strong: rgba(108, 76, 241, 0.25);
+$color-border-subtle: rgba(84, 120, 240, 0.08);
+$color-border: rgba(84, 120, 240, 0.12);
+$color-border-card: rgba(84, 120, 240, 0.12);
+$color-border-hover: rgba(84, 120, 240, 0.35);
+$color-border-strong: rgba(84, 120, 240, 0.25);
 $color-border-input: #E5E7EB;
 
 // Status & Feedback Colors
@@ -75,10 +79,10 @@ $color-danger-bg: rgba(239, 68, 68, 0.12);
 $color-danger-border: rgba(239, 68, 68, 0.25);
 $color-danger-text: #FCA5A5;
 
-$color-info: #38BDF8;
-$color-info-light: #E0F2FE;
+$color-info: #5478F0;
+$color-info-light: #EEF2FE;
 $color-info-dark: #0369A1;
-$color-info-bg: rgba(56, 189, 248, 0.12);
+$color-info-bg: rgba(84, 120, 240, 0.10);
 
 // Max Pro Gold Gradient Accent
 $pro-gold-start: #F59E0B;
@@ -86,9 +90,9 @@ $pro-gold-end: #D97706;
 $pro-gold-glow: rgba(245, 158, 11, 0.35);
 
 // Gradients
-$gradient-primary: linear-gradient(135deg, #6C4CF1 0%, #8B5CF6 50%, #7C5CFC 100%);
-$gradient-primary-hover: linear-gradient(135deg, #7C5CFC 0%, #9D74FF 50%, #8B5CF6 100%);
-$gradient-hero: linear-gradient(135deg, #0B1020 0%, #171333 55%, #24154D 100%);
+$gradient-primary: linear-gradient(135deg, #5478F0 0%, #6E8EF5 50%, #4064E0 100%);
+$gradient-primary-hover: linear-gradient(135deg, #4064E0 0%, #5B7EF2 50%, #3558DC 100%);
+$gradient-hero: linear-gradient(135deg, #5478F0 0%, #6E8EF5 50%, #4064E0 100%);
 $gradient-pro-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
 
 // 2. Typography Tokens
@@ -148,9 +152,9 @@ $shadow-md: 0 4px 6px -1px rgba(17, 24, 39, 0.08), 0 2px 4px -1px rgba(17, 24, 3
 $shadow-lg: 0 10px 15px -3px rgba(17, 24, 39, 0.1), 0 4px 6px -2px rgba(17, 24, 39, 0.05);
 $shadow-xl: 0 20px 25px -5px rgba(17, 24, 39, 0.12), 0 10px 10px -5px rgba(17, 24, 39, 0.04);
 $shadow-card: 0 8px 30px rgba(17, 24, 39, 0.06);
-$shadow-card-highlight: 0 8px 35px rgba(108, 76, 241, 0.15);
-$shadow-glow-purple: 0 0 25px rgba(108, 76, 241, 0.25);
-$shadow-glow-primary: 0 0 20px rgba(108, 76, 241, 0.35);
+$shadow-card-highlight: 0 8px 35px rgba(84, 120, 240, 0.15);
+$shadow-glow-purple: 0 0 25px rgba(84, 120, 240, 0.25);
+$shadow-glow-primary: 0 0 20px rgba(84, 120, 240, 0.35);
 $shadow-glow-gold: 0 0 20px rgba(245, 158, 11, 0.35);
 
 // 6. Breakpoints

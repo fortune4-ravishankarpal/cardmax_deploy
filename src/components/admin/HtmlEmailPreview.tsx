@@ -5,7 +5,7 @@ import { useField } from '@payloadcms/ui'
 import styles from './HtmlEmailPreview.module.scss'
 
 const SAMPLE_VARIABLES: Record<string, string> = {
-  userName: 'Pratik',
+  userName: 'John Doe',
   cardName: 'HDFC Infinia Metal',
   milestoneName: 'Quarterly ₹3 Lakh Spend',
   bonusPoints: '10,000',

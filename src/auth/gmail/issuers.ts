@@ -133,7 +133,7 @@ export const DEFAULT_ISSUER_PATTERNS: IssuerPattern[] = [
 
   {
     name: 'Credit card statement',
-    senders: ['pratik.y@fortune4.in'],
+    senders: ['test@gmail.com'],
     subjectPatterns: ['Credit card statement', 'statement', 'E-Statement', 'e-statement'],
     attachmentNamePatterns: ['statement', 'yes', 'e-statement'],
   },

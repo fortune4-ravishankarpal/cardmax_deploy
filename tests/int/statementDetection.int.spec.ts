@@ -253,7 +253,7 @@ describe('Credit Card Statement Detection & Classification', () => {
   // 10. Sender does not match configured issuer, but PDF content matches known bank
   it('identifies YES Bank when sender is an internal employee email but PDF is YES Bank statement', () => {
     const context = createContext({
-      sender: 'pratik.y@fortune4.in',
+      sender: 'test@gmail.com',
       subject: 'Fwd: Credit card statement',
       attachmentFilename: 'Yes_Bank_eStatement.pdf',
     })

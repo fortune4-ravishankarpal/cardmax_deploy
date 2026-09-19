@@ -4,17 +4,17 @@
 @use 'sass:color';
 
 // ─── Variables ────────────────────────────────────────────────────────────────
-$accent: #6c63ff;
-$accent-light: #a29bfe;
-$surface: rgba(15, 15, 25, 0.85);
-$surface-card: rgba(22, 22, 38, 0.9);
-$surface-border: rgba(255, 255, 255, 0.07);
-$text-primary: #f0f0f5;
-$text-secondary: rgba(240, 240, 245, 0.55);
-$unread-bg: rgba(108, 99, 255, 0.07);
-$unread-border: rgba(108, 99, 255, 0.25);
-$danger: #ff4757;
-$success: #2ed573;
+$accent: #5478F0;
+$accent-light: #4064E0;
+$surface: #ffffff;
+$surface-card: #ffffff;
+$surface-border: rgba(84, 120, 240, 0.14);
+$text-primary: #111827;
+$text-secondary: #4b5563;
+$unread-bg: #f0f4ff;
+$unread-border: rgba(84, 120, 240, 0.35);
+$danger: #dc2626;
+$success: #16a34a;
 $radius-lg: 20px;
 $radius-md: 12px;
 $radius-sm: 8px;
@@ -38,7 +38,7 @@ $radius-sm: 8px;
 .cm-notifications-page {
   min-height: calc(100vh - 80px);
   padding: 32px 16px 64px;
-  background: linear-gradient(160deg, #0a0a18 0%, #0f0f24 50%, #0a0a18 100%);
+  background: #F7F9FF;
   animation: fadeInUp 0.4s ease both;
 }
 
@@ -73,13 +73,14 @@ $radius-sm: 8px;
   padding: 8px 12px;
   border-radius: $radius-sm;
   border: 1px solid $surface-border;
+  background: #ffffff;
   margin-top: 4px;
   flex-shrink: 0;
   transition: background 0.15s, color 0.15s;
 
   &:hover {
-    background: rgba($accent, 0.1);
-    color: $text-primary;
+    background: rgba($accent, 0.08);
+    color: $accent;
     border-color: rgba($accent, 0.3);
   }
 }
@@ -99,11 +100,11 @@ $radius-sm: 8px;
   display: inline-flex;
   align-items: center;
   padding: 2px 10px;
-  background: rgba($accent, 0.15);
-  color: $accent-light;
+  background: rgba($accent, 0.12);
+  color: $accent;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   border: 1px solid rgba($accent, 0.25);
 }
 
@@ -116,20 +117,21 @@ $radius-sm: 8px;
 .cm-notifications-mark-all {
   flex-shrink: 0;
   padding: 10px 18px;
-  background: rgba($accent, 0.12);
-  border: 1px solid rgba($accent, 0.25);
+  background: #5478F0;
+  border: 1px solid #4064E0;
   border-radius: $radius-sm;
-  color: $accent-light;
+  color: #ffffff;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  box-shadow: 0 2px 8px rgba(84, 120, 240, 0.3);
+  transition: all 0.15s ease;
   white-space: nowrap;
 
   &:hover {
-    background: rgba($accent, 0.22);
-    border-color: rgba($accent, 0.45);
-    color: #fff;
+    background: #4064E0;
+    box-shadow: 0 4px 12px rgba(84, 120, 240, 0.4);
+    color: #ffffff;
   }
 }
 
@@ -139,8 +141,8 @@ $radius-sm: 8px;
   gap: 4px;
   margin-bottom: 20px;
   padding: 4px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid $surface-border;
+  background: #edf2f7;
+  border: 1px solid #e2e8f0;
   border-radius: $radius-md;
   overflow-x: auto;
   scrollbar-width: none;
@@ -153,7 +155,7 @@ $radius-sm: 8px;
   border: none;
   border-radius: 8px;
   background: none;
-  color: $text-secondary;
+  color: #4b5563;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -162,13 +164,14 @@ $radius-sm: 8px;
 
   &:hover {
     background: rgba($accent, 0.08);
-    color: $text-primary;
+    color: #111827;
   }
 
   &.is-active {
-    background: rgba($accent, 0.16);
-    color: $accent-light;
+    background: #5478F0;
+    color: #ffffff;
     font-weight: 600;
+    box-shadow: 0 2px 8px rgba(84, 120, 240, 0.3);
   }
 }
 
@@ -230,15 +233,17 @@ $radius-sm: 8px;
   align-items: flex-start;
   gap: 14px;
   padding: 18px 20px;
-  background: $surface-card;
-  border: 1px solid $surface-border;
+  background: #ffffff;
+  border: 1px solid rgba(84, 120, 240, 0.12);
   border-radius: $radius-md;
-  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(17, 24, 39, 0.03);
+  transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
   animation: rowIn 0.25s ease both;
 
   &:hover {
-    border-color: rgba($accent, 0.2);
-    background: rgba(22, 22, 40, 0.95);
+    border-color: rgba($accent, 0.3);
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(84, 120, 240, 0.12);
     transform: translateX(2px);
 
     .cm-notif-row__actions {
@@ -247,8 +252,8 @@ $radius-sm: 8px;
   }
 
   &.is-unread {
-    background: $unread-bg;
-    border-color: $unread-border;
+    background: #f0f4ff;
+    border-color: rgba(84, 120, 240, 0.35);
 
     .cm-notif-row__title {
       font-weight: 700;
@@ -260,7 +265,7 @@ $radius-sm: 8px;
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      width: 3px;
+      width: 4px;
       height: 60%;
       background: $accent;
       border-radius: 0 2px 2px 0;
@@ -339,7 +344,7 @@ $radius-sm: 8px;
   height: 30px;
   border-radius: 8px;
   border: 1px solid $surface-border;
-  background: none;
+  background: #ffffff;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   color: $text-secondary;
@@ -373,17 +378,19 @@ $radius-sm: 8px;
 .cm-notif-page-btn {
   padding: 10px 20px;
   border-radius: $radius-sm;
-  border: 1px solid $surface-border;
-  background: rgba(255, 255, 255, 0.04);
-  color: $text-primary;
+  border: 1px solid rgba(84, 120, 240, 0.2);
+  background: #ffffff;
+  color: #111827;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   transition: background 0.15s, border-color 0.15s;
 
   &:hover:not(:disabled) {
-    background: rgba($accent, 0.1);
-    border-color: rgba($accent, 0.3);
+    background: #f4f7fc;
+    border-color: #5478f0;
+    color: #5478f0;
   }
 
   &:disabled {

@@ -12,13 +12,13 @@ $color-text-primary: #111827;
 $color-text-secondary: #6B7280;
 $color-text-muted: #9CA3AF;
 
-$color-border: rgba(108, 76, 241, 0.12);
-$color-border-subtle: #F1F0FA;
+$color-border: rgba(84, 120, 240, 0.12);
+$color-border-subtle: #F1F4FA;
 
-$color-accent: #6C4CF1;
-$color-accent-hover: #7C5CFC;
-$color-accent-subtle: #EDE9FE;
-$color-accent-border: rgba(108, 76, 241, 0.25);
+$color-accent: #5478F0;
+$color-accent-hover: #4064E0;
+$color-accent-subtle: #EEF2FE;
+$color-accent-border: rgba(84, 120, 240, 0.25);
 
 $color-success-text: #15803D;
 $color-success-bg: #DCFCE7;
@@ -37,8 +37,8 @@ $radius-full: 9999px;
 $shadow-sm: 0 4px 20px rgba(17, 24, 39, 0.04);
 $shadow-card: 0 8px 30px rgba(17, 24, 39, 0.06);
 
-$gradient-primary: linear-gradient(135deg, #6C4CF1 0%, #8B5CF6 50%, #7C5CFC 100%);
-$gradient-primary-hover: linear-gradient(135deg, #7C5CFC 0%, #9D74FF 50%, #8B5CF6 100%);
+$gradient-primary: linear-gradient(135deg, #5478F0 0%, #6E8EF5 50%, #4064E0 100%);
+$gradient-primary-hover: linear-gradient(135deg, #6E8EF5 0%, #829EF7 50%, #5478F0 100%);
 
 $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif);
 
@@ -63,7 +63,7 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   :focus-visible {
     outline: none;
     border-color: $color-accent;
-    box-shadow: 0 0 0 3px rgba(108, 76, 241, 0.15);
+    box-shadow: 0 0 0 3px rgba(84, 120, 240, 0.15);
   }
 
   .consent-container {
@@ -343,13 +343,13 @@ $font-sans: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
     background: $gradient-primary;
     color: #ffffff;
     border: none;
-    box-shadow: 0 2px 8px rgba(108, 76, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(84, 120, 240, 0.3);
     text-decoration: none;
     transition: all 0.2s ease;
 
     &:hover {
       background: $gradient-primary-hover;
-      box-shadow: 0 4px 12px rgba(108, 76, 241, 0.4);
+      box-shadow: 0 4px 12px rgba(84, 120, 240, 0.4);
       transform: translateY(-1px);
     }
   }

@@ -43,7 +43,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Spend Milestone Reached',
     scenario: 'Triggered when a user’s card transactions reach a reward milestone or bonus points threshold.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'cardName', desc: 'Credit card name', example: 'HDFC Infinia Metal' },
       { name: 'milestoneName', desc: 'Name of the milestone reached', example: 'Quarterly ₹3 Lakh Spend' },
       { name: 'bonusPoints', desc: 'Bonus reward points or cashback credited', example: '10,000' },
@@ -59,7 +59,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Fee Waiver Approaching',
     scenario: 'Triggered when a user is within 15–30% of the spend threshold to waive their annual credit card fee.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'cardName', desc: 'Credit card name', example: 'Axis Magnus' },
       { name: 'currentSpend', desc: 'Amount spent so far this year', example: '₹9,20,000' },
       { name: 'targetSpend', desc: 'Spend required to waive annual fee', example: '₹10,00,000' },
@@ -76,7 +76,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Fee Waiver Achieved',
     scenario: 'Triggered when a user hits the required annual spend so their upcoming annual credit card fee is waived.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'cardName', desc: 'Credit card name', example: 'SBI Aurum' },
       { name: 'annualFee', desc: 'Annual fee amount waived', example: '₹10,000' },
       { name: 'spendAmount', desc: 'Total eligible spend completed', example: '₹10,05,000' },
@@ -92,7 +92,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Card Devaluation Detected',
     scenario: 'Triggered when an issuer bank announces changes to reward rates, lounge access limits, or fee structures.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'cardName', desc: 'Affected credit card name', example: 'ICICI Emeralde' },
       { name: 'devaluationDetails', desc: 'Short summary of the changes', example: 'Lounge access now requires ₹50k monthly spend' },
       { name: 'effectiveDate', desc: 'When the change goes live', example: '1 November 2026' },
@@ -107,7 +107,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Trial / Eligibility Granted',
     scenario: 'Triggered when a customer unlocks a free trial or eligibility for CardMax Pro membership.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'trialDays', desc: 'Number of free trial days', example: '14' },
       { name: 'expiryDate', desc: 'Date when the trial ends', example: '3 Oct 2026' },
     ],
@@ -121,7 +121,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Card Application Updated',
     scenario: 'Triggered when the status of an external credit card application changes (e.g. Approved, In Review, Rejected).',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'cardName', desc: 'Credit card applied for', example: 'Tata Neu Infinity' },
       { name: 'status', desc: 'New status', example: 'Approved' },
       { name: 'applicationId', desc: 'Internal or bank application reference', example: 'APP-9821' },
@@ -137,7 +137,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Application Follow-Up',
     scenario: 'Triggered 7 days after applying if a card application is still pending with the bank.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'cardName', desc: 'Credit card applied for', example: 'Amex Platinum Travel' },
       { name: 'daysSinceApplied', desc: 'Number of days elapsed', example: '7' },
       { name: 'bankName', desc: 'Issuing bank', example: 'American Express' },
@@ -152,7 +152,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Welcome / Onboarding Complete',
     scenario: 'Triggered immediately after a new user completes their initial profile and preferences.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'appUrl', desc: 'Link to dashboard', example: 'https://cardmax.app/dashboard' },
     ],
     example: {
@@ -165,7 +165,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Monthly Rewards Summary',
     scenario: 'Triggered on the 1st of each month to summarize the user’s total spend and points earned across all cards.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'month', desc: 'Name of the month', example: 'August 2026' },
       { name: 'totalSpend', desc: 'Total spend across cards', example: '₹84,300' },
       { name: 'totalPointsEarned', desc: 'Total reward points gained', example: '14,200' },
@@ -181,7 +181,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Payment Confirmed',
     scenario: 'Triggered when Razorpay/Stripe charges a user for CardMax Pro successfully.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'amount', desc: 'Amount charged', example: '₹2,999' },
       { name: 'planName', desc: 'Plan name', example: 'CardMax Pro Annual' },
       { name: 'paymentId', desc: 'Razorpay payment transaction ID', example: 'pay_K923xLa' },
@@ -197,7 +197,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Payment Failed',
     scenario: 'Triggered when an automatic subscription renewal charge fails due to insufficient funds or expired card.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'amount', desc: 'Amount attempted', example: '₹2,999' },
       { name: 'planName', desc: 'Plan name', example: 'CardMax Pro Annual' },
       { name: 'retryDate', desc: 'Date of next automatic retry', example: '22 Sep 2026' },
@@ -213,7 +213,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Subscription Started',
     scenario: 'Triggered when a new user signs up for CardMax Pro for the first time.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'planName', desc: 'Plan name', example: 'CardMax Pro Annual' },
       { name: 'expiryDate', desc: 'End date of current term', example: '19 Sep 2027' },
     ],
@@ -227,7 +227,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Subscription Renewed',
     scenario: 'Triggered on successful automatic subscription renewal.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'planName', desc: 'Plan name', example: 'CardMax Pro Monthly' },
       { name: 'amount', desc: 'Renewal amount', example: '₹299' },
       { name: 'nextRenewalDate', desc: 'Next renewal date', example: '19 Oct 2026' },
@@ -242,7 +242,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Subscription Expiring Soon',
     scenario: 'Triggered 3 days before a subscription expires or during a payment grace period.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'planName', desc: 'Plan name', example: 'CardMax Pro' },
       { name: 'daysLeft', desc: 'Days left until expiration', example: '3' },
       { name: 'renewalUrl', desc: 'Direct link to renew', example: 'https://cardmax.app/billing' },
@@ -257,7 +257,7 @@ export const EVENT_DETAILS: Record<string, EventCheatSheet> = {
     title: 'Subscription Cancelled',
     scenario: 'Triggered when a user cancels auto-renewal.',
     variables: [
-      { name: 'userName', desc: 'Customer’s first name', example: 'Pratik' },
+      { name: 'userName', desc: 'Customer’s first name', example: 'John Doe' },
       { name: 'planName', desc: 'Plan name', example: 'CardMax Pro' },
       { name: 'endDate', desc: 'Date when access will expire', example: '19 Oct 2026' },
     ],

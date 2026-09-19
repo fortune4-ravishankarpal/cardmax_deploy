@@ -2,8 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #0b1020 0%, #171333 55%, #24154d 100%);
-  color: #f8fafc;
+  background: linear-gradient(135deg, #5478F0 0%, #4064E0 100%);
+  color: #FFFFFF;
   font-family: var(--font-inter, system-ui, -apple-system, sans-serif);
 
   .onboarding-topbar {
@@ -24,9 +24,9 @@
 
     .signout-link {
       font-size: 0.85rem;
-      color: #94a3b8;
-      background: none;
-      border: 1px solid rgba(108, 76, 241, 0.2);
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       border-radius: 6px;
       padding: 0.35rem 0.75rem;
       cursor: pointer;
@@ -34,8 +34,8 @@
 
       &:hover {
         color: #ffffff;
-        border-color: rgba(108, 76, 241, 0.4);
-        background: rgba(108, 76, 241, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.25);
       }
     }
   }
@@ -51,22 +51,22 @@
   .onboarding-card {
     width: 100%;
     max-width: 680px;
-    background: #11182d;
-    border: 1px solid rgba(108, 76, 241, 0.18);
+    background: #ffffff;
+    border: 1px solid rgba(84, 120, 240, 0.18);
     border-radius: 16px;
     padding: 2.5rem 2rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(108, 76, 241, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18), 0 0 25px rgba(84, 120, 240, 0.1);
 
     h1 {
       font-size: 1.6rem;
       font-weight: 700;
-      color: #ffffff;
+      color: #111827;
       margin: 0 0 0.5rem;
     }
 
     .subtitle {
       font-size: 0.925rem;
-      color: #94a3b8;
+      color: #4B5563;
       margin: 0 0 1.75rem;
       line-height: 1.5;
     }
@@ -77,11 +77,11 @@
       margin-bottom: 1.25rem;
 
       &.service-box {
-        background: rgba(108, 76, 241, 0.1);
-        border: 1px solid rgba(108, 76, 241, 0.25);
+        background: #F4F7FC;
+        border: 1px solid rgba(84, 120, 240, 0.22);
 
         h3 {
-          color: #a78bfa;
+          color: #3558DC;
           font-size: 0.95rem;
           font-weight: 600;
           margin: 0 0 0.5rem;
@@ -93,7 +93,7 @@
 
           li {
             font-size: 0.85rem;
-            color: #cbd5e1;
+            color: #374151;
             line-height: 1.5;
             margin-bottom: 0.4rem;
 
@@ -102,18 +102,18 @@
             }
 
             strong {
-              color: #ffffff;
+              color: #111827;
             }
           }
         }
       }
 
       &.exclusion-box {
-        background: rgba(34, 197, 94, 0.08);
-        border: 1px solid rgba(34, 197, 94, 0.25);
+        background: #F0FDF4;
+        border: 1px solid rgba(34, 197, 94, 0.3);
 
         h4 {
-          color: #86efac;
+          color: #166534;
           font-size: 0.85rem;
           font-weight: 600;
           margin: 0 0 0.35rem;
@@ -121,7 +121,7 @@
 
         p {
           font-size: 0.8rem;
-          color: #cbd5e1;
+          color: #166534;
           margin: 0;
           line-height: 1.45;
         }
@@ -134,7 +134,7 @@
       gap: 1rem;
       margin: 1.75rem 0 2rem;
       padding-top: 1.25rem;
-      border-top: 1px solid rgba(108, 76, 241, 0.15);
+      border-top: 1px solid #E5E7EB;
 
       .checkbox-item {
         display: flex;
@@ -145,14 +145,14 @@
           margin-top: 0.25rem;
           width: 1.15rem;
           height: 1.15rem;
-          accent-color: #6c4cf1;
+          accent-color: #5478f0;
           cursor: pointer;
           flex-shrink: 0;
         }
 
         label {
           font-size: 0.9rem;
-          color: #e2e8f0;
+          color: #1F2937;
           line-height: 1.45;
           cursor: pointer;
           margin: 0;
@@ -167,12 +167,12 @@
             margin-left: 0.35rem;
 
             a {
-              color: #a78bfa;
+              color: #5478F0;
               text-decoration: underline;
               font-size: 0.85rem;
 
               &:hover {
-                color: #c4b5fd;
+                color: #4064E0;
               }
             }
           }
@@ -187,7 +187,7 @@
 
       .btn-continue {
         width: 100%;
-        background: linear-gradient(135deg, #6c4cf1 0%, #8b5cf6 50%, #7c5cfc 100%);
+        background: linear-gradient(135deg, #5478f0 0%, #6e8ef5 50%, #4064e0 100%);
         color: #ffffff;
         border: none;
         padding: 0.85rem 1.5rem;
@@ -195,18 +195,18 @@
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(108, 76, 241, 0.35);
+        box-shadow: 0 4px 15px rgba(84, 120, 240, 0.35);
         transition: all 0.2s ease;
 
         &:hover:not(:disabled) {
-          background: linear-gradient(135deg, #7c5cfc 0%, #9d74ff 50%, #8b5cf6 100%);
-          box-shadow: 0 6px 20px rgba(108, 76, 241, 0.45);
+          background: linear-gradient(135deg, #6e8ef5 0%, #829ef7 50%, #5478f0 100%);
+          box-shadow: 0 6px 20px rgba(84, 120, 240, 0.45);
           transform: translateY(-1px);
         }
 
         &:disabled {
-          background: #1e293b;
-          color: #64748b;
+          background: #E2E8F0;
+          color: #94A3B8;
           box-shadow: none;
           cursor: not-allowed;
         }
@@ -215,29 +215,29 @@
       .footer-note {
         text-align: center;
         font-size: 0.8rem;
-        color: #64748b;
+        color: #6B7280;
         margin: 0;
 
         button {
           background: none;
           border: none;
-          color: #94a3b8;
+          color: #4B5563;
           text-decoration: underline;
           cursor: pointer;
           padding: 0;
           font-size: inherit;
 
           &:hover {
-            color: #cbd5e1;
+            color: #111827;
           }
         }
       }
     }
 
     .error-alert {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      color: #DC2626;
       padding: 0.75rem 1rem;
       border-radius: 8px;
       margin-bottom: 1.25rem;
