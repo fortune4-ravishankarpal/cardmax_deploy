@@ -18,6 +18,7 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
+    "prenuke": "rm -rf .next",
     "nuke": "echo y | pnpm payload migrate:fresh && pnpm seed",
     "nuke:x": "pnpm safe:dev",
     "seed": "tsx -r dotenv/config src/seed/seeders/index.seed.ts",
