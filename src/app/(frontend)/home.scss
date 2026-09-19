@@ -681,19 +681,20 @@ $pro-gold-2: #d97706;
 }
 
 .cm-category-card {
-  flex: 0 0 280px;
-  width: 280px;
-  min-width: 280px;
-  max-width: 280px;
+  flex: 0 0 300px;
+  width: 300px;
+  min-width: 300px;
+  max-width: 320px;
+  min-height: 245px;
   box-sizing: border-box;
   scroll-snap-align: start;
   background: #ffffff;
   border: 1px solid rgba(84, 120, 240, 0.22);
   border-radius: 14px;
-  padding: 1.15rem;
+  padding: 1.25rem 1.15rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.65rem;
   position: relative;
   overflow: hidden;
   animation: cmFrameGlow 4s ease-in-out infinite;
@@ -703,13 +704,13 @@ $pro-gold-2: #d97706;
     border-color 0.28s ease;
 
   @media (max-width: 640px) {
-    flex: 0 0 calc(84vw - 2rem);
-    width: calc(84vw - 2rem);
-    min-width: 240px;
-    max-width: 295px;
+    flex: 0 0 calc(85vw - 1.5rem);
+    width: calc(85vw - 1.5rem);
+    min-width: 260px;
+    max-width: 310px;
     padding: 1rem 0.9rem;
     border-radius: 12px;
-    gap: 0.5rem;
+    gap: 0.55rem;
   }
 
   // Animated Top Neon Frame Edge
@@ -759,79 +760,95 @@ $pro-gold-2: #d97706;
 
   .cm-cat-top {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+    width: 100%;
 
     .cm-cat-title {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.9rem;
+      gap: 0.55rem;
+      font-size: 0.96rem;
       font-weight: 700;
       color: $color-text-dark;
+      width: 100%;
       min-width: 0;
+      line-height: 1.3;
 
       .cm-cat-emoji {
-        font-size: 1.15rem;
+        font-size: 1.2rem;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: #f1f5f9;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         line-height: 1;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+
+      span:last-child {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       @media (max-width: 640px) {
-        font-size: 0.84rem;
-        gap: 0.35rem;
+        font-size: 0.88rem;
+        gap: 0.45rem;
 
         .cm-cat-emoji {
-          font-size: 1rem;
-        }
-
-        svg {
-          width: 16px;
-          height: 16px;
-          flex-shrink: 0;
+          font-size: 1.05rem;
+          width: 26px;
+          height: 26px;
         }
       }
     }
 
     .cm-cat-multiplier {
-      font-size: 0.78rem;
-      font-weight: 800;
+      font-size: 0.74rem;
+      font-weight: 700;
       color: #15803d;
       background: #dcfce7;
-      padding: 0.2rem 0.45rem;
-      border-radius: 6px;
-      flex-shrink: 0;
+      border: 1px solid rgba(21, 128, 61, 0.2);
+      padding: 0.22rem 0.6rem;
+      border-radius: 9999px;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1.2;
+      max-width: 100%;
 
       @media (max-width: 640px) {
-        font-size: 0.72rem;
-        padding: 0.15rem 0.4rem;
+        font-size: 0.7rem;
+        padding: 0.18rem 0.5rem;
       }
     }
   }
 
   .cm-cat-card-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #1e293b;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+    margin-top: 0.1rem;
 
     @media (max-width: 640px) {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       line-height: 1.35;
     }
   }
 
   .cm-cat-perk {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: $color-text-muted;
-    line-height: 1.4;
+    line-height: 1.45;
 
     @media (max-width: 640px) {
-      font-size: 0.76rem;
+      font-size: 0.78rem;
       line-height: 1.4;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -841,13 +858,14 @@ $pro-gold-2: #d97706;
   }
 
   .cm-cat-status {
-    font-size: 0.725rem;
+    font-size: 0.74rem;
     font-weight: 600;
     color: $color-primary;
     margin-top: auto;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
+    padding-top: 0.35rem;
 
     @media (max-width: 640px) {
       font-size: 0.7rem;
