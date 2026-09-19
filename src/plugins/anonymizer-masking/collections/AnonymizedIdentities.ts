@@ -4,6 +4,7 @@ export const AnonymizedIdentities: CollectionConfig = {
   slug: 'anonymized-identities',
   admin: {
     useAsTitle: 'anonymousId',
+    group: 'Privacy & Settings',
   },
   fields: [
     {

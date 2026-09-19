@@ -7,6 +7,7 @@ export const createAnonymizationLogsCollection = (
     admin: {
         defaultColumns: ['request', 'status', 'totalCollections', 'totalDocuments', 'startedAt'],
         useAsTitle: 'status',
+        group: 'Privacy & Settings',
     },
     access: {
         admin: async (args) => Boolean(await defaultAdmin(args)),
