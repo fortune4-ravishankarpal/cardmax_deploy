@@ -6,11 +6,11 @@ export interface MasterCardOption {
   id: string
   name: string
   bank?:
-    | {
-        id?: string
-        name?: string
-      }
-    | string
+  | {
+    id?: string
+    name?: string
+  }
+  | string
   cardType?: string
   network?: string
 }
@@ -390,14 +390,17 @@ export default function AddCardModal({ isOpen, onClose, onCardAdded }: AddCardMo
             aria-label="Close modal"
           >
             <svg
-              width="18"
-              height="18"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
           </button>
         </header>

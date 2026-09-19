@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import ShowMeTheMathsModal, { type RecommendationMathData } from './ShowMeTheMathsModal'
+import '../../home.scss'
 
 export interface DashboardData {
   user: {
@@ -35,6 +36,34 @@ export interface DashboardData {
   recentStatementsCount: number
 }
 
+const getCategoryIcon = (icon?: string): string => {
+  if (!icon) return '💳'
+  const iconMap: Record<string, string> = {
+    utensils: '🍽️',
+    dining: '🍽️',
+    dinning: '🍽️',
+    'dining & delivery': '🍽️',
+    'dining & food delivery': '🍽️',
+    'shopping-bag': '🛍️',
+    shopping: '🛍️',
+    'shopping & electronics': '🛍️',
+    'online shopping': '🛍️',
+    plane: '✈️',
+    travel: '✈️',
+    'travel & flights': '✈️',
+    fuel: '⛽',
+    'fuel surcharge': '⛽',
+    groceries: '🥦',
+    grocery: '🥦',
+    'grocery & spends': '🥦',
+    utilities: '⚡',
+    'utility bills': '⚡',
+    entertainment: '🍿',
+    movies: '🍿',
+  }
+  return iconMap[icon.toLowerCase()] || icon
+}
+
 export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
   const { user, metrics, gmailConnected, recommendations } = data
 
@@ -43,7 +72,11 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const offset = direction === 'left' ? -320 : 320
+      const isMobile = typeof window !== 'undefined' && window.innerWidth <= 640
+      const scrollStep = isMobile
+        ? scrollContainerRef.current.clientWidth * 0.85
+        : 320
+      const offset = direction === 'left' ? -scrollStep : scrollStep
       scrollContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' })
     }
   }
@@ -261,7 +294,7 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
                   <div key={rec.category} className="cm-category-card">
                     <div className="cm-cat-top">
                       <span className="cm-cat-title">
-                        <span>{rec.icon}</span>
+                        <span className="cm-cat-emoji">{getCategoryIcon(rec.icon)}</span>
                         <span>{rec.category}</span>
                       </span>
                       <span className="cm-cat-multiplier">{rec.multiplier}</span>
@@ -292,6 +325,7 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
 
                     {/* ── Show Me the Maths Trigger ── */}
                     <button
+                      type="button"
                       className="cm-show-maths-btn"
                       id={`show-maths-${rec.category.replace(/\s+/g, '-').replace(/&/g, 'and').toLowerCase()}`}
                       onClick={() =>
@@ -299,7 +333,7 @@ export const DashboardView: React.FC<{ data: DashboardData }> = ({ data }) => {
                           category: rec.category,
                           categorySlug: rec.categorySlug,
                           cardName: rec.cardName || rec.bestCard,
-                          icon: rec.icon,
+                          icon: getCategoryIcon(rec.icon),
                           bestCard: rec.bestCard,
                           multiplier: rec.multiplier,
                         })

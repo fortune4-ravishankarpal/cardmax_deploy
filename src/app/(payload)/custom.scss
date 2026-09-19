@@ -18,3 +18,35 @@
     display: none !important;
   }
 }
+
+// Global Scrollbar
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #5478f073 #f3f4f6;
+}
+
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background-color: #5478f073;
+  border-radius: 8px;
+  border: 2px solid #f3f4f6;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background-color: #7267f0;
+}

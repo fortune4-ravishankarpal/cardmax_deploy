@@ -14,28 +14,28 @@
   --font-mono: #{$font-mono};
 
   // Centralized Theme Tokens
-  --color-primary: #5478F0;
-  --color-primary-hover: #4064E0;
-  --color-primary-bright: #6E8EF5;
-  --color-primary-light: #EEF2FE;
-  --color-background: #F7F9FF;
-  --color-surface: #FFFFFF;
-  --color-surface-hover: #EEF2FE;
-  --color-navy: #5478F0;
-  --color-navy-dark: #5478F0;
-  --color-navy-surface: #4064E0;
+  --color-primary: #5478f0;
+  --color-primary-hover: #4064e0;
+  --color-primary-bright: #6e8ef5;
+  --color-primary-light: #eef2fe;
+  --color-background: #f7f9ff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #eef2fe;
+  --color-navy: #5478f0;
+  --color-navy-dark: #5478f0;
+  --color-navy-surface: #4064e0;
   --color-text-primary: #111827;
-  --color-text-secondary: #4B5563;
-  --color-text-muted: #6B7280;
-  --color-text-on-primary: #FFFFFF;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  --color-info: #5478F0;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #6b7280;
+  --color-text-on-primary: #ffffff;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #5478f0;
 
   // Gradients
-  --gradient-primary: linear-gradient(135deg, #5478F0 0%, #6E8EF5 50%, #4064E0 100%);
-  --gradient-hero: linear-gradient(135deg, #5478F0 0%, #6E8EF5 50%, #4064E0 100%);
+  --gradient-primary: linear-gradient(135deg, #5478f0 0%, #6e8ef5 50%, #4064e0 100%);
+  --gradient-hero: linear-gradient(135deg, #5478f0 0%, #6e8ef5 50%, #4064e0 100%);
 }
 
 * {
@@ -111,7 +111,9 @@ svg {
   border: 1px solid rgba(84, 120, 240, 0.18);
   border-radius: $radius-xl;
   background: $color-navy-dark;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(84, 120, 240, 0.15);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 25px rgba(84, 120, 240, 0.15);
   @include flex-column;
   gap: $spacing-4;
 }
@@ -326,7 +328,7 @@ svg {
   padding: 12px 14px;
   border: 1px solid rgba(84, 120, 240, 0.18);
   border-radius: $radius-md;
-  background: #F7F9FF;
+  background: #f7f9ff;
   color: $color-text-primary;
   font-size: 14px;
   max-height: 220px;
@@ -347,3 +349,42 @@ svg {
     color: $color-text-dark-secondary;
   }
 }
+
+/* ==========================================================================
+   Global Custom Scrollbar
+   ========================================================================== */
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #5478f073 #f3f4f6;
+}
+
+/* 1. Width of the overall scrollbar */
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px; /* For horizontal scrollbars */
+}
+
+/* 2. Track (the background) */
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+/* 3. Thumb (the movable bar) */
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background-color: #5478f073;
+  border-radius: 8px;
+  border: 2px solid #f3f4f6; /* Creates padding around the thumb */
+}
+
+/* 4. Thumb hover effect */
+*::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background-color: #7267f0;
+}
+
