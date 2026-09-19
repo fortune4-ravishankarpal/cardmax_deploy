@@ -19,7 +19,7 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "nuke": "echo y | pnpm payload migrate:fresh && pnpm seed",
-    "postnuke": "pnpm safe:dev",
+    "nuke:x": "pnpm safe:dev",
     "seed": "tsx -r dotenv/config src/seed/seeders/index.seed.ts",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
