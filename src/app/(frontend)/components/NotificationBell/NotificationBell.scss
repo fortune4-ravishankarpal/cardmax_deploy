@@ -4,22 +4,22 @@
 // ─── Variables ────────────────────────────────────────────────────────────────
 $bell-size: 38px;
 $badge-color: #ef4444;
-$accent: #5478f0;
-$accent-hover: #385cdb;
-$accent-light: #eef2fe;
+$accent: #4f46e5;
+$accent-hover: #4338ca;
+$accent-light: #eef2ff;
 $surface: #ffffff;
-$surface-border: #e5e7eb;
-$surface-hover: #f8faff;
-$text-primary: #111827;
-$text-secondary: #4b5563;
-$text-muted: #9ca3af;
-$unread-bg: #f4f7ff;
-$unread-hover: #ebf1ff;
-$unread-dot: #5478f0;
+$surface-border: #e2e8f0;
+$surface-hover: #f8fafc;
+$text-primary: #0f172a;
+$text-secondary: #475569;
+$text-muted: #64748b;
+$unread-bg: #eef2ff;
+$unread-hover: #e0e7ff;
+$unread-dot: #4f46e5;
 $radius: 16px;
 $shadow:
-  0 18px 40px -6px rgba(15, 23, 42, 0.14),
-  0 4px 16px -2px rgba(84, 120, 240, 0.08);
+  0 18px 40px -6px rgba(15, 23, 42, 0.1),
+  0 4px 16px -2px rgba(79, 70, 229, 0.06);
 
 // ─── Bell Shake animation ─────────────────────────────────────────────────────
 @keyframes bellShake {
@@ -90,33 +90,37 @@ $shadow:
   width: $bell-size;
   height: $bell-size;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   cursor: pointer;
   transition:
     background 0.18s ease,
     border-color 0.18s ease,
+    color 0.18s ease,
     transform 0.15s ease,
     box-shadow 0.18s ease;
   outline: none;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.24);
-    border-color: rgba(255, 255, 255, 0.45);
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
   }
 
   &:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid #4f46e5;
     outline-offset: 2px;
   }
 
   &.is-open {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.55);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: #ffffff;
+    border-color: #4f46e5;
+    color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
   }
 
   &.is-new .cm-notif-bell__icon {
@@ -145,7 +149,7 @@ $shadow:
   text-align: center;
   animation: badgePulse 2s ease-out 1;
   pointer-events: none;
-  border: 2px solid #5478f0; // Blends cleanly with navbar background
+  border: 2px solid #f4f6fc; // Blends cleanly with navbar background
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 

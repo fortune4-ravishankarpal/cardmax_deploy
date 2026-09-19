@@ -4,24 +4,24 @@
 // Inspired by PointsFly: Deep Navy hero & clean light intelligent dashboard
 // ==========================================================================
 
-$color-bg-light: #f7f7fc;
+$color-bg-light: #f4f6fc;
 $color-card-white: #ffffff;
-$color-surface-hover: #f1f0fa;
-$color-border-card: rgba(84, 120, 240, 0.12);
-$color-border-hover: rgba(84, 120, 240, 0.35);
+$color-surface-hover: #eef2ff;
+$color-border-card: #e2e8f0;
+$color-border-hover: #cbd5e1;
 
-$color-primary: #5478f0;
-$color-primary-hover: #4064e0;
-$color-primary-bright: #6e8ef5;
-$color-primary-glow: rgba(84, 120, 240, 0.25);
+$color-primary: #4f46e5;
+$color-primary-hover: #4338ca;
+$color-primary-bright: #6366f1;
+$color-primary-glow: rgba(79, 70, 229, 0.2);
 
-$color-navy-deep: #5478f0;
-$color-navy-dark: #5478f0;
-$color-navy-surface: #4064e0;
+$color-navy-deep: #4f46e5;
+$color-navy-dark: #4338ca;
+$color-navy-surface: #3730a3;
 
-$color-text-dark: #111827;
-$color-text-muted: #6b7280;
-$color-text-subtle: #9ca3af;
+$color-text-dark: #0f172a;
+$color-text-muted: #475569;
+$color-text-subtle: #64748b;
 $color-text-light: #ffffff;
 $color-text-light-muted: #cbd5e1;
 
@@ -51,10 +51,10 @@ $pro-gold-2: #d97706;
     padding: 1rem 0.75rem 2.5rem;
   }
 
-  // #5478F0 hero background when rendering Guest Landing
+  // Clean soft slate background when rendering Guest Landing
   &:has(.cm-landing-hero) {
-    background: linear-gradient(135deg, #5478f0 0%, #6e8ef5 50%, #4064e0 100%);
-    color: #ffffff;
+    background: #f4f6fc;
+    color: #0f172a;
   }
 }
 
@@ -1095,11 +1095,11 @@ $pro-gold-2: #d97706;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.4rem 0.9rem;
+    padding: 0.4rem 0.95rem;
     border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.16);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #ffffff;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #4f46e5;
     font-size: 0.825rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
@@ -1108,24 +1108,24 @@ $pro-gold-2: #d97706;
     svg {
       width: 14px;
       height: 14px;
-      color: #ffffff;
+      color: #4f46e5;
     }
   }
 
   h1 {
     font-size: 3.25rem;
     line-height: 1.15;
-    font-weight: 900;
+    font-weight: 800;
     letter-spacing: -0.035em;
     margin: 0 0 1.25rem;
-    color: #ffffff;
+    color: #0f172a;
 
     @media (max-width: 768px) {
       font-size: 2.25rem;
     }
 
     .cm-text-gradient {
-      background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #bae6fd 100%);
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #4338ca 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -1134,7 +1134,7 @@ $pro-gold-2: #d97706;
   .cm-hero-subtitle {
     font-size: 1.15rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.92);
+    color: #475569;
     max-width: 680px;
     margin: 0 0 2.25rem;
 
@@ -1156,18 +1156,20 @@ $pro-gold-2: #d97706;
       gap: 0.5rem;
       padding: 0.9rem 1.8rem;
       background: #ffffff;
-      color: #5478f0;
+      color: #0f172a;
       font-weight: 700;
       font-size: 1rem;
       border-radius: 12px;
+      border: 1px solid #e2e8f0;
       text-decoration: none;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       transition: all 0.2s ease;
 
       &:hover {
-        background: #f0f4ff;
+        background: #f8fafc;
+        border-color: #cbd5e1;
         transform: translateY(-2px);
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
       }
     }
 
@@ -1176,25 +1178,26 @@ $pro-gold-2: #d97706;
       align-items: center;
       gap: 0.5rem;
       padding: 0.9rem 1.8rem;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      color: #ffffff;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: #0f172a;
       font-weight: 600;
       font-size: 1rem;
       border-radius: 12px;
       text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
       transition: all 0.2s ease;
 
       &:hover {
-        background: rgba(255, 255, 255, 0.22);
-        border-color: #ffffff;
+        background: #f8fafc;
+        border-color: #cbd5e1;
         transform: translateY(-2px);
       }
     }
   }
 }
 
-// Feature Highlights Grid
+// Feature Highlights Grid (Bottom Section Cards)
 .cm-landing-features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -1204,18 +1207,18 @@ $pro-gold-2: #d97706;
 
 .cm-feature-box {
   background: #ffffff;
-  border: 1px solid rgba(84, 120, 240, 0.18);
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 
   &:hover {
-    border-color: #5478f0;
-    box-shadow: 0 14px 40px rgba(84, 120, 240, 0.2);
+    border-color: #cbd5e1;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
     transform: translateY(-3px);
   }
 
@@ -1223,8 +1226,9 @@ $pro-gold-2: #d97706;
     width: 44px;
     height: 44px;
     border-radius: 12px;
-    background: rgba(84, 120, 240, 0.12);
-    color: #5478f0;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    color: #4f46e5;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1239,14 +1243,14 @@ $pro-gold-2: #d97706;
   h3 {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #111827;
+    color: #0f172a;
     margin: 0;
   }
 
   p {
     font-size: 0.88rem;
     line-height: 1.55;
-    color: #4b5563;
+    color: #475569;
     margin: 0;
   }
 }
@@ -1258,11 +1262,11 @@ $pro-gold-2: #d97706;
   justify-content: center;
   gap: 2.5rem;
   flex-wrap: wrap;
-  padding: 1.75rem 2rem;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 14px;
-  backdrop-filter: blur(10px);
+  padding: 1.5rem 2rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   max-width: 960px;
   margin: 0 auto;
 
@@ -1272,12 +1276,12 @@ $pro-gold-2: #d97706;
     gap: 0.6rem;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #ffffff;
+    color: #475569;
 
     svg {
       width: 18px;
       height: 18px;
-      color: #86efac;
+      color: #22c55e;
       flex-shrink: 0;
     }
   }

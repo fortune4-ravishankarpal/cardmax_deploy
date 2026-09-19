@@ -5,95 +5,95 @@
 
 // 1. Color Palette
 // --------------------------------------------------------------------------
-// Primary Brand Colors (Fintech Blue #5478F0)
-$color-primary: #5478F0;
-$color-primary-hover: #4064E0;
-$color-primary-dark: #2E52D0;
-$color-primary-bright: #6E8EF5;
-$color-primary-light: #EEF2FE;
-$color-primary-subtle: rgba(84, 120, 240, 0.10);
-$color-primary-glow: rgba(84, 120, 240, 0.25);
+// Primary Brand Colors (Modern Fintech Indigo #4F46E5)
+$color-primary: #4f46e5;
+$color-primary-hover: #4338ca;
+$color-primary-dark: #3730a3;
+$color-primary-bright: #6366f1;
+$color-primary-light: #eef2ff;
+$color-primary-subtle: rgba(79, 70, 229, 0.1);
+$color-primary-glow: rgba(79, 70, 229, 0.25);
 
-// Primary Brand Surfaces (Replacing dark navy throughout app)
-$color-navy-deep: #5478F0;
-$color-navy-dark: #5478F0;
-$color-navy-surface: #4064E0;
+// Primary Brand Surfaces
+$color-navy-deep: #4f46e5;
+$color-navy-dark: #4338ca;
+$color-navy-surface: #3730a3;
 
 // Secondary Accents
-$color-cyan: #38BDF8;
-$color-soft-purple: #818CF8;
+$color-cyan: #38bdf8;
+$color-soft-purple: #818cf8;
 
 // Light Backgrounds & Surfaces (Fintech Dashboard & SaaS)
-$color-bg-main: #F7F9FF;
-$color-bg-light: #F7F9FF;
-$color-surface-white: #FFFFFF;
-$color-surface-secondary: #EEF2FE;
+$color-bg-main: #f4f6fc;
+$color-bg-light: #f4f6fc;
+$color-surface-white: #ffffff;
+$color-surface-secondary: #eef2ff;
 
-// Unified Theme Surfaces (Card = White, Page = Light Blue Tint, Major Brand Surfaces = #5478F0)
-$color-bg-base: #F7F9FF;
-$color-bg-page: #F7F9FF;
-$color-surface-card: #FFFFFF;
-$color-surface-hover: #EEF2FE;
-$color-surface-subtle: #F7F9FF;
-$color-surface-modal: #FFFFFF;
+// Unified Theme Surfaces (Card = White, Page = Soft Slate Tint, Major Brand Surfaces = #4F46E5)
+$color-bg-base: #f4f6fc;
+$color-bg-page: #f4f6fc;
+$color-surface-card: #ffffff;
+$color-surface-hover: #eef2ff;
+$color-surface-subtle: #f4f6fc;
+$color-surface-modal: #ffffff;
 
 // Text Colors (High Contrast & Legibility)
-$color-text-primary: #111827;
-$color-text-secondary: #4B5563;
-$color-text-muted: #6B7280;
-$color-text-on-primary: #FFFFFF;
+$color-text-primary: #0f172a;
+$color-text-secondary: #475569;
+$color-text-muted: #64748b;
+$color-text-on-primary: #ffffff;
 $color-text-on-primary-muted: rgba(255, 255, 255, 0.88);
-$color-text-dark-primary: #FFFFFF;
-$color-text-dark-secondary: #CBD5E1;
-$color-text-main: #111827;
-$color-text-subtle: #9CA3AF;
-$color-text-inverse: #111827;
+$color-text-dark-primary: #ffffff;
+$color-text-dark-secondary: #cbd5e1;
+$color-text-main: #0f172a;
+$color-text-subtle: #94a3b8;
+$color-text-inverse: #0f172a;
 
 // Border Colors
-$color-border-subtle: rgba(84, 120, 240, 0.08);
-$color-border: rgba(84, 120, 240, 0.12);
-$color-border-card: rgba(84, 120, 240, 0.12);
-$color-border-hover: rgba(84, 120, 240, 0.35);
-$color-border-strong: rgba(84, 120, 240, 0.25);
-$color-border-input: #E5E7EB;
+$color-border-subtle: #f1f5f9;
+$color-border: #e2e8f0;
+$color-border-card: #e2e8f0;
+$color-border-hover: #cbd5e1;
+$color-border-strong: #94a3b8;
+$color-border-input: #e2e8f0;
 
 // Status & Feedback Colors
-$color-success: #22C55E;
-$color-success-soft: #86EFAC;
-$color-success-light: #DCFCE7;
-$color-success-dark: #15803D;
+$color-success: #22c55e;
+$color-success-soft: #86efac;
+$color-success-light: #dcfce7;
+$color-success-dark: #15803d;
 $color-success-bg: rgba(34, 197, 94, 0.12);
 $color-success-border: rgba(34, 197, 94, 0.25);
 
-$color-warning: #F59E0B;
-$color-warning-light: #FEF3C7;
-$color-warning-dark: #B45309;
+$color-warning: #f59e0b;
+$color-warning-light: #fef3c7;
+$color-warning-dark: #b45309;
 $color-warning-bg: rgba(245, 158, 11, 0.12);
 $color-warning-border: rgba(245, 158, 11, 0.25);
 
-$color-danger: #EF4444;
-$color-danger-hover: #DC2626;
-$color-danger-light: #FEE2E2;
-$color-danger-dark: #B91C1C;
+$color-danger: #ef4444;
+$color-danger-hover: #dc2626;
+$color-danger-light: #fee2e2;
+$color-danger-dark: #b91c1c;
 $color-danger-bg: rgba(239, 68, 68, 0.12);
 $color-danger-border: rgba(239, 68, 68, 0.25);
-$color-danger-text: #FCA5A5;
+$color-danger-text: #fca5a5;
 
-$color-info: #5478F0;
-$color-info-light: #EEF2FE;
-$color-info-dark: #0369A1;
-$color-info-bg: rgba(84, 120, 240, 0.10);
+$color-info: #4f46e5;
+$color-info-light: #eef2ff;
+$color-info-dark: #3730a3;
+$color-info-bg: rgba(79, 70, 229, 0.1);
 
 // Max Pro Gold Gradient Accent
-$pro-gold-start: #F59E0B;
-$pro-gold-end: #D97706;
+$pro-gold-start: #f59e0b;
+$pro-gold-end: #d97706;
 $pro-gold-glow: rgba(245, 158, 11, 0.35);
 
 // Gradients
-$gradient-primary: linear-gradient(135deg, #5478F0 0%, #6E8EF5 50%, #4064E0 100%);
-$gradient-primary-hover: linear-gradient(135deg, #4064E0 0%, #5B7EF2 50%, #3558DC 100%);
-$gradient-hero: linear-gradient(135deg, #5478F0 0%, #6E8EF5 50%, #4064E0 100%);
-$gradient-pro-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+$gradient-primary: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #4338ca 100%);
+$gradient-primary-hover: linear-gradient(135deg, #4338ca 0%, #4f46e5 50%, #3730a3 100%);
+$gradient-hero: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #4338ca 100%);
+$gradient-pro-gold: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
 
 // 2. Typography Tokens
 // --------------------------------------------------------------------------
