@@ -701,7 +701,7 @@ export default function AddCardModal({ isOpen, onClose, onCardAdded }: AddCardMo
                   />
                 </div>
 
-                <div className="form-row-2">
+                <div className="form-row-2 row-compact">
                   <div className="form-group">
                     <label htmlFor="vault-expiry-month" className="form-label">
                       Expiry Month <span className="required-star">*</span>

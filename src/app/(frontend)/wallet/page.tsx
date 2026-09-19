@@ -378,52 +378,51 @@ export default function WalletPage() {
         {/* ── Reward Recommendations Widget ──────────────────────────── */}
         <section className="wallet-recommendations-section">
           <div className="wallet-rec-header">
-            <div>
-              <h2 className="wallet-rec-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-                </svg>
-                Best Card by Category
+            <div className="wallet-rec-header-top">
+              <div className="wallet-rec-title-wrap">
+                <h2 className="wallet-rec-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                  </svg>
+                  <span>Best Card by Category</span>
+                </h2>
                 {!recLoading && (
-                  <span style={{
-                    fontSize: '0.62rem', fontWeight: 700, marginLeft: 8,
-                    padding: '0.12rem 0.45rem', borderRadius: 4,
-                    background: recSource === 'live' ? 'rgba(34,197,94,0.15)' : 'rgba(245,158,11,0.15)',
-                    color: recSource === 'live' ? '#15803d' : '#b45309',
-                  }}>
+                  <span
+                    className={`wallet-rec-live-badge ${recSource === 'live' ? 'is-live' : 'is-static'}`}
+                  >
                     {recSource === 'live' ? '● Live from DB' : '● Static data'}
                   </span>
                 )}
-              </h2>
-              <p className="wallet-rec-subtitle">See the exact maths behind each card recommendation</p>
-            </div>
-            {recTiles.length > 3 && (
-              <div className="wallet-rec-scroll-controls">
-                <button
-                  type="button"
-                  className="wallet-scroll-btn"
-                  onClick={() => handleRecScroll('left')}
-                  aria-label="Scroll left"
-                  title="Scroll left"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="wallet-scroll-btn"
-                  onClick={() => handleRecScroll('right')}
-                  aria-label="Scroll right"
-                  title="Scroll right"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
               </div>
-            )}
+              {recTiles.length > 3 && (
+                <div className="wallet-rec-scroll-controls">
+                  <button
+                    type="button"
+                    className="wallet-scroll-btn"
+                    onClick={() => handleRecScroll('left')}
+                    aria-label="Scroll left"
+                    title="Scroll left"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="wallet-scroll-btn"
+                    onClick={() => handleRecScroll('right')}
+                    aria-label="Scroll right"
+                    title="Scroll right"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
+            <p className="wallet-rec-subtitle">See the exact maths behind each card recommendation</p>
           </div>
 
           {recLoading ? (

@@ -153,6 +153,34 @@ $shadow:
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
+// ─── Mobile Backdrop ──────────────────────────────────────────────────────────
+.cm-notif-backdrop {
+  display: none;
+
+  @media (max-width: 640px) {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.28);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 1040;
+    animation: cmNotifFadeIn 0.18s ease;
+  }
+}
+
+@keyframes cmNotifFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 // ─── Dropdown panel ───────────────────────────────────────────────────────────
 .cm-notif-dropdown {
   position: absolute;
@@ -170,9 +198,19 @@ $shadow:
   animation: dropdownIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
   overflow: hidden;
 
-  @media (max-width: 480px) {
-    width: calc(100vw - 24px);
-    right: -10px;
+  @media (max-width: 640px) {
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: 440px;
+    margin: 0 auto;
+    max-height: calc(100dvh - 84px);
+    border-radius: 14px;
+    box-shadow:
+      0 20px 45px -10px rgba(15, 23, 42, 0.25),
+      0 4px 16px -2px rgba(79, 70, 229, 0.08);
   }
 }
 
@@ -185,6 +223,10 @@ $shadow:
   background: #ffffff;
   border-bottom: 1px solid #f1f3f7;
   flex-shrink: 0;
+
+  @media (max-width: 640px) {
+    padding: 12px 14px 10px;
+  }
 }
 
 .cm-notif-dropdown__title {
@@ -192,6 +234,12 @@ $shadow:
   font-weight: 700;
   color: $text-primary;
   letter-spacing: -0.01em;
+}
+
+.cm-notif-dropdown__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .cm-notif-dropdown__mark-all {
@@ -211,12 +259,41 @@ $shadow:
   }
 }
 
+.cm-notif-dropdown__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #e2e8f0;
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  svg {
+    display: block;
+  }
+}
+
 // ─── Notification list ────────────────────────────────────────────────────────
 .cm-notif-dropdown__list {
   flex: 1;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #5478f073 #f3f4f6;
+  scrollbar-color: #4f46e573 #f4f6fc;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -288,6 +365,11 @@ $shadow:
   cursor: pointer;
   transition: background 0.15s ease;
   position: relative;
+
+  @media (max-width: 640px) {
+    padding: 11px 14px;
+    gap: 10px;
+  }
 
   &:not(:last-child) {
     border-bottom: 1px solid #f1f3f7;
@@ -374,6 +456,10 @@ $shadow:
   background: #fafbfe;
   flex-shrink: 0;
   text-align: center;
+
+  @media (max-width: 640px) {
+    padding: 10px 14px;
+  }
 }
 
 .cm-notif-dropdown__view-all {

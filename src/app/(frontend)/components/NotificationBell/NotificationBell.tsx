@@ -94,9 +94,9 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
     }
   }, [isOpen, fetchNotifications])
 
-  // Close on outside click / Escape
+  // Close on outside click / touch / Escape
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false)
       }
@@ -104,10 +104,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false)
     }
-    if (isOpen) document.addEventListener('mousedown', handleClickOutside)
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside)
+    }
     document.addEventListener('keydown', handleEscape)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
       document.removeEventListener('keydown', handleEscape)
     }
   }, [isOpen])
@@ -163,19 +167,47 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
       </button>
 
       {isOpen && (
-        <div className="cm-notif-dropdown" role="dialog" aria-label="Notifications panel">
+        <>
+          <div
+            className="cm-notif-backdrop"
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="cm-notif-dropdown" role="dialog" aria-label="Notifications panel">
           {/* Header */}
           <div className="cm-notif-dropdown__header">
             <span className="cm-notif-dropdown__title">Notifications</span>
-            {unreadCount > 0 && (
+            <div className="cm-notif-dropdown__actions">
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  className="cm-notif-dropdown__mark-all"
+                  onClick={markAllRead}
+                >
+                  Mark all read
+                </button>
+              )}
               <button
                 type="button"
-                className="cm-notif-dropdown__mark-all"
-                onClick={markAllRead}
+                className="cm-notif-dropdown__close"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close notifications"
               >
-                Mark all read
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
               </button>
-            )}
+            </div>
           </div>
 
           {/* Notification list */}
@@ -248,6 +280,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ userId }) =>
             </Link>
           </div>
         </div>
+        </>
       )}
     </div>
   )
