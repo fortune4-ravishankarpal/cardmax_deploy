@@ -31,7 +31,6 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-
       # 5.  Generate types
       - name: Install Dependencies
         run: pnpm gen
