@@ -66,7 +66,7 @@ jobs:
             pnpm-lock.yaml \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/var/www/cardmax/
 
-      # 10. Install production dependencies on AWS and start/restart PM2 process
+    # 10. Install production dependencies on AWS and start/restart PM2 process
       - name: Install Production Dependencies & Start Process
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -74,10 +74,12 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /var/www/cardmax
+            # Source shell environment files to load Node, PNPM, and PM2 paths
+            [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
+            [ -s "$HOME/.profile" ] && \. "$HOME/.profile"
+            [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc"
 
-            # Load Node/PM2/PNPM environment into SSH session path
-            export PATH=$PATH:~/.nvm/versions/node/$(node -v)/bin:~/.local/share/pnpm
+            cd /var/www/cardmax
 
             # Install ONLY production dependencies
             pnpm install --prod
