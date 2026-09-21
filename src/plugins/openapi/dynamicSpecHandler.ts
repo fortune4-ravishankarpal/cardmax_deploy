@@ -37,7 +37,7 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
     serve: true,
     filters: {
       include: [],
-      exclude: ['admin'], // Hide internal admin collection by default from API specs
+      exclude: ['admin', 'roles'], // Hide internal admin and roles collections by default from API specs
       includeHidden: false,
       includeSystem: false,
       includeCustom: true,

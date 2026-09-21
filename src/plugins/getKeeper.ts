@@ -9,7 +9,7 @@ const baseGatekeeperPlugin = gatekeeperPlugin({
     },
   },
   excludeCollections: [
-'users',
+    'users',
     'CreditCard',
     'banks',
     'user-cards',
@@ -50,7 +50,8 @@ export const gatekeeperPluginConfig: Plugin = async (incomingConfig) => {
   const config = await baseGatekeeperPlugin(incomingConfig)
 
   // Protect gatekeeper collections so non-admin users (e.g. api-users or users)
-  // never trigger gatekeeper's checkPermission with their own string role (like 'developer').
+  // never trigger gatekeeper's checkPermission with their own string role (like 'developer'),
+  // and unauthenticated build probes never attempt req.payload.count().
   const targetSlugs = ['admin', 'roles', 'provider-events']
 
   for (const slug of targetSlugs) {
@@ -63,9 +64,9 @@ export const gatekeeperPluginConfig: Plugin = async (incomingConfig) => {
         const origFn = origAccess[op]
         if (origFn && typeof origFn === 'function') {
           ;(col.access as any)[op] = async (args: any) => {
-            // If the user belongs to another auth collection (e.g. api-users or users),
-            // they cannot access admin/roles and gatekeeper must not attempt to resolve their role ID.
-            if (args.req?.user && args.req.user.collection !== 'admin') {
+            // Deny immediately if unauthenticated or if the user is not from the CMS 'admin' collection.
+            // This prevents gatekeeper from accessing req.payload during build/probes or resolving non-admin roles.
+            if (!args.req?.user || args.req.user.collection !== 'admin') {
               return false
             }
             return origFn(args)
@@ -77,4 +78,3 @@ export const gatekeeperPluginConfig: Plugin = async (incomingConfig) => {
 
   return config
 }
-
