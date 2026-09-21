@@ -513,31 +513,254 @@ export const Users: CollectionConfig = {
       path: '/send-otp',
       method: 'post',
       handler: sendOtpHandler,
+      custom: {
+        openapi: {
+          summary: 'Send OTP for Authentication',
+          description: 'Request a one-time password (OTP) via SMS or Email for user authentication.',
+          tags: ['Authentication'],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['identifier'],
+                  properties: {
+                    identifier: {
+                      type: 'string',
+                      description: 'Mobile number (with country code e.g. +91...) or email address',
+                      example: '+919876543210',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              description: 'OTP sent successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      channel: { type: 'string', example: 'sms' },
+                      maskedIdentifier: { type: 'string', example: '+91******3210' },
+                      expiresInSeconds: { type: 'number', example: 300 },
+                    },
+                  },
+                },
+              },
+            },
+            '400': {
+              description: 'Invalid identifier or validation error',
+            },
+          },
+        },
+      },
     },
     {
       path: '/verify-otp',
       method: 'post',
       handler: verifyOtpHandler,
+      custom: {
+        openapi: {
+          summary: 'Verify OTP & Issue Session',
+          description: 'Verify the OTP code received by the user and authenticate / create the user session.',
+          tags: ['Authentication'],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['identifier', 'code'],
+                  properties: {
+                    identifier: {
+                      type: 'string',
+                      description: 'Mobile number (with country code e.g. +91...) or email address',
+                      example: '+919876543210',
+                    },
+                    code: {
+                      type: 'string',
+                      description: '4-8 digit OTP code',
+                      example: '123456',
+                    },
+                    name: {
+                      type: 'string',
+                      description: 'Optional user full name for new user registration',
+                      example: 'John Doe',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              description: 'Authentication successful, session token issued',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string', example: '01912345-6789-7abc-def0-1234567890ab' },
+                      email: { type: 'string', example: 'user@example.com' },
+                      name: { type: 'string', example: 'John Doe' },
+                      profileComplete: { type: 'boolean', example: true },
+                      token: { type: 'string', example: 'jwt-session-token' },
+                    },
+                  },
+                },
+              },
+            },
+            '400': {
+              description: 'Invalid or expired OTP',
+            },
+          },
+        },
+      },
     },
     {
       path: '/complete-profile',
       method: 'post',
       handler: completeProfileHandler,
+      custom: {
+        openapi: {
+          summary: 'Complete User Profile',
+          description: 'Completes onboarding for the user after initial OTP verification.',
+          tags: ['Authentication', 'Users'],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['name'],
+                  properties: {
+                    name: { type: 'string', example: 'John Doe' },
+                    email: { type: 'string', example: 'john@example.com' },
+                    phone: { type: 'string', example: '+919876543210' },
+                    income: { type: 'number', example: 1200000 },
+                    employmentType: { type: 'string', example: 'Salaried' },
+                    pan: { type: 'string', example: 'ABCDE1234F' },
+                    marketingConsent: { type: 'boolean', example: false },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              description: 'Profile completed successfully',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      profileComplete: { type: 'boolean', example: true },
+                    },
+                  },
+                },
+              },
+            },
+            '400': {
+              description: 'Validation error',
+            },
+          },
+        },
+      },
     },
     {
       path: '/profile',
       method: 'get',
       handler: getProfileHandler,
+      custom: {
+        openapi: {
+          summary: 'Get Current User Profile',
+          description: 'Fetches the authenticated user profile information.',
+          tags: ['Users'],
+          responses: {
+            '200': {
+              description: 'User profile details',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string' },
+                      email: { type: 'string' },
+                      name: { type: 'string' },
+                      phone: { type: 'string' },
+                      isPro: { type: 'boolean' },
+                      profileCompleted: { type: 'boolean' },
+                    },
+                  },
+                },
+              },
+            },
+            '401': {
+              description: 'Unauthorized - session required',
+            },
+          },
+        },
+      },
     },
     {
       path: '/profile',
       method: 'patch',
       handler: updateProfileHandler,
+      custom: {
+        openapi: {
+          summary: 'Update User Profile',
+          description: 'Updates specific fields on the authenticated user profile.',
+          tags: ['Users'],
+          requestBody: {
+            required: true,
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string', example: 'John Doe' },
+                    phone: { type: 'string', example: '+919876543210' },
+                    income: { type: 'number', example: 1500000 },
+                    employmentType: { type: 'string', example: 'Salaried' },
+                    pan: { type: 'string', example: 'ABCDE1234F' },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              description: 'Profile updated successfully',
+            },
+            '401': {
+              description: 'Unauthorized',
+            },
+          },
+        },
+      },
     },
     {
       path: '/logout',
       method: 'post',
       handler: logoutHandler,
+      custom: {
+        openapi: {
+          summary: 'User Logout',
+          description: 'Logs out the user and clears their authentication session cookie.',
+          tags: ['Authentication'],
+          responses: {
+            '200': {
+              description: 'Logged out successfully',
+            },
+          },
+        },
+      },
     },
     {
       path: '/google/login',

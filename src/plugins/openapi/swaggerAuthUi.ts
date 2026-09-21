@@ -1,4 +1,5 @@
 import type { PayloadRequest } from 'payload'
+import { FUNCTIONAL_TAG_ORDER } from './tagOrder'
 
 export const swaggerAuthUiHandler = async (req: PayloadRequest): Promise<Response> => {
   try {
@@ -332,6 +333,7 @@ export const swaggerAuthUiHandler = async (req: PayloadRequest): Promise<Respons
     });
 
     window.onload = () => {
+      const tagOrder = ${JSON.stringify(FUNCTIONAL_TAG_ORDER.map((t) => t.toLowerCase()))};
       window.ui = SwaggerUIBundle({
         url: '/api/openapi.json',
         dom_id: '#swagger-ui',
@@ -341,6 +343,15 @@ export const swaggerAuthUiHandler = async (req: PayloadRequest): Promise<Respons
           SwaggerUIBundle.SwaggerUIStandalonePreset
         ],
         layout: "BaseLayout",
+        tagsSorter: (a, b) => {
+          const idxA = tagOrder.indexOf(a.toLowerCase());
+          const idxB = tagOrder.indexOf(b.toLowerCase());
+          if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+          if (idxA !== -1) return -1;
+          if (idxB !== -1) return 1;
+          return a.localeCompare(b);
+        },
+        operationsSorter: 'alpha',
         requestInterceptor: (request) => {
           request.credentials = 'same-origin';
           return request;

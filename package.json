@@ -15,6 +15,8 @@
     "gen": "pnpm generate:importmap && pnpm generate:types",
     "seed:one": "tsx -r dotenv/config scripts/seed-one.ts",
     "sync:plugin": "node scripts/sync-plugin.js",
+    "swagger:check": "node scripts/sync-swagger.js",
+    "swagger:sync": "node scripts/sync-swagger.js --sync",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
