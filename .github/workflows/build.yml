@@ -27,9 +27,14 @@ jobs:
           node-version: 24
           cache: 'pnpm'
 
+      # Inject whole .env file onto the build machine
+      - name: Create .env File from Secret
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+
       # 4. Install dependencies
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       # 5.  Generate types
       - name: Install Dependencies
@@ -38,5 +43,3 @@ jobs:
       # 6. Execute build
       - name: Create Build
         run: pnpm build
-
-        
