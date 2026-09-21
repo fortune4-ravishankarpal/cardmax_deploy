@@ -1,28 +1,44 @@
 import type { Access } from 'payload'
-
-const isAdmin = (user: unknown): boolean => {
-  const u = user as { collection?: string } | null
-  return Boolean(u && u.collection === 'admin')
-}
+import { hasApiPermission } from '@/access/apiPermissionEngine'
 
 export const usersReadAccess: Access = ({ req }) => {
-  const user = (req.user as { collection?: string; id?: number } | null) || null
+  const user = (req.user as { collection?: string; id?: string | number } | null) || null
   if (!user) return false
-  if (isAdmin(user)) return true
-  return { id: { equals: user.id } }
+
+  // 1. CMS Superadmins or API Users with 'read' permission on 'users' collection
+  if (hasApiPermission(req, 'users', 'read')) {
+    return true
+  }
+
+  // 2. Regular customer users (collection === 'users') can only view their own user record
+  if (user.collection === 'users') {
+    return { id: { equals: user.id } }
+  }
+
+  return false
 }
 
 export const usersCreateAccess: Access = ({ req }) => {
-  return isAdmin(req.user)
+  return hasApiPermission(req, 'users', 'create')
 }
 
 export const usersUpdateAccess: Access = ({ req }) => {
-  const user = (req.user as { collection?: string; id?: number } | null) || null
+  const user = (req.user as { collection?: string; id?: string | number } | null) || null
   if (!user) return false
-  if (isAdmin(user)) return true
-  return { id: { equals: user.id } }
+
+  // 1. CMS Superadmins or API Users with 'update' permission on 'users'
+  if (hasApiPermission(req, 'users', 'update')) {
+    return true
+  }
+
+  // 2. Regular customer users can only update their own record
+  if (user.collection === 'users') {
+    return { id: { equals: user.id } }
+  }
+
+  return false
 }
 
 export const usersDeleteAccess: Access = ({ req }) => {
-  return isAdmin(req.user)
+  return hasApiPermission(req, 'users', 'delete')
 }

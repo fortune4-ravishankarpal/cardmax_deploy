@@ -66,6 +66,18 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
     }
   }
 
+  // Remove restricted/private fields (such as encrypted PAN) from schemas so Swagger does not prefill forbidden query parameters
+  const RESTRICTED_FIELDS = ['pan']
+  if (cachedBaseDoc?.components?.schemas) {
+    for (const schema of Object.values(cachedBaseDoc.components.schemas) as any[]) {
+      if (schema && typeof schema === 'object' && schema.properties) {
+        for (const f of RESTRICTED_FIELDS) {
+          delete schema.properties[f]
+        }
+      }
+    }
+  }
+
   // Ensure all active tags are present, have descriptive metadata, and are sorted
   const allDocTags = new Set<string>()
   for (const [, pathItem] of Object.entries(cachedBaseDoc?.paths || {})) {
