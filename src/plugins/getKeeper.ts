@@ -9,7 +9,7 @@ const baseGatekeeperPlugin = gatekeeperPlugin({
     },
   },
   excludeCollections: [
-    'users',
+'users',
     'CreditCard',
     'banks',
     'user-cards',
@@ -42,6 +42,7 @@ const baseGatekeeperPlugin = gatekeeperPlugin({
     'anonymization-logs',
     'provider-events',
     'roles',
+    'admin',
   ],
 })
 
