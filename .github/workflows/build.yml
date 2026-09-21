@@ -36,43 +36,36 @@ jobs:
 
       # 6. Execute build
       - name: Create Build
-        run: npm run build 
+        run: npm run build
 
-      # 7a. Setup SSH Key for Tunneling
+      # 7. Setup SSH Agent
       - name: Setup SSH Agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      # 7b. Open SSH Tunnel, Run Migrations, Close Tunnel
-      - name: Run Migrations via SSH Tunnel
+      # 8. Run Migrations on GitHub Runner via SSH Tunnel
+      - name: Run Database Migrations via SSH Tunnel
         run: |
-          # Add EC2 host to known hosts
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-          # Create background SSH tunnel (maps local port 5432 to EC2 port 5432)
+          # Open background SSH tunnel mapping local port 5432 to EC2 5432
           ssh -f -N -L 5432:127.0.0.1:5432 ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}
 
-          # Run migration locally through the tunnel
+          # Run migration locally through tunnel
           npm run mg
-
-      # 8. Setup SSH Key for AWS Transfer
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
       # 9. Sync Build Artifacts, configuration, and package files to AWS
       - name: Sync Build Artifacts to AWS EC2
         run: |
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
           ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm -rf /var/www/cardmax/.next"
 
           rsync -avz \
             .next \
             public \
             package.json \
+            package-lock.json \
+            tsconfig.json \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/var/www/cardmax/
 
       # 10. Install production dependencies on AWS and start/restart PM2 process
@@ -83,7 +76,6 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Source shell environment files to load Node and PM2 paths
             [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
             [ -s "$HOME/.profile" ] && \. "$HOME/.profile"
             [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc"
