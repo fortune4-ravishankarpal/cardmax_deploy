@@ -1,6 +1,7 @@
 import type { PayloadRequest } from 'payload'
 import { buildOpenApiDocument } from '@seshuk/payload-plugin-openapi'
 import { hasApiPermission, HTTP_METHOD_TO_OPERATION } from '@/access/apiPermissionEngine'
+import { sortTags, TAG_METADATA } from './tagOrder'
 
 let cachedBaseDoc: any = null
 
@@ -9,6 +10,13 @@ const deriveServerUrl = (req: PayloadRequest): string => {
   const protocol = host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https'
   return `${protocol}://${host}`
 }
+
+const OBSOLETE_AUTH_PATHS = [
+  '/api/users/login',
+  '/api/users/forgot-password',
+  '/api/users/reset-password',
+  '/api/users/unlock',
+]
 
 /**
  * Generates or retrieves the cached base OpenAPI document.
@@ -29,7 +37,7 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
     serve: true,
     filters: {
       include: [],
-      exclude: ['admin'], // Hide internal admin collection by default from API specs
+      exclude: ['admin', 'roles'], // Hide internal admin and roles collections by default from API specs
       includeHidden: false,
       includeSystem: false,
       includeCustom: true,
@@ -41,7 +49,7 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
     },
     interactiveAuth: { enabled: true, endpoint: '/openapi-auth' },
     nestedTags: false,
-    cache: true,
+    cache: process.env.NODE_ENV === 'production',
     extensions: [],
   }
 
@@ -51,6 +59,63 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
     language: 'en',
   })
 
+  // Remove obsolete password-based auth endpoints from Swagger
+  if (cachedBaseDoc?.paths) {
+    for (const path of OBSOLETE_AUTH_PATHS) {
+      delete cachedBaseDoc.paths[path]
+    }
+  }
+
+  // Remove restricted/private fields (such as encrypted PAN) from schemas so Swagger does not prefill forbidden query parameters
+  const RESTRICTED_FIELDS = ['pan']
+  if (cachedBaseDoc?.components?.schemas) {
+    for (const schema of Object.values(cachedBaseDoc.components.schemas) as any[]) {
+      if (schema && typeof schema === 'object' && schema.properties) {
+        for (const f of RESTRICTED_FIELDS) {
+          delete schema.properties[f]
+        }
+      }
+    }
+
+    // Provide schema definitions for internal entities referenced in relations (like createdBy / lastModifiedBy)
+    // so Swagger UI can resolve references without throwing resolver errors
+    if (!cachedBaseDoc.components.schemas.Admin) {
+      cachedBaseDoc.components.schemas.Admin = {
+        type: 'object',
+        description: 'System Administrator (Internal Reference)',
+        properties: {
+          id: { type: 'string', description: 'Admin user unique identifier' },
+          email: { type: 'string', format: 'email', description: 'Admin email address' },
+        },
+      }
+    }
+  }
+
+  // Ensure all active tags are present, have descriptive metadata, and are sorted
+  const allDocTags = new Set<string>()
+  for (const [, pathItem] of Object.entries(cachedBaseDoc?.paths || {})) {
+    if (!pathItem || typeof pathItem !== 'object') continue
+    for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
+      const opTags = (pathItem as any)?.[method]?.tags
+      if (Array.isArray(opTags)) {
+        opTags.forEach((t: string) => allDocTags.add(t))
+      }
+    }
+  }
+
+  const existingTags = Array.isArray(cachedBaseDoc?.tags) ? cachedBaseDoc.tags : []
+  const tagMap = new Map<string, any>(existingTags.map((t: any) => [t.name, t]))
+
+  cachedBaseDoc.tags = sortTags(
+    Array.from(allDocTags).map(
+      (tagName) =>
+        tagMap.get(tagName) || {
+          name: tagName,
+          description: TAG_METADATA[tagName]?.description || `${tagName} Endpoints`,
+        }
+    )
+  )
+
   return cachedBaseDoc
 }
 
@@ -59,12 +124,14 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
  * Returns a customized OpenAPI document based on the authenticated user's permissions.
  */
 export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response> => {
-  const user = req.user as {
+  let user = req.user as {
+    id?: string | number
     collection?: string
     role?: string
     status?: string
     email?: string
     permissions?: Array<{ collection: string; methods: string[] }>
+    allowedEndpoints?: string[]
   } | null
 
   // 1. Unauthenticated -> 401 Unauthorized
@@ -76,6 +143,28 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       },
       { status: 401 }
     )
+  }
+
+  // Fetch fresh API user record from DB so changes in Admin Panel apply immediately
+  if (user.id && user.collection === 'api-users') {
+    try {
+      const freshUser = (await req.payload.findByID({
+        collection: 'api-users',
+        id: String(user.id),
+        depth: 0,
+      })) as any
+      if (freshUser) {
+        user = {
+          ...user,
+          role: freshUser.role ?? user.role,
+          status: freshUser.status ?? user.status,
+          permissions: freshUser.permissions ?? user.permissions,
+          allowedEndpoints: freshUser.allowedEndpoints ?? user.allowedEndpoints,
+        }
+      }
+    } catch {
+      // fallback to decoded token
+    }
   }
 
   // 2. Suspended / Inactive User -> 403 Forbidden
@@ -105,6 +194,9 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       title: 'CardMax API (Administrator View)',
       description: `Full access view for ${user.email ?? 'Admin'}. All collections and CRUD operations enabled.`,
     }
+    for (const p of OBSOLETE_AUTH_PATHS) {
+      delete adminDoc.paths?.[p]
+    }
     return Response.json(adminDoc)
   }
 
@@ -124,6 +216,9 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
 
     const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete']
     const paths = filteredDoc.paths || {}
+    for (const p of OBSOLETE_AUTH_PATHS) {
+      delete paths[p]
+    }
     const activeTags = new Set<string>()
 
     for (const [pathKey, pathItem] of Object.entries(paths)) {
@@ -133,12 +228,18 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       const cleanPath = pathKey.replace(/^\/api\//, '').replace(/^\//, '')
       const firstSegment = cleanPath.split('/')[0]?.toLowerCase()
 
+      // 1. Check if user has explicit endpoint-level permission
+      const userAllowedEndpoints = Array.isArray(user.allowedEndpoints) ? user.allowedEndpoints : []
+      const isExplicitlyAllowedEndpoint = userAllowedEndpoints.includes(pathKey)
+
       // If this path belongs to a collection:
       if (firstSegment && collectionSlugs.has(firstSegment)) {
         for (const method of HTTP_METHODS) {
           if ((pathItem as any)[method]) {
             const operation = HTTP_METHOD_TO_OPERATION[method]
-            const allowed = operation ? hasApiPermission(req, firstSegment, operation) : false
+            const allowed =
+              isExplicitlyAllowedEndpoint ||
+              (operation ? hasApiPermission(req, firstSegment, operation) : false)
 
             if (!allowed) {
               delete (pathItem as any)[method]
@@ -170,10 +271,18 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       }
     }
 
-    // Filter tags to only include tags of active operations
-    if (Array.isArray(filteredDoc.tags)) {
-      filteredDoc.tags = filteredDoc.tags.filter((t: any) => activeTags.has(t.name))
-    }
+    // Ensure tags include all active operations, enriched with metadata and sorted in functional order
+    const existingTags = Array.isArray(filteredDoc.tags) ? filteredDoc.tags : []
+    const tagMap = new Map<string, any>(existingTags.map((t: any) => [t.name, t]))
+    filteredDoc.tags = sortTags(
+      Array.from(activeTags).map(
+        (tagName) =>
+          tagMap.get(tagName) || {
+            name: tagName,
+            description: TAG_METADATA[tagName]?.description || `${tagName} Endpoints`,
+          }
+      )
+    )
 
     return Response.json(filteredDoc)
   }
