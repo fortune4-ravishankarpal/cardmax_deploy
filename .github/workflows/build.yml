@@ -50,23 +50,22 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      # 9. Clear old .next build and copy new build output + package files to AWS
+      # 9. Sync Build Artifacts, configuration, and package files to AWS
       - name: Sync Build Artifacts to AWS EC2
         run: |
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-          # Remove old .next build on server prior to syncing new files
           ssh ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} "rm -rf /var/www/cardmax/.next"
 
-          # Rsync built files, public directory, package.json, and lockfile
           rsync -avz \
             .next \
             public \
             package.json \
             pnpm-lock.yaml \
+            tsconfig.json \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/var/www/cardmax/
 
-    # 10. Install production dependencies on AWS and start/restart PM2 process
+      # 10. Install production dependencies on AWS and start/restart PM2 process
       - name: Install Production Dependencies & Start Process
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -80,7 +79,7 @@ jobs:
             [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc"
 
             cd /var/www/cardmax
-
+            pnpm config set approved-builds "*" || true
             # Install ONLY production dependencies
             pnpm install --prod
 
