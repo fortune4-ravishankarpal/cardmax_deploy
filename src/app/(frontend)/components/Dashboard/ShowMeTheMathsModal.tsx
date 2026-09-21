@@ -259,16 +259,10 @@ export default function ShowMeTheMathsModal({ recommendation, onClose }: Props) 
                   <line x1="8" y1="18" x2="10" y2="18" />
                   <line x1="14" y1="18" x2="16" y2="18" />
                 </svg>
-                Show Me the Maths · {icon} {category}
+                <span className={styles.headerCategoryText}>Show Me the Maths · {icon} {category}</span>
                 {/* Data source badge */}
                 {!loading && (
-                  <span style={{
-                    fontSize: '0.62rem', fontWeight: 700,
-                    padding: '0.1rem 0.4rem', borderRadius: 4,
-                    background: dataSource === 'live' ? 'rgba(34,197,94,0.25)' : 'rgba(245,158,11,0.2)',
-                    color: dataSource === 'live' ? '#4ade80' : '#fbbf24',
-                    marginLeft: 4,
-                  }}>
+                  <span className={`${styles.sourceBadge} ${dataSource === 'live' ? styles['sourceBadge--live'] : styles['sourceBadge--static']}`}>
                     {dataSource === 'live' ? '● Live' : '● Static'}
                   </span>
                 )}
@@ -289,15 +283,26 @@ export default function ShowMeTheMathsModal({ recommendation, onClose }: Props) 
 
           {/* Verdict badge */}
           {breakdown && (
-            <div className={styles.verdictBadge}>
+            <div className={`${styles.verdictBadge} ${breakdown.annualValueGap < 0 ? styles['verdictBadge--negative'] : ''}`}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
+                {breakdown.annualValueGap >= 0 ? (
+                  <polyline points="20 6 9 17 4 12" />
+                ) : (
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                )}
               </svg>
-              You save{' '}
-              <span className={styles.verdictAmount}>
-                {breakdown.annualValueGap >= 0 ? `+${fmt(animGap)}` : fmt(-animGap)}
-              </span>{' '}
-              per year vs. baseline
+              {breakdown.annualValueGap >= 0 ? (
+                <>
+                  You save{' '}
+                  <span className={styles.verdictAmount}>+{fmt(animGap)}</span>{' '}
+                  per year vs. baseline
+                </>
+              ) : (
+                <>
+                  <span className={styles.verdictAmount}>−{fmt(animGap)}</span>{' '}
+                  annual gap vs. baseline
+                </>
+              )}
             </div>
           )}
         </div>
