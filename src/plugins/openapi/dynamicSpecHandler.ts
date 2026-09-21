@@ -1,6 +1,7 @@
 import type { PayloadRequest } from 'payload'
 import { buildOpenApiDocument } from '@seshuk/payload-plugin-openapi'
 import { hasApiPermission, HTTP_METHOD_TO_OPERATION } from '@/access/apiPermissionEngine'
+import { sortTags, TAG_METADATA } from './tagOrder'
 
 let cachedBaseDoc: any = null
 
@@ -64,6 +65,31 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
       delete cachedBaseDoc.paths[path]
     }
   }
+
+  // Ensure all active tags are present, have descriptive metadata, and are sorted
+  const allDocTags = new Set<string>()
+  for (const [, pathItem] of Object.entries(cachedBaseDoc?.paths || {})) {
+    if (!pathItem || typeof pathItem !== 'object') continue
+    for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
+      const opTags = (pathItem as any)?.[method]?.tags
+      if (Array.isArray(opTags)) {
+        opTags.forEach((t: string) => allDocTags.add(t))
+      }
+    }
+  }
+
+  const existingTags = Array.isArray(cachedBaseDoc?.tags) ? cachedBaseDoc.tags : []
+  const tagMap = new Map<string, any>(existingTags.map((t: any) => [t.name, t]))
+
+  cachedBaseDoc.tags = sortTags(
+    Array.from(allDocTags).map(
+      (tagName) =>
+        tagMap.get(tagName) || {
+          name: tagName,
+          description: TAG_METADATA[tagName]?.description || `${tagName} Endpoints`,
+        }
+    )
+  )
 
   return cachedBaseDoc
 }
@@ -220,11 +246,17 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       }
     }
 
-    // Ensure tags include all active operations
+    // Ensure tags include all active operations, enriched with metadata and sorted in functional order
     const existingTags = Array.isArray(filteredDoc.tags) ? filteredDoc.tags : []
     const tagMap = new Map<string, any>(existingTags.map((t: any) => [t.name, t]))
-    filteredDoc.tags = Array.from(activeTags).map(
-      (tagName) => tagMap.get(tagName) || { name: tagName, description: `${tagName} Endpoints` }
+    filteredDoc.tags = sortTags(
+      Array.from(activeTags).map(
+        (tagName) =>
+          tagMap.get(tagName) || {
+            name: tagName,
+            description: TAG_METADATA[tagName]?.description || `${tagName} Endpoints`,
+          }
+      )
     )
 
     return Response.json(filteredDoc)
