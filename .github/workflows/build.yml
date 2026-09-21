@@ -83,5 +83,5 @@ jobs:
             pnpm install --prod
 
             # Reload active process or start new PM2 instance if not running
-            pm2 reload cardmax || pm2 start pnpm --name "cardmax" -- start
+            pm2 restart cardmax || pm2 start pnpm --name "cardmax" -- start
             pm2 save
