@@ -1,0 +1,36 @@
+name: Build CardMax
+
+on:
+  push:
+    branches:
+      - v1/deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Setup latest version of PNPM
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      # 3. Setup Node.js 24 with PNPM caching
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      # 4. Install dependencies
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 5. Execute build
+      - name: Create Build
+        run: pnpm build
