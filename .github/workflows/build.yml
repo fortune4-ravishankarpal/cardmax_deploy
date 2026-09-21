@@ -28,7 +28,7 @@ jobs:
 
       # 4. Install all dependencies (including devDependencies)
       - name: Install All Dependencies
-        run: npm ci
+        run: npm install
 
       # 5. Generate types
       - name: Generate Types

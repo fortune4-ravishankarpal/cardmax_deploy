@@ -7,23 +7,23 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
-    "safe:dev": "rm -rf .next && pnpm gen && cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "safe:dev": "rm -rf .next && npm run gen && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
-    "predev": "pnpm generate:importmap && pnpm generate:types",
+    "predev": "npm run generate:importmap && npm run generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
-    "gen": "pnpm generate:importmap && pnpm generate:types",
+    "gen": "npm run generate:importmap && npm run generate:types",
     "seed:one": "tsx -r dotenv/config scripts/seed-one.ts",
     "sync:plugin": "node scripts/sync-plugin.js",
     "swagger:check": "node scripts/sync-swagger.js",
     "swagger:sync": "node scripts/sync-swagger.js --sync",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "test": "pnpm run test:int && pnpm run test:e2e",
+    "test": "npm run test:int && npm run test:e2e",
     "prenuke": "rm -rf .next",
-    "nuke": "echo y | pnpm payload migrate:fresh && pnpm seed",
-    "nuke:x": "pnpm safe:dev",
-    "mg": "echo y | pnpm payload migrate:fresh && pnpm seed",
+    "nuke": "echo y | npm run payload migrate:fresh && npm run seed",
+    "nuke:x": "npm run safe:dev",
+    "mg": "echo y | npm run payload migrate:fresh && npm run seed",
     "seed": "tsx -r dotenv/config src/seed/seeders/index.seed.ts",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
@@ -75,7 +75,6 @@
     "vitest": "4.0.18"
   },
   "engines": {
-    "node": "^18.20.2 || >=20.9.0",
-    "pnpm": "^9 || ^10 || ^11"
+    "node": "^18.20.2 || >=20.9.0"
   }
 }
