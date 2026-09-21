@@ -10,6 +10,13 @@ const deriveServerUrl = (req: PayloadRequest): string => {
   return `${protocol}://${host}`
 }
 
+const OBSOLETE_AUTH_PATHS = [
+  '/api/users/login',
+  '/api/users/forgot-password',
+  '/api/users/reset-password',
+  '/api/users/unlock',
+]
+
 /**
  * Generates or retrieves the cached base OpenAPI document.
  */
@@ -50,6 +57,13 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
     options: resolvedOptions,
     language: 'en',
   })
+
+  // Remove obsolete password-based auth endpoints from Swagger
+  if (cachedBaseDoc?.paths) {
+    for (const path of OBSOLETE_AUTH_PATHS) {
+      delete cachedBaseDoc.paths[path]
+    }
+  }
 
   return cachedBaseDoc
 }
@@ -129,6 +143,9 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       title: 'CardMax API (Administrator View)',
       description: `Full access view for ${user.email ?? 'Admin'}. All collections and CRUD operations enabled.`,
     }
+    for (const p of OBSOLETE_AUTH_PATHS) {
+      delete adminDoc.paths?.[p]
+    }
     return Response.json(adminDoc)
   }
 
@@ -148,6 +165,9 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
 
     const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete']
     const paths = filteredDoc.paths || {}
+    for (const p of OBSOLETE_AUTH_PATHS) {
+      delete paths[p]
+    }
     const activeTags = new Set<string>()
 
     for (const [pathKey, pathItem] of Object.entries(paths)) {
