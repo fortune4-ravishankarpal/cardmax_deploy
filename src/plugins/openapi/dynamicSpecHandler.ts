@@ -76,6 +76,19 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
         }
       }
     }
+
+    // Provide schema definitions for internal entities referenced in relations (like createdBy / lastModifiedBy)
+    // so Swagger UI can resolve references without throwing resolver errors
+    if (!cachedBaseDoc.components.schemas.Admin) {
+      cachedBaseDoc.components.schemas.Admin = {
+        type: 'object',
+        description: 'System Administrator (Internal Reference)',
+        properties: {
+          id: { type: 'string', description: 'Admin user unique identifier' },
+          email: { type: 'string', format: 'email', description: 'Admin email address' },
+        },
+      }
+    }
   }
 
   // Ensure all active tags are present, have descriptive metadata, and are sorted
