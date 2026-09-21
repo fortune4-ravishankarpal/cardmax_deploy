@@ -84,6 +84,9 @@ jobs:
             # Install ONLY production dependencies
             pnpm install --prod
 
+             # Install ONLY production dependencies
+            pnpm mg
+
             # Reload active process or start new PM2 instance if not running
             pm2 restart cardmax || pm2 start pnpm --name "cardmax" -- start
             pm2 save

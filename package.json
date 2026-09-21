@@ -23,6 +23,7 @@
     "prenuke": "rm -rf .next",
     "nuke": "echo y | pnpm payload migrate:fresh && pnpm seed",
     "nuke:x": "pnpm safe:dev",
+    "mg": "echo y | pnpm payload migrate:fresh && pnpm seed",
     "seed": "tsx -r dotenv/config src/seed/seeders/index.seed.ts",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"
