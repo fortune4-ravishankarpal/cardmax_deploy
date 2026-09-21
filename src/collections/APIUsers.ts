@@ -72,6 +72,8 @@ export const APIUsers: CollectionConfig = {
           type: 'select',
           required: true,
           options: [
+            { label: 'Users (users)', value: 'users' },
+            { label: 'OTP Records (otp)', value: 'otp' },
             { label: 'Banks (banks)', value: 'banks' },
             { label: 'Cards (cards)', value: 'cards' },
             { label: 'Credit Cards (CreditCard)', value: 'CreditCard' },
@@ -101,6 +103,23 @@ export const APIUsers: CollectionConfig = {
             { label: 'Delete (DELETE)', value: 'delete' },
           ],
         },
+      ],
+    },
+    {
+      name: 'allowedEndpoints',
+      type: 'select',
+      hasMany: true,
+      saveToJWT: true,
+      admin: {
+        condition: (data) => data?.role === 'developer',
+        description: 'Grant access to specific custom API endpoints (e.g. Send OTP, Verify OTP). Leave empty if granting access via collection permissions.',
+      },
+      options: [
+        { label: 'Send OTP (POST /api/users/send-otp)', value: '/api/users/send-otp' },
+        { label: 'Verify OTP (POST /api/users/verify-otp)', value: '/api/users/verify-otp' },
+        { label: 'Complete Profile (POST /api/users/complete-profile)', value: '/api/users/complete-profile' },
+        { label: 'Get Profile (GET /api/users/profile)', value: '/api/users/profile' },
+        { label: 'Logout (POST /api/users/logout)', value: '/api/users/logout' },
       ],
     },
   ],

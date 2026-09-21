@@ -41,7 +41,7 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
     },
     interactiveAuth: { enabled: true, endpoint: '/openapi-auth' },
     nestedTags: false,
-    cache: true,
+    cache: process.env.NODE_ENV === 'production',
     extensions: [],
   }
 
@@ -59,12 +59,14 @@ export const getBaseOpenApiDocument = async (req: PayloadRequest) => {
  * Returns a customized OpenAPI document based on the authenticated user's permissions.
  */
 export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response> => {
-  const user = req.user as {
+  let user = req.user as {
+    id?: string | number
     collection?: string
     role?: string
     status?: string
     email?: string
     permissions?: Array<{ collection: string; methods: string[] }>
+    allowedEndpoints?: string[]
   } | null
 
   // 1. Unauthenticated -> 401 Unauthorized
@@ -76,6 +78,28 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       },
       { status: 401 }
     )
+  }
+
+  // Fetch fresh API user record from DB so changes in Admin Panel apply immediately
+  if (user.id && user.collection === 'api-users') {
+    try {
+      const freshUser = (await req.payload.findByID({
+        collection: 'api-users',
+        id: String(user.id),
+        depth: 0,
+      })) as any
+      if (freshUser) {
+        user = {
+          ...user,
+          role: freshUser.role ?? user.role,
+          status: freshUser.status ?? user.status,
+          permissions: freshUser.permissions ?? user.permissions,
+          allowedEndpoints: freshUser.allowedEndpoints ?? user.allowedEndpoints,
+        }
+      }
+    } catch {
+      // fallback to decoded token
+    }
   }
 
   // 2. Suspended / Inactive User -> 403 Forbidden
@@ -133,12 +157,18 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       const cleanPath = pathKey.replace(/^\/api\//, '').replace(/^\//, '')
       const firstSegment = cleanPath.split('/')[0]?.toLowerCase()
 
+      // 1. Check if user has explicit endpoint-level permission
+      const userAllowedEndpoints = Array.isArray(user.allowedEndpoints) ? user.allowedEndpoints : []
+      const isExplicitlyAllowedEndpoint = userAllowedEndpoints.includes(pathKey)
+
       // If this path belongs to a collection:
       if (firstSegment && collectionSlugs.has(firstSegment)) {
         for (const method of HTTP_METHODS) {
           if ((pathItem as any)[method]) {
             const operation = HTTP_METHOD_TO_OPERATION[method]
-            const allowed = operation ? hasApiPermission(req, firstSegment, operation) : false
+            const allowed =
+              isExplicitlyAllowedEndpoint ||
+              (operation ? hasApiPermission(req, firstSegment, operation) : false)
 
             if (!allowed) {
               delete (pathItem as any)[method]
@@ -170,10 +200,12 @@ export const dynamicSpecHandler = async (req: PayloadRequest): Promise<Response>
       }
     }
 
-    // Filter tags to only include tags of active operations
-    if (Array.isArray(filteredDoc.tags)) {
-      filteredDoc.tags = filteredDoc.tags.filter((t: any) => activeTags.has(t.name))
-    }
+    // Ensure tags include all active operations
+    const existingTags = Array.isArray(filteredDoc.tags) ? filteredDoc.tags : []
+    const tagMap = new Map<string, any>(existingTags.map((t: any) => [t.name, t]))
+    filteredDoc.tags = Array.from(activeTags).map(
+      (tagName) => tagMap.get(tagName) || { name: tagName, description: `${tagName} Endpoints` }
+    )
 
     return Response.json(filteredDoc)
   }

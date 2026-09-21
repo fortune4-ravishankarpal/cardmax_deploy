@@ -20,6 +20,10 @@ export async function seedApiUsers(payload: Payload) {
       status: 'active' as const,
       permissions: [
         {
+          collection: 'users',
+          methods: ['read', 'create'],
+        },
+        {
           collection: 'banks',
           methods: ['read'],
         },
