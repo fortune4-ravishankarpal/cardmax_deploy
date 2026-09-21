@@ -14,43 +14,37 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Setup latest version of PNPM
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: latest
-
-      # 3. Setup Node.js 24 with PNPM caching
+      # 2. Setup Node.js 24 with NPM caching
       - name: Setup Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'pnpm'
+          cache: 'npm'
 
-      # 4. Create .env file for build step
+      # 3. Create .env file for build step
       - name: Create .env File
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
 
-      # 5. Install all dependencies (including devDependencies)
+      # 4. Install all dependencies (including devDependencies)
       - name: Install All Dependencies
-        run: pnpm install
+        run: npm ci
 
-      # 6. Generate types
+      # 5. Generate types
       - name: Generate Types
-        run: pnpm gen
+        run: npm run gen
 
-      # 7. Execute build
+      # 6. Execute build
       - name: Create Build
-        run: pnpm build
+        run: npm run build
 
-      # 8. Setup SSH Key for AWS Transfer
+      # 7. Setup SSH Key for AWS Transfer
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-      # 9. Sync Build Artifacts, configuration, and package files to AWS
+      # 8. Sync Build Artifacts, configuration, and package files to AWS
       - name: Sync Build Artifacts to AWS EC2
         run: |
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
@@ -61,11 +55,11 @@ jobs:
             .next \
             public \
             package.json \
-            pnpm-lock.yaml \
+            package-lock.yaml \
             tsconfig.json \
             ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/var/www/cardmax/
 
-      # 10. Install production dependencies on AWS and start/restart PM2 process
+      # 9. Install production dependencies on AWS, run migrations, and start/restart PM2 process
       - name: Install Production Dependencies & Start Process
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -73,19 +67,19 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Source shell environment files to load Node, PNPM, and PM2 paths
+            # Source shell environment files to load Node and PM2 paths
             [ -s "$HOME/.nvm/nvm.sh" ] && \. "$HOME/.nvm/nvm.sh"
             [ -s "$HOME/.profile" ] && \. "$HOME/.profile"
             [ -s "$HOME/.bashrc" ] && \. "$HOME/.bashrc"
 
             cd /var/www/cardmax
-            pnpm config set approved-builds "*" || true
-            # Install ONLY production dependencies
-            pnpm install --prod
 
-             # Install ONLY production dependencies
-            pnpm mg
+            # Install ONLY production dependencies
+            npm ci --omit=dev
+
+            # Run migrations
+            npm run mg
 
             # Reload active process or start new PM2 instance if not running
-            pm2 restart cardmax || pm2 start pnpm --name "cardmax" -- start
+            pm2 restart cardmax || pm2 start npm --name "cardmax" -- start
             pm2 save
