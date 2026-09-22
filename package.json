@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
+    "postbuild": "echo y | pnpm payload migrate:fresh && pnpm seed",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "safe:dev": "rm -rf .next && pnpm gen && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
